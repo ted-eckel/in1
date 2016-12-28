@@ -7,7 +7,12 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-
+<%= session.inspect %>
+<br />
+<br />
+Hello from application.html.erb!
+<br />
+<%= session['omniauth.pocket.token'] %>
 <%= yield %>
 
 </body>

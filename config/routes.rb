@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  # match '/auth/:provider/callback', to: 'sessions#create', via: [:get, :post]
+  match '/auth/:provider/callback', to: 'static_pages#auth_hash', via: [:get, :post]
+  match '/logout', to: 'sessions#destroy', via: [:get, :post]
+  get 'pocket', to: 'static_pages#pocket'
+  get 'auth_hash', to: 'static_pages#auth_hash'
+
+  resource :user
+
+  root "static_pages#root"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

@@ -1,11 +1,17 @@
 Rails.application.routes.draw do
   # match '/auth/:provider/callback', to: 'sessions#create', via: [:get, :post]
-  match '/auth/:provider/callback', to: 'static_pages#auth_hash', via: [:get, :post]
-  match '/logout', to: 'sessions#destroy', via: [:get, :post]
-  get 'pocket', to: 'static_pages#pocket'
-  get 'auth_hash', to: 'static_pages#auth_hash'
+  # match '/auth/:provider/callback', to: 'static_pages#auth_hash', via: [:get, :post]
+  # match '/logout', to: 'sessions#destroy', via: [:get, :post]
+  # get 'pocket', to: 'pocket#pocket'
+  # get 'auth_hash', to: 'pocket#auth_hash'
 
-  resource :user
+  namespace :api, defaults: {format: :json} do
+    resource :user, only: [:create]
+    resource :session, only: [:create, :destroy, :show]
+    get 'pocket_retrieve', to: 'pocket#retrieve'
+  end
+
+  match '/auth/:provider/callback', to: 'static_pages#root', via: [:get, :post]
 
   root "static_pages#root"
   # The priority is based upon order of creation: first created -> highest priority.

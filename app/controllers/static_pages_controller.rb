@@ -1,27 +1,20 @@
-require 'httparty'
+# require 'httparty'
 
 class StaticPagesController < ApplicationController
   def root
-  end
+    @user = current_user
+    # when the user signs in, check their identities, and if
+    # there's no session data / cookie for that identity, then
+    # reauthenticate user.identities
+    if @user.identities
+      @user.identities.each do |i|
+        unless session["#{i.provider}_omniauth_data"]
+          find_or_create_identity
+          redirect_to "auth/#{i.provider}"
+        end
+      end
+    end
 
-  def pocket
-    options = {
-        	body: {
-        		consumer_key: ENV["pocket_consumer_key"],
-        		access_token: session["pocket_access_token"],
-        		count: 10,
-            offset: 0,
-            sort: 'newest',
-            detailType: 'complete'
-        	}
-        }
-
-    render json: HTTParty.post('https://getpocket.com/v3/get', options)
-  end
-
-  def auth_hash
-    session["omniauth.pocket_data"] = request.env["omniauth.auth"]
-    session["pocket_access_token"] = session["omniauth.pocket_data"]["credentials"]["token"]
-    redirect_to pocket_url
+    find_or_create_identity
   end
 end

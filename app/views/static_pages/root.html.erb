@@ -1,4 +1,18 @@
 <ul>
   <li><%= link_to 'Pocket', '/auth/pocket' %></li>
 </ul>
-<%= session['pocket_access_token'] %>
+
+
+<span><%= request.env["omniauth.auth"] ? "Auth hash present!" : "No auth hash" %></span>
+<br>
+<span><%= session['pocket_access_token'] ? session['pocket_access_token'] : "No access token" %></span>
+
+
+<!-- <script id="bootstrap-current-user" type="text/javascript">
+  <%# if signed_in? %>
+  	window.currentUser = <%#= render("api/users/user.json.jbuilder",
+  		user: current_user).html_safe %>
+  <%# end %>
+</script> -->
+
+<main id="root"></main>

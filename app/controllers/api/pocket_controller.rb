@@ -7,8 +7,6 @@ class Api::PocketController < ApplicationController
     render json: HTTParty.post('https://getpocket.com/v3/get', pocket_get_params)
   end
 
-  private
-
   def necessary_params
     {
       "consumer_key" => ENV["pocket_consumer_key"],
@@ -17,22 +15,29 @@ class Api::PocketController < ApplicationController
   end
 
   def pocket_get_params
+    # {
+    #   "body" => params.permit(
+    #   :format,
+    #   :state,
+    #   :favorite,
+    #   :tag,
+    #   :contentType,
+    #   :sort,
+    #   :detailType,
+    #   :search,
+    #   :domain,
+    #   :since,
+    #   :count,
+    #   :offset
+    #   ).merge(necessary_params)
+    # }
     {
-      "body" => params.permit(
-        :state,
-        :favorite,
-        :tag,
-        :contentType,
-        :sort,
-        :detailType,
-        :search,
-        :domain,
-        :since,
-        :count,
-        :offset
-      ).merge(necessary_params)
+      "body" => params.merge(necessary_params)
     }
   end
+
+  private
+
 
   def pocket_send_params
     # TODO:

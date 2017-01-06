@@ -14,14 +14,12 @@
 
 
 
-<script id="bootstrap-current-user" type="text/javascript">
-  <% if signed_in? %>
-  	window.currentUser = <%= render("api/users/user.json.jbuilder",
-  		user: current_user).html_safe %>
-  <% end %>
-</script>
 
 <% if current_user %>
+  <script id="bootstrap-current-user" type="text/javascript">
+    window.currentUser = <%= render("api/users/user.json.jbuilder",
+    user: current_user).html_safe %>
+  </script>
   <main id="root"></main>
 <% else %>
   <form action="/api/session" method="post" name="login_form" >

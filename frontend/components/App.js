@@ -39,9 +39,13 @@ class App extends Component {
                 {
                   items.map((item, idx) => {
                     return (<li key={idx}>
+                      <img src={"http://www.google.com/s2/favicons?domain=".concat(items[idx].given_url)} />
+                      { " " }
                       <a href={items[idx].given_url}>
                         {items[idx].resolved_title}
                       </a> : { (new Date(parseInt(items[idx].time_added) * 1000)).toString() }
+                      { " : "}
+                      { items[idx].image ? <img style={{ "maxHeight": "100px" }} src={items[idx].image.src}  /> : <span/>}
                     </li>)
                   })
                 }

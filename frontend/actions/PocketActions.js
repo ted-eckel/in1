@@ -16,29 +16,29 @@ export const receiveError = error => ({
   error
 })
 
-export const fetchItems = state => (dispatch, getState) => {
-  let params = getState().pocket.params
-  dispatch(requestItems(params));
+export const fetchItems = (newParams = {}) => (dispatch, getState) => {
+  dispatch(requestItems(newParams));
+  let params = getState().pocket.params;
   return APIUtil.pocketRetrieve(params)
   .then(items => dispatch(receiveItems(items)));
 }
 
-const shouldFetchItems = state => {
-  const pocket = state.pocket
-  if (Object.keys(pocket.items).length === 0) {
-    return true
-  }
-  if (pocket.isFetching) {
-    return false
-  }
-  return false
-}
+// const shouldFetchItems = state => {
+//   const pocket = state.pocket
+//   if (pocket.items.length === 0) {
+//     return true
+//   }
+//   if (pocket.isFetching) {
+//     return false
+//   }
+//   return false
+// }
 
-export const fetchItemsIfNeeded = state => (dispatch, getState) => {
-  if (shouldFetchItems(getState())) {
-    return dispatch(fetchItems(getState()))
-  }
-}
+// export const fetchItemsIfNeeded = state => (dispatch, getState) => {
+//   if (shouldFetchItems(getState())) {
+//     return dispatch(fetchItems(getState()))
+//   }
+// }
 
 // const fetchSuccess = items => dispatch => dispatch(receiveItems(items));
 // const fetchError = error => dispatch => dispatch(receiveError(error));

@@ -1,4 +1,6 @@
 import merge from 'lodash/merge'
+import union from 'lodash/union'
+import uniq from 'lodash/uniq'
 import { combineReducers } from 'redux'
 import update from 'react/lib/update'
 import ActionType from '../actions/ActionType'
@@ -8,23 +10,19 @@ let nextOffset = 0;
 const itemsReducer = (state = [], action) => {
   switch (action.type) {
     case ActionType.Pocket.Items.LOAD_SUCCESS:
-      // let deepCopyState = merge({}, state);
-      // let deepCopyItems = merge({}, action.items.list);
       let list = action.items.list;
+      let oldState = union([], state);
       let newState = [];
-      // return {
-      //   ...deepCopyState,
-      //   ...deepCopyItems
-      // }
-      Object.keys(list).forEach(key => newState.push(list[key]))
-      newState.sort((a, b) => parseInt(b.time_added) - parseInt(a.time_added))
-      return update(state, {$push: newState})
-      // let list = action.items.list;
-      // return {
-      //   ...state,
-      //   ...list
-      // }
-      // return update(state, action.items.list)
+
+      Object.keys(list).forEach(key => newState.push({
+        service: "pocket",
+        time: list[key].time_added,
+        item: list[key]
+      }));
+
+      let nextState = uniq(union(oldState, newState));
+      nextState.sort((a, b) => parseInt(b.time) - parseInt(a.time));
+      return nextState;
     default:
       return state;
   }
@@ -39,7 +37,10 @@ const paramsReducer = (state = {
     case ActionType.Pocket.Items.LOAD_REQUEST:
       return update(state, {$merge: action.params})
     case ActionType.Pocket.Items.LOAD_SUCCESS:
-      return update(state, {$merge: {offset: nextOffset += 20}})
+      let nextState = merge({}, state);
+      nextState.offset += 20;
+      return nextState;
+      // return update(state, {$merge: {offset: nextOffset += 20}})
     default:
       return state;
   }

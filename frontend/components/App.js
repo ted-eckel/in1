@@ -128,6 +128,15 @@ class App extends Component {
                   : (items[idx].item.excerpt ? <div style={{fontSize: "12px", margin: "10px", color: "darkgray"}}>{items[idx].item.excerpt}</div> : <span />)
                 }
               </div>
+              <div style={{margin: "0 10px"}}>
+                {
+                  items[idx].item.tags
+                  ? (Object.keys(items[idx].item.tags).map((tag, idx) => {
+                    return (<span style={{fontSize: "14px"}}>{tag} </span>)
+                  }))
+                  : <span style={{display: "none"}} />
+                }
+              </div>
             </Paper>
           </a>
         </div>

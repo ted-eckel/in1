@@ -11,6 +11,10 @@ import MasonryInfiniteScroller from 'react-masonry-infinite'
 import InfiniteScroll from 'react-infinite-scroller'
 import AppBar from 'material-ui/AppBar'
 import Infinite from 'react-infinite'
+// import Masonry from 'masonry-layout'
+import Masonry from 'react-masonry-component'
+import InView from 'in-view'
+// import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 
 // if there is are no more items, Pocket will return something like this as a response:
@@ -50,6 +54,12 @@ class App extends Component {
     console.log("handleRefresh()");
   }
 
+  handleLoadMore = () => {
+    const { dispatch } = this.props;
+    dispatch(fetchItems());
+    console.log("handleLoadMore()");
+  }
+
   render() {
     const { items, isFetching } = this.props
     const isEmpty = items.length === 0
@@ -59,76 +69,82 @@ class App extends Component {
       </div>
     );
 
+    // InView('.lolol')
+    //     .on('enter', this.handleRefresh)
+    //     .on('exit', el => {
+    //         el.style.opacity = 0.5;
+    //     });
+    // $(window).scroll(() => {
+    //    if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+    //        alert("near bottom!");
+    //    }
+    // });
+
+    const childElements = items.map((item, idx) => {
+      return (
+        <div
+          key={idx}
+          style={{
+            margin: "15px"
+          }}>
+          <a
+            href={items[idx].item.given_url}
+            style={{
+              textDecoration: "none"
+            }}>
+            <Paper
+              style={{
+                width: "275px",
+                // height: "225px",
+                padding: "10px 0",
+              }}
+              zDepth={1}>
+              <div style={{margin: "0 10px"}}>
+                {items[idx].service === "pocket"
+                  ? (
+                    <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
+                      <img src={"http://www.google.com/s2/favicons?domain=".concat(items[idx].item.given_url)} />
+                      {" "}
+                    </div>
+                  )
+                  : <span />
+                }
+                <span style={{}}>
+                  {
+                    items[idx].item.resolved_title
+                    ? items[idx].item.resolved_title
+                    : items[idx].item.given_title
+                  }
+                </span>
+              </div>
+              <div>
+                {
+                  items[idx].item.image
+                  ? <div style={{margin: "10px auto", display: "table"}}><img style={{ maxWidth: "275px"}} src={items[idx].item.image.src} /></div>
+                  : (items[idx].item.excerpt ? <div style={{fontSize: "12px", margin: "10px", color: "darkgray"}}>{items[idx].item.excerpt}</div> : <span />)
+                }
+              </div>
+            </Paper>
+          </a>
+        </div>
+      )
+    });
+
+
+
     return (
       <MuiThemeProvider style={{width: "100%", height: "100%"}}>
-        <div style={{backgroundColor: "#F4F4F6"}}>
+        <div>
           <GreetingContainer />
           <br />
           <br />
-          <Infinite elementHeight={225}
-                    containerHeight={window.innerHeight}
-                    infiniteLoadingBeginEdgeOffset={200}
-                    loadingSpinnerDelegate={elementInfiniteLoad}
-                    isInfiniteLoading={isFetching}
-                    useWindowAsScrollContainer
-                    onInfiniteLoad={this.handleRefresh}
-                    style={{
-                      padding: "0 175px",
-                      margin: "0 auto",
-                      display: "-webkit-box",
-                      display: "-moz-box",
-                      display: "-ms-flexbox",
-                      display: "-webkit-flex",
-                      display: "flex",
-                      alignContent: "flex-start",
-                      flexWrap: "wrap"
-                    }}
-                    >
-                      {items.map((item, idx) => {
-                        return (
-                          <span
-                            key={idx}
-                            style={{
-                              margin: "15"
-                            }}>
-                            <a
-                              href={items[idx].item.given_url}
-                              style={{
-                                textDecoration: "none"
-                              }}>
-                              <Paper
-                                style={{
-                                  width: "275",
-                                  height: "225",
-                                  padding: "10",
-                                }}
-                                zDepth={1}>
-                                {items[idx].service === "pocket"
-                                  ? (
-                                        <span>
-                                          <img src={"http://www.google.com/s2/favicons?domain=".concat(items[idx].item.given_url)} />
-                                          {" "}
-                                        </span>
-                                      )
-                                    : <span />
-                                  }
-                                <span>
-                                  {
-                                    items[idx].item.resolved_title
-                                    ? items[idx].item.resolved_title
-                                    : items[idx].item.given_title
-                                  }
-                                </span>
-                              </Paper>
-                            </a>
-                          </span>
-                        )
-                      })}
-          </Infinite>
+          <Masonry>
+            {childElements}
+          </Masonry>
           {/* <div>
             { isEmpty ? elementInfiniteLoad : <PocketContainer /> }
           </div> */}
-          {/* <FlatButton label="Fetch more items" onClick={this.handleClick} /> */}
+          <FlatButton className="lolol" label="Fetch more items" onClick={this.handleClick} />
         </div>
       </MuiThemeProvider>
     )

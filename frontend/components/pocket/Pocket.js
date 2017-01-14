@@ -3,7 +3,7 @@ import Paper from 'material-ui/Paper'
 
 // const list = items => { items.list ? items.list : {} };
 
-const handleClick = fetchItems => fetchItems("{'count':'7'}");
+const handleClick = fetchItems => fetchItems();
 
 const Pocket = ({items}) => (
   <div style={{

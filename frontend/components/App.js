@@ -100,7 +100,7 @@ class App extends Component {
               style={{
                 width: "275px",
                 // height: "225px",
-                padding: "10px 0",
+                padding: "10px 0"
               }}
               zDepth={1}>
               <div style={{margin: "0 10px"}}>
@@ -121,7 +121,7 @@ class App extends Component {
                   }
                 </span>
               </div>
-              <div>
+              <div style={{maxHeight: "350px", overflow: "hidden"}}>
                 {
                   items[idx].item.image
                   ? <div style={{margin: "10px auto", display: "table"}}><img style={{ maxWidth: "275px"}} src={items[idx].item.image.src} /></div>

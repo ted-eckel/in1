@@ -14,6 +14,7 @@ import Infinite from 'react-infinite'
 // import Masonry from 'masonry-layout'
 import Masonry from 'react-masonry-component'
 import InView from 'in-view'
+import MasonryMixin from 'react-masonry-mixin'
 // import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 
@@ -29,17 +30,18 @@ import InView from 'in-view'
 { items[idx].image ? <img style={{ "maxHeight": "100px" }} src={items[idx].image.src}  /> : <span/>} */}
 
 class App extends Component {
+
   static propTypes = {
     items: PropTypes.array.isRequired,
     isFetching: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired
   }
 
-  componentDidMount() {
-    const { dispatch } = this.props
-    dispatch(fetchItems())
-    console.log("componentDidMount()")
-  }
+  // componentDidMount() {
+  //   const { dispatch } = this.props
+  //   dispatch(fetchItems())
+  //   console.log("componentDidMount()")
+  // }
 
   handleClick = e => {
     e.preventDefault()
@@ -55,9 +57,11 @@ class App extends Component {
   }
 
   handleLoadMore = () => {
-    const { dispatch } = this.props;
-    dispatch(fetchItems());
-    console.log("handleLoadMore()");
+    const { dispatch, isFetching } = this.props;
+    if (!isFetching){
+      dispatch(fetchItems());
+      console.log("handleLoadMore()");
+    }
   }
 
   render() {
@@ -138,13 +142,24 @@ class App extends Component {
           <GreetingContainer />
           <br />
           <br />
-          <Masonry>
+          <InfiniteScroll
+            ref='masonryContainer'
+            loader={elementInfiniteLoad}
+            loadMore={this.handleLoadMore}
+            hasMore
+            threshold={200}
+          >
+            <Masonry>
+              {childElements}
+            </Masonry>
+          </InfiniteScroll>
+          {/* <Masonry>
             {childElements}
-          </Masonry>
+          </Masonry> */}
           {/* <div>
             { isEmpty ? elementInfiniteLoad : <PocketContainer /> }
           </div> */}
-          <FlatButton className="lolol" label="Fetch more items" onClick={this.handleClick} />
+          {/* <FlatButton className="lolol" label="Fetch more items" onClick={this.handleClick} /> */}
         </div>
       </MuiThemeProvider>
     )

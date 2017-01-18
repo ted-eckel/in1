@@ -35,7 +35,7 @@ const logged = (props) => (
 logged.muiName = 'IconMenu'
 
 const personalGreeting = (currentUser, logout) => (
-  <AppBar title="in1" iconElementRight={<FlatButton label="Logout" onClick={logout} />} />
+  <AppBar title="in1" iconElementRight={<FlatButton label="Logout" onClick={logout} />} style={{position: "fixed", top: "0"}}/>
 );
 
 {/* <hgroup className="header-group">

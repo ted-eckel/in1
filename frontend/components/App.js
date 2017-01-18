@@ -15,6 +15,8 @@ import Infinite from 'react-infinite'
 import Masonry from 'react-masonry-component'
 import InView from 'in-view'
 import MasonryMixin from 'react-masonry-mixin'
+import Chip from 'material-ui/Chip'
+import Avatar from 'material-ui/Avatar'
 // import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 
@@ -64,25 +66,22 @@ class App extends Component {
     }
   }
 
+  handleRequestDelete = e => {
+    e.preventDefault();
+    alert('You clicked the delete button.');
+  }
+
+  handleTouchTap = e => {
+    e.preventDefault();
+    alert('You clicked the Chip.');
+  }
+
   render() {
     const { items, isFetching } = this.props
     const isEmpty = items.length === 0
     const elementInfiniteLoad = (
-      <div style={{margin: "0 auto"}}>
-        <CircularProgress size={80} thickness={6} />
-      </div>
+      <CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />
     );
-
-    // InView('.lolol')
-    //     .on('enter', this.handleRefresh)
-    //     .on('exit', el => {
-    //         el.style.opacity = 0.5;
-    //     });
-    // $(window).scroll(() => {
-    //    if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
-    //        alert("near bottom!");
-    //    }
-    // });
 
     const childElements = items.map((item, idx) => {
       return (
@@ -90,19 +89,22 @@ class App extends Component {
           key={idx}
           style={{
             margin: "15px"
-          }}>
+          }}
+          className="paper"
+        >
           <a
             href={items[idx].item.given_url}
             style={{
               textDecoration: "none"
-            }}>
+            }}
+            target="_blank">
             <Paper
               style={{
                 width: "275px",
                 // height: "225px",
                 padding: "10px 0"
               }}
-              zDepth={1}>
+            >
               <div style={{margin: "0 10px"}}>
                 {items[idx].service === "pocket"
                   ? (
@@ -123,17 +125,65 @@ class App extends Component {
               </div>
               <div style={{maxHeight: "350px", overflow: "hidden"}}>
                 {
-                  items[idx].item.image
-                  ? <div style={{margin: "10px auto", display: "table"}}><img style={{ maxWidth: "275px"}} src={items[idx].item.image.src} /></div>
-                  : (items[idx].item.excerpt ? <div style={{fontSize: "12px", margin: "10px", color: "darkgray"}}>{items[idx].item.excerpt}</div> : <span />)
+                  (items[idx].item.image)
+                  ? (
+                      <div
+                        style={{
+                          margin: "10px auto",
+                          display: "table"
+                        }}
+                      >
+                        <img
+                          style={{
+                            maxWidth: "275px",
+                            fontSize: "12px",
+                            color: "darkgray"
+                          }}
+                          src={items[idx].item.image.src}
+                          alt={(items[idx].item.excerpt ? items[idx].item.excerpt : "")}
+                        />
+                      </div>
+                    )
+                  : (
+                      items[idx].item.excerpt
+                      ? (
+                          <div
+                            style={{
+                              fontSize: "12px",
+                              margin: "10px",
+                              color: "darkgray"
+                            }}
+                          >
+                            {items[idx].item.excerpt}
+                          </div>
+                        )
+                      : <span />
+                    )
                 }
               </div>
-              <div style={{margin: "0 10px"}}>
+              <div style={{margin: "0 10px 0 20px"}}>
                 {
                   items[idx].item.tags
-                  ? (Object.keys(items[idx].item.tags).map((tag, idx) => {
-                    return (<span style={{fontSize: "14px"}}>{tag} </span>)
-                  }))
+                  ? (
+                      <div style={{display: "flex", flexWrap: "wrap"}}>
+                        {Object.keys(items[idx].item.tags).map((tag, idx) => {
+                          return (
+                            <Chip
+                              style={{
+                                margin: "2px",
+                                height: "25px"
+                              }}
+                              key={idx}
+                              onTouchTap={this.handleTouchTap}
+                              onRequestDelete={this.handleRequestDelete}
+                              className="chip"
+                            >
+                              {tag}
+                            </Chip>
+                          )
+                        })}
+                      </div>
+                    )
                   : <span style={{display: "none"}} />
                 }
               </div>
@@ -149,19 +199,19 @@ class App extends Component {
       <MuiThemeProvider style={{width: "100%", height: "100%"}}>
         <div>
           <GreetingContainer />
-          <br />
-          <br />
-          <InfiniteScroll
-            ref='masonryContainer'
-            loader={elementInfiniteLoad}
-            loadMore={this.handleLoadMore}
-            hasMore
-            threshold={200}
-          >
-            <Masonry>
-              {childElements}
-            </Masonry>
-          </InfiniteScroll>
+          <div style={{maxWidth: "1525px", margin: "80px auto"}}>
+            <InfiniteScroll
+              ref='masonryContainer'
+              loadMore={this.handleLoadMore}
+              loader={elementInfiniteLoad}
+              hasMore
+              threshold={200}
+              >
+              <Masonry>
+                {childElements}
+              </Masonry>
+            </InfiniteScroll>
+          </div>
           {/* <Masonry>
             {childElements}
           </Masonry> */}

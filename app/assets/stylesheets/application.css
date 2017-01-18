@@ -70,5 +70,110 @@
  }
 
  body {
-   background: #F4F4F6
+   background: #E8E8E8
  }
+
+ html::-webkit-scrollbar {
+   height: 16px;
+   overflow: visible;
+   width: 11px;
+ }
+
+ html::-webkit-scrollbar-button {
+   height: 0;
+   width: 0;
+ }
+
+ html::-webkit-scrollbar-corner {
+   background: transparent;
+ }
+
+ html::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,.2);
+  background-clip: padding-box;
+  border: solid transparent;
+  border-width: 1px 1px 1px 2px;
+  -webkit-box-shadow: inset 1px 1px 0 rgba(0,0,0,.1), inset 0 -1px 0 rgba(0,0,0,.07);
+  box-shadow: inset 1px 1px 0 rgba(0,0,0,.1), inset 0 -1px 0 rgba(0,0,0,.07);
+ }
+
+ html::-webkit-scrollbar-track {
+   background-clip: padding-box;
+   border: solid #d4d4d4;
+   border-width: 0 0 0 1px;
+ }
+
+ .tags a {
+   display: inline-block;
+   height: 24px;
+   line-height: 24px;
+   position: relative;
+   margin: 0 16px 8px 0;
+   padding: 0 10px 0 12px;
+   background: #eee;
+   -webkit-border-bottom-right-radius: 3px;
+   border-bottom-right-radius: 3px;
+   -webkit-border-top-right-radius: 3px;
+   border-top-right-radius: 3px;
+   /*-webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+   box-shadow: 0 1px 2px rgba(0,0,0,0.2);*/
+   color: #464646;
+   font-size: 11px;
+   font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,sans-serif;
+   text-decoration: none;
+   /*text-shadow: 0 1px 2px rgba(0,0,0,0.2);*/
+   /*font-weight: bold;*/
+}
+
+/*<div className="tags">
+  {Object.keys(items[idx].item.tags).map((tag, idx) => {
+    return (
+      <a key={idx} href="#" className="tag">{tag}</a>
+    )
+  })}
+</div>*/
+
+.tags a:hover {
+  color: #fff;
+  background: #737373;
+}
+
+.tags a:before {
+  content: "";
+  position: absolute;
+  top:0;
+  left: -12px;
+  width: 0;
+  height: 0;
+  border-color: transparent #eee transparent transparent;
+  border-style: solid;
+  border-width: 12px 12px 12px 0;
+}
+
+.tags a:hover::before {
+  border-color: transparent #737373 transparent transparent;
+}
+
+.tags a:after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 1px;
+  float: left;
+  width: 5px;
+  height: 5px;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  background: #fff;
+  /*-webkit-box-shadow: -1px -1px 2px rgba(0,0,0,0.4);
+  box-shadow: -1px -1px 2px rgba(0,0,0,0.4);*/
+}
+
+.paper {
+  box-shadow: initial;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.paper:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}

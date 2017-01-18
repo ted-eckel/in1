@@ -1,4 +1,10 @@
 const ActionType = {
+  App: {
+    View: {
+      TOGGLE_DRAWER: '',
+    },
+  },
+
   Gmail: {
     App: {
       SEARCH: '',

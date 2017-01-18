@@ -7,6 +7,7 @@ import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import Toggle from 'material-ui/Toggle';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import Menu from 'material-ui/svg-icons/navigation/menu';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 
 const sessionLinks = () => (
@@ -34,8 +35,22 @@ const logged = (props) => (
 
 logged.muiName = 'IconMenu'
 
-const personalGreeting = (currentUser, logout) => (
-  <AppBar title="in1" iconElementRight={<FlatButton label="Logout" onClick={logout} />} style={{position: "fixed", top: "0"}}/>
+const personalGreeting = (currentUser, logout, toggleDrawer) => (
+  <AppBar
+    title="in1"
+    iconElementLeft={
+      <IconButton
+        onClick={toggleDrawer}>
+        <Menu />
+      </IconButton>
+    }
+    iconElementRight={
+      <FlatButton
+        label="Logout"
+        onClick={logout}
+      />
+    }
+    style={{position: "fixed", top: "0"}}/>
 );
 
 {/* <hgroup className="header-group">
@@ -43,8 +58,8 @@ const personalGreeting = (currentUser, logout) => (
   <button className="header-button" onClick={logout}>Log Out</button>
 </hgroup> */}
 
-const Greeting = ({ currentUser, logout }) => (
-  currentUser ? personalGreeting(currentUser, logout) : sessionLinks()
+const Greeting = ({ currentUser, logout, toggleDrawer }) => (
+  currentUser ? personalGreeting(currentUser, logout, toggleDrawer) : sessionLinks()
 );
 
 export default Greeting;

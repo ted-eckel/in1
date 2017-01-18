@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import GreetingContainer from './greeting/GreetingContainer'
 import PocketContainer from './pocket/PocketContainer'
 import { fetchItems } from '../actions/PocketActions'
+import { toggleDrawer } from '../actions/AppActions'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import FlatButton from 'material-ui/FlatButton'
 import CircularProgress from 'material-ui/CircularProgress'
@@ -18,6 +19,8 @@ import MasonryMixin from 'react-masonry-mixin'
 import Chip from 'material-ui/Chip'
 import Avatar from 'material-ui/Avatar'
 import SvgIconClear from 'material-ui/svg-icons/content/clear'
+import Drawer from 'material-ui/Drawer'
+import MenuItem from 'material-ui/MenuItem'
 // import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 
@@ -37,7 +40,8 @@ class App extends Component {
   static propTypes = {
     items: PropTypes.array.isRequired,
     isFetching: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    drawerOpen: PropTypes.bool.isRequired
   }
 
   // componentDidMount() {
@@ -75,6 +79,11 @@ class App extends Component {
   handleTouchTap = e => {
     e.preventDefault();
     alert('You clicked the Chip.');
+  }
+
+  handleDrawerClose = () => {
+    const { dispatch } = this.props;
+    dispatch(toggleDrawer());
   }
 
   urlParser = url => {
@@ -225,6 +234,14 @@ class App extends Component {
       <MuiThemeProvider style={{width: "100%", height: "100%"}}>
         <div>
           <GreetingContainer />
+          <Drawer
+            open={this.props.drawerOpen}
+            docked={false}
+            onRequestChange={this.handleDrawerClose}
+          >
+            <MenuItem onClick={this.handleDrawerClose}>Connect to Pocket</MenuItem>
+            <MenuItem onClick={this.handleDrawerClose}>Connect to Gmail</MenuItem>
+          </Drawer>
           <div style={{maxWidth: "1525px", margin: "80px auto"}}>
             <InfiniteScroll
               ref='masonryContainer'
@@ -251,18 +268,27 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  const {
-    items,
-    isFetching,
-    error
-  } = state.pocket
-
+const mapStateToProps = (state, ownProps) => {
   return {
-    items,
-    isFetching,
-    error
+    items: state.pocket.items,
+    isFetching: state.pocket.isFetching,
+    error: state.pocket.error,
+    drawerOpen: state.app.drawerOpen
   }
 }
+
+// const mapStateToProps = state => {
+//   const {
+//     items,
+//     isFetching,
+//     error
+//   } = state.pocket
+//
+//   return {
+//     items,
+//     isFetching,
+//     error
+//   }
+// }
 
 export default connect(mapStateToProps)(App)

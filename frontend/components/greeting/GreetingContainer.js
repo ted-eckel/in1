@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { logout } from '../../actions/session_actions';
+import { toggleDrawer } from '../../actions/AppActions';
 import Greeting from './greeting';
 
 const mapStateToProps = ({ session }) => ({
@@ -7,7 +8,8 @@ const mapStateToProps = ({ session }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  logout: () => dispatch(logout())
+  logout: () => dispatch(logout()),
+  toggleDrawer: () => dispatch(toggleDrawer())
 });
 
 export default connect(

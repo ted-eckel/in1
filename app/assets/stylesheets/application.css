@@ -190,3 +190,7 @@
 .item-url:hover {
   color: #50bcb6;
 }
+
+.pocket-link:hover .pocket-title {
+  color: #50bcb6;
+}

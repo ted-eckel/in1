@@ -111,8 +111,10 @@ class App extends Component {
               style={{
                 textDecoration: "none"
               }}
-              target="_blank">
-              <div style={{margin: "0 10px"}}>
+              target="_blank"
+              className="pocket-link"
+            >
+              <div style={{margin: "0 10px 5px"}}>
                 {
                   items[idx].service === "pocket"
                   ? (
@@ -123,7 +125,7 @@ class App extends Component {
                   )
                   : <span />
                 }
-              <span style={{}}>
+              <span style={{}} className="pocket-title">
                 {
                   items[idx].item.resolved_title
                   ? items[idx].item.resolved_title
@@ -170,7 +172,7 @@ class App extends Component {
                   }
               </div>
             </a>
-            <div style={{margin: "0 0 0 10px"}}>
+            <div style={{margin: "0 0 7px 10px"}}>
               <a
                 href={items[idx].item.given_url}
                 style={{

@@ -103,7 +103,7 @@
    border-width: 0 0 0 1px;
  }
 
- .tags a {
+ .tags div {
    display: inline-block;
    height: 24px;
    line-height: 24px;
@@ -125,20 +125,18 @@
    /*font-weight: bold;*/
 }
 
-/*<div className="tags">
-  {Object.keys(items[idx].item.tags).map((tag, idx) => {
-    return (
-      <a key={idx} href="#" className="tag">{tag}</a>
-    )
-  })}
-</div>*/
-
-.tags a:hover {
+.tags div:hover {
   color: #fff;
   background: #737373;
 }
 
-.tags a:before {
+.tags div:hover span {
+  color: #fff;
+  background: #737373;
+  display: inline-block;
+}
+
+.tags div:before {
   content: "";
   position: absolute;
   top:0;
@@ -150,11 +148,11 @@
   border-width: 12px 12px 12px 0;
 }
 
-.tags a:hover::before {
+.tags div:hover::before {
   border-color: transparent #737373 transparent transparent;
 }
 
-.tags a:after {
+.tags div:after {
   content: "";
   position: absolute;
   top: 10px;
@@ -169,6 +167,11 @@
   box-shadow: -1px -1px 2px rgba(0,0,0,0.4);*/
 }
 
+.tags div span {
+  /*color: transparent;*/
+  display: none;
+}
+
 .paper {
   box-shadow: initial;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
@@ -176,4 +179,14 @@
 
 .paper:hover {
   box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.item-url {
+  font-size: 13px;
+  font-family: Helvetica, Arial, sans-serif;
+  color: rgb(153, 153, 153);
+}
+
+.item-url:hover {
+  color: #50bcb6;
 }

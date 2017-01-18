@@ -17,6 +17,7 @@ import InView from 'in-view'
 import MasonryMixin from 'react-masonry-mixin'
 import Chip from 'material-ui/Chip'
 import Avatar from 'material-ui/Avatar'
+import SvgIconClear from 'material-ui/svg-icons/content/clear'
 // import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 
@@ -76,6 +77,12 @@ class App extends Component {
     alert('You clicked the Chip.');
   }
 
+  urlParser = url => {
+    let parser = document.createElement('a');
+    parser.href = url;
+    return parser.hostname;
+  }
+
   render() {
     const { items, isFetching } = this.props
     const isEmpty = items.length === 0
@@ -92,103 +99,120 @@ class App extends Component {
           }}
           className="paper"
         >
-          <a
-            href={items[idx].item.given_url}
+          <Paper
             style={{
-              textDecoration: "none"
+              width: "275px",
+              // height: "225px",
+              padding: "10px 0"
             }}
-            target="_blank">
-            <Paper
+          >
+            <a
+              href={"https://getpocket.com/a/read/".concat(items[idx].item.item_id)}
               style={{
-                width: "275px",
-                // height: "225px",
-                padding: "10px 0"
+                textDecoration: "none"
               }}
-            >
+              target="_blank">
               <div style={{margin: "0 10px"}}>
-                {items[idx].service === "pocket"
+                {
+                  items[idx].service === "pocket"
                   ? (
                     <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
-                      <img src={"http://www.google.com/s2/favicons?domain=".concat(items[idx].item.given_url)} />
+                      <img src="http://www.google.com/s2/favicons?domain=https://getpocket.com/" />
                       {" "}
                     </div>
                   )
                   : <span />
                 }
-                <span style={{}}>
-                  {
-                    items[idx].item.resolved_title
-                    ? items[idx].item.resolved_title
-                    : items[idx].item.given_title
-                  }
-                </span>
-              </div>
-              <div style={{maxHeight: "350px", overflow: "hidden"}}>
+              <span style={{}}>
                 {
-                  (items[idx].item.image)
-                  ? (
+                  items[idx].item.resolved_title
+                  ? items[idx].item.resolved_title
+                  : items[idx].item.given_title
+                }
+              </span>
+            </div>
+            <div style={{maxHeight: "350px", overflow: "hidden"}}>
+              {
+                (items[idx].item.image)
+                ? (
+                  <div
+                    style={{
+                      margin: "10px auto",
+                      display: "table"
+                    }}
+                    >
+                      <img
+                        style={{
+                          maxWidth: "275px",
+                          fontSize: "12px",
+                          color: "darkgray"
+                        }}
+                        src={items[idx].item.image.src}
+                        alt={(items[idx].item.excerpt ? items[idx].item.excerpt : "")}
+                      />
+                    </div>
+                  )
+                  : (
+                    items[idx].item.excerpt
+                    ? (
                       <div
                         style={{
-                          margin: "10px auto",
-                          display: "table"
+                          fontSize: "12px",
+                          margin: "10px",
+                          color: "darkgray"
                         }}
-                      >
-                        <img
-                          style={{
-                            maxWidth: "275px",
-                            fontSize: "12px",
-                            color: "darkgray"
-                          }}
-                          src={items[idx].item.image.src}
-                          alt={(items[idx].item.excerpt ? items[idx].item.excerpt : "")}
-                        />
-                      </div>
+                        >
+                          {items[idx].item.excerpt}
+                        </div>
+                      )
+                    : <span />
                     )
-                  : (
-                      items[idx].item.excerpt
-                      ? (
-                          <div
+                  }
+              </div>
+            </a>
+            <div style={{margin: "0 0 0 10px"}}>
+              <a
+                href={items[idx].item.given_url}
+                style={{
+                  textDecoration: "none"
+                }}
+                target="_blank"
+              >
+                <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
+                  <img src={"http://www.google.com/s2/favicons?domain=".concat(items[idx].item.given_url)} />
+                  {" "}
+                  <span className="item-url">{this.urlParser(items[idx].item.given_url)}</span>
+                </div>
+              </a>
+            </div>
+            <div style={{margin: "0 10px 0 20px"}}>
+              {
+                items[idx].item.tags
+                ? (
+                  <div className="tags">
+                    {Object.keys(items[idx].item.tags).map((tag, idx) => {
+                      return (
+                        <div key={idx} style={{cursor: "pointer"}} className="tag">
+                          {tag}
+                          <span
                             style={{
+                              fontWeight: "bold",
                               fontSize: "12px",
-                              margin: "10px",
-                              color: "darkgray"
+                              margin: "0 0 0 5px"
                             }}
+                            onClick={this.handleRequestDelete}
                           >
-                            {items[idx].item.excerpt}
-                          </div>
-                        )
-                      : <span />
-                    )
-                }
-              </div>
-              <div style={{margin: "0 10px 0 20px"}}>
-                {
-                  items[idx].item.tags
-                  ? (
-                      <div style={{display: "flex", flexWrap: "wrap"}}>
-                        {Object.keys(items[idx].item.tags).map((tag, idx) => {
-                          return (
-                            <Chip
-                              style={{
-                                margin: "2px",
-                                height: "25px"
-                              }}
-                              key={idx}
-                              onTouchTap={this.handleTouchTap}
-                              onRequestDelete={this.handleRequestDelete}
-                              className="chip"
-                            >
-                              {tag}
-                            </Chip>
-                          )
-                        })}
-                      </div>
-                    )
-                  : <span style={{display: "none"}} />
-                }
-              </div>
-            </Paper>
-          </a>
+                            x
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  )
+                : <span style={{display: "none"}} />
+              }
+            </div>
+          </Paper>
         </div>
       )
     });

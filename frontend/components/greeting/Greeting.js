@@ -38,6 +38,9 @@ logged.muiName = 'IconMenu'
 const personalGreeting = (currentUser, logout, toggleDrawer) => (
   <AppBar
     title="in1"
+    style={{
+      zIndex: 2
+    }}
     iconElementLeft={
       <IconButton
         onClick={toggleDrawer}>

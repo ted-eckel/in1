@@ -1,26 +1,28 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import GreetingContainer from './greeting/GreetingContainer'
-import PocketContainer from './pocket/PocketContainer'
+// import PocketContainer from './pocket/PocketContainer'
 import { fetchItems } from '../actions/PocketActions'
 import { toggleDrawer } from '../actions/AppActions'
+import { checkAuth, load } from '../actions/GoogleActions'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import FlatButton from 'material-ui/FlatButton'
 import CircularProgress from 'material-ui/CircularProgress'
 import Paper from 'material-ui/Paper'
-import MasonryInfiniteScroller from 'react-masonry-infinite'
+// import MasonryInfiniteScroller from 'react-masonry-infinite'
 import InfiniteScroll from 'react-infinite-scroller'
 import AppBar from 'material-ui/AppBar'
 import Infinite from 'react-infinite'
 // import Masonry from 'masonry-layout'
 import Masonry from 'react-masonry-component'
-import InView from 'in-view'
-import MasonryMixin from 'react-masonry-mixin'
-import Chip from 'material-ui/Chip'
+// import InView from 'in-view'
+// import MasonryMixin from 'react-masonry-mixin'
+// import Chip from 'material-ui/Chip'
 import Avatar from 'material-ui/Avatar'
 import SvgIconClear from 'material-ui/svg-icons/content/clear'
 import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
+import config from '../config'
 // import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 
@@ -49,6 +51,28 @@ class App extends Component {
   //   dispatch(fetchItems())
   //   console.log("componentDidMount()")
   // }
+
+  componentDidMount() {
+    window.gapi.load('client', () => {
+      checkAuth(true, this.handleAuth.bind(this));
+    });
+  }
+
+  handleAuth(authResult) {
+    if (authResult && !authResult.error) {
+      console.log("authenticated: true")
+      load()
+    } else {
+      console.log("authenticated: false")
+    }
+  }
+
+  handleAuthClick = e => {
+    e.preventDefault();
+    const { dispatch } = this.props;
+    dispatch(toggleDrawer());
+    dispatch(handleAuthClicking());
+  }
 
   handleClick = e => {
     e.preventDefault()
@@ -233,15 +257,22 @@ class App extends Component {
     return (
       <MuiThemeProvider style={{width: "100%", height: "100%"}}>
         <div>
-          <GreetingContainer />
           <Drawer
             open={this.props.drawerOpen}
             docked={false}
             onRequestChange={this.handleDrawerClose}
+            containerStyle={{zIndex: 1}}
+            overlayStyle={{display: "none"}}
           >
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
             <MenuItem onClick={this.handleDrawerClose}>Connect to Pocket</MenuItem>
             <MenuItem onClick={this.handleDrawerClose}>Connect to Gmail</MenuItem>
           </Drawer>
+          <GreetingContainer />
           <div style={{maxWidth: "1525px", margin: "80px auto"}}>
             <InfiniteScroll
               ref='masonryContainer'

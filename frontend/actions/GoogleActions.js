@@ -2,7 +2,7 @@ import ActionType from '../actions/ActionType'
 import * as APIUtil from '../util/google_api_util'
 import config from '../config'
 
-export function checkAuth(immediate, callback) {
+export const checkAuth = (immediate, callback) => {
   window.gapi.client.setApiKey(config.apiKey);
   window.gapi.auth.authorize({
     'client_id': config.clientId,
@@ -11,14 +11,17 @@ export function checkAuth(immediate, callback) {
   }, callback);
 }
 
-export function load() {
+export const load = (callback) => {
   window.gapi.client.load('gmail', 'v1', () => {
     let request = window.gapi.client.gmail.users.labels.list({'userId': 'me'});
     request.execute(response => {
-      for (let i = 0; i < response.labels.length; i++){
-        let label = response.labels[i];
-        console.log(label.name);
-      };
+      let labels = response.labels;
+      console.log(labels);
+      callback(labels)
+      // for (let i = 0; i < response.labels.length; i++){
+      //   let label = response.labels[i];
+      //   console.log(label.name);
+      // };
     });
     // window.gapi.client.gmail.users.labels.list({
     //   'userId': 'me'
@@ -36,6 +39,10 @@ export function load() {
     //   }
     // })
   })
+}
+
+const dispatchLabels = labels => dispatch => {
+  return dispatch({type: ActionType.Gmail.Label.LOAD_ALL_SUCCESS, labels});
 }
 
 // import RSVP from 'rsvp';
@@ -142,9 +149,9 @@ export function load() {
 //   });
 // }
 
-export const requestAuthorization = () => ({
-  type: ActionType.Gmail.Authorization.REQUEST
-})
+// export const requestAuthorization = () => ({
+//   type: ActionType.Gmail.Authorization.REQUEST
+// })
 //
 // export const authorizationSuccess = () => ({
 //   type: ActionType.Gmail.Authorization.SUCCESS

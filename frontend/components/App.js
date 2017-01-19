@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import GreetingContainer from './greeting/GreetingContainer'
 // import PocketContainer from './pocket/PocketContainer'
+// import ActionType from '../actions/ActionType'
 import { fetchItems } from '../actions/PocketActions'
 import { toggleDrawer } from '../actions/AppActions'
 import { checkAuth, load } from '../actions/GoogleActions'
@@ -53,26 +54,35 @@ class App extends Component {
   // }
 
   componentDidMount() {
+    const { dispatch } = this.props;
     window.gapi.load('client', () => {
+      dispatch({type: ActionType.Gmail.Authorization.REQUEST})
       checkAuth(true, this.handleAuth.bind(this));
     });
   }
 
-  handleAuth(authResult) {
+  handleAuth = authResult => {
+    const { dispatch } = this.props;
     if (authResult && !authResult.error) {
-      console.log("authenticated: true")
-      load()
+      dispatch({type: ActionType.Gmail.Authorization.SUCCESS})
+      dispatch({type: ActionType.Gmail.Label.LOAD_ALL_REQUEST})
+      load(this.handleLabels.bind(this))
     } else {
-      console.log("authenticated: false")
+      dispatch({type: ActionType.Gmail.Authorization.FAILURE})
     }
   }
 
-  handleAuthClick = e => {
-    e.preventDefault();
+  handleLabels = labels => {
     const { dispatch } = this.props;
-    dispatch(toggleDrawer());
-    dispatch(handleAuthClicking());
+    dispatch({type: ActionType.Gmail.Label.LOAD_ALL_SUCCESS, labels})
   }
+
+  // handleAuthClick = e => {
+  //   e.preventDefault();
+  //   const { dispatch } = this.props;
+  //   dispatch(toggleDrawer());
+  //   dispatch(handleAuthClicking());
+  // }
 
   handleClick = e => {
     e.preventDefault()

@@ -3,6 +3,7 @@ import ActionType from '../actions/ActionType'
 const defaultState = {
   isAuthorized: false,
   isAuthorizing: false,
+  labels: {}
 };
 
 const GoogleReducer = (state = defaultState, action) => {
@@ -24,8 +25,14 @@ const GoogleReducer = (state = defaultState, action) => {
         isAuthorized: false,
         isAuthorizing: false,
       };
+    case ActionType.Gmail.Label.LOAD_ALL_SUCCESS:
+      return {
+        ...state,
+        labels: action.labels
+      };
+    default:
+      return state;
   }
-  return state;
 };
 
 export default GoogleReducer

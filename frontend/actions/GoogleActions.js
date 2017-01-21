@@ -25,17 +25,37 @@ export const load = (successCallback, errorCallback) => {
   })
 }
 
-export const loadThreadList = (successCallback, errorCallback) => {
+export const loadThreadList = (successCallback, errorCallback, threadCallback) => {
   window.gapi.client.load('gmail', 'v1', () => {
     window.gapi.client.gmail.users.threads.list({
       userId: 'me',
       labelIds: 'INBOX',
-      maxResults: 10
+      maxResults: 20
     }).execute(
       response => {
         if (response.threads){
           let threadList = response.threads;
-          successCallback(threadList)
+          console.log("threadList:")
+          console.log(threadList);
+          let threadMessages = [];
+          threadList.forEach(threadKey => {
+            console.log("threadKey:")
+            console.log(threadKey);
+            window.gapi.client.gmail.users.threads.get({
+              userId: 'me',
+              id: threadKey.id
+            }).execute(
+              response => {
+                console.log("threads:")
+                console.log(response);
+                let threadMessages = response.messages;
+                threadCallback(threadMessages)
+                // response.messages.forEach(message => threadMessages.push(message))
+              }
+            )
+          })
+          successCallback(threadList);
+          // threadCallback(threadMessages);
         } else {
           errorCallback(response)
         }
@@ -44,28 +64,33 @@ export const loadThreadList = (successCallback, errorCallback) => {
   })
 }
 
-export const loadThreads = (successCallback, errorCallback) => getState => {
-  window.gapi.client.load('gmail', 'v1', () => {
-    let threadList = getState().gmail.threadList;
-    let threadMessages = [];
-    threadList.forEach(
-      threadKey => {
-        window.gapi.client.gmail.users.threads.get({
-          userId: 'me',
-          id: threadKey.thread.id
-        }).execute(
-          response => {
-            if (response.messages) {
-              response.messages.forEach(message => threadMessages.push(message))
-            } else {
-              errorCallback(response)
-            }
+export const loadThreads = (successCallback, errorCallback, threadListState) => {
+  let threadMessages = [];
+  console.log(threadListState);
+  threadListState.forEach(
+    threadKey => {
+      window.gapi.client.gmail.users.threads.get({
+        userId: 'me',
+        id: threadKey.thread.id
+      }).execute(
+        response => {
+          if (response.messages) {
+            console.log(response.messages)
+            response.messages.forEach(message => threadMessages.push(message))
+          } else {
+            errorCallback(response)
           }
-        )
-      }
-    )
+        }
+      )
+    }
+  )
+  if (threadMessages.length > 0) {
     successCallback(threadMessages)
-  })
+  } else {
+    errorCallback()
+  }
+  // window.gapi.client.load('gmail', 'v1', () => {
+  // })
 }
 
 // import RSVP from 'rsvp';

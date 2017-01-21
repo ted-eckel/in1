@@ -8,6 +8,7 @@ import { pocketRetrieve } from './util/pocket_api_util'
 
 import * as SessionActions from './actions/session_actions'
 import * as PocketActions from './actions/PocketActions'
+import * as GoogleActions from './actions/GoogleActions'
 import ActionType from './actions/ActionType'
 import * as APIUtil from './util/pocket_api_util'
 
@@ -19,6 +20,7 @@ window.store = configureStore();
 
 window.SessionActions = SessionActions;
 window.PocketActions = PocketActions;
+window.GoogleActions = GoogleActions;
 window.ActionType = ActionType;
 window.APIUtil = APIUtil;
 

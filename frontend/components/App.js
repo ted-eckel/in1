@@ -24,6 +24,7 @@ import SvgIconClear from 'material-ui/svg-icons/content/clear'
 import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
 import config from '../config'
+import configureStore from '../store'
 // import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 
@@ -68,7 +69,7 @@ class App extends Component {
       dispatch({type: ActionType.Gmail.Label.LOAD_ALL_REQUEST})
       load(this.handleLabels.bind(this), this.handleLabelError.bind(this))
       dispatch({type: ActionType.Gmail.Thread.LOAD_LIST_REQUEST})
-      loadThreadList(this.handleThreadList.bind(this), this.handleThreadListError)
+      loadThreadList(this.handleThreadList.bind(this), this.handleThreadListError.bind(this), this.handleThreads.bind(this))
     } else {
       dispatch({type: ActionType.Gmail.Authorization.FAILURE})
     }
@@ -94,8 +95,8 @@ class App extends Component {
   handleThreadList = threadList => {
     const { dispatch } = this.props;
     dispatch({type: ActionType.Gmail.Thread.LOAD_LIST_SUCCESS, threadList})
-    dispatch({type: ActionType.Gmail.Thread.LOAD_REQUEST})
-    loadThreads(this.handleThreads.bind(this), this.handleThreadsError.bind(this))
+    // dispatch({type: ActionType.Gmail.Thread.LOAD_REQUEST})
+    // loadThreads(this.handleThreads.bind(this), this.handleThreadsError.bind(this), threadListState)
   }
 
   handleThreadListError = error => {

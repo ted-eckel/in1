@@ -36,12 +36,27 @@ const GoogleReducer = (state = defaultState, action) => {
       };
     case ActionType.Gmail.Thread.LOAD_LIST_SUCCESS:
       let threadList = action.threadList;
-      let oldState = union([], state);
-      let nextState = uniq(union(oldState, threadList));
+      let oldThreadListState = union([], state.threadList);
+      let newThreadListState = [];
+
+      threadList.forEach(thread => newThreadListState.push(thread));
+      let nextThreadListState = uniq(union(oldThreadListState, newThreadListState));
 
       return {
         ...state,
-        threadList: nextState
+        threadList: nextThreadListState
+      }
+    case ActionType.Gmail.Thread.LOAD_SUCCESS:
+      let threadMessages = action.threadMessages;
+      let oldThreadMessagesState = union([], state.threadMessages);
+      let newThreadMessagesState = [];
+
+      threadMessages.forEach(threadMessage => newThreadMessagesState.push(threadMessage))
+      let nextThreadMessagesState = union(oldThreadMessagesState, newThreadMessagesState);
+
+      return {
+        ...state,
+        threadMessages: nextThreadMessagesState
       }
     default:
       return state;

@@ -3,7 +3,8 @@ import ActionType from '../actions/ActionType'
 const defaultState = {
   isAuthorized: false,
   isAuthorizing: false,
-  labels: {}
+  labels: {},
+  threads: []
 };
 
 const GoogleReducer = (state = defaultState, action) => {
@@ -30,6 +31,11 @@ const GoogleReducer = (state = defaultState, action) => {
         ...state,
         labels: action.labels
       };
+    case ActionType.Gmail.ThreadList.LOAD_LIST_SUCCESS:
+      return {
+        ...state,
+        threads: action.threads
+      }
     default:
       return state;
   }

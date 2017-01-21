@@ -11,38 +11,42 @@ export const checkAuth = (immediate, callback) => {
   }, callback);
 }
 
-export const load = (callback) => {
+export const load = (successCallback, errorCallback) => {
   window.gapi.client.load('gmail', 'v1', () => {
     let request = window.gapi.client.gmail.users.labels.list({'userId': 'me'});
     request.execute(response => {
-      let labels = response.labels;
-      console.log(labels);
-      callback(labels)
-      // for (let i = 0; i < response.labels.length; i++){
-      //   let label = response.labels[i];
-      //   console.log(label.name);
-      // };
+      if (response.labels) {
+        let labels = response.labels;
+        successCallback(labels)
+      } else {
+        errorCallback(response)
+      }
     });
-    // window.gapi.client.gmail.users.labels.list({
-    //   'userId': 'me'
-    // }).execute.then((response) => {
-    //   const labels = response.labels;
-    //   console.log('Labels:');
-    //
-    //   if (labels && labels.length > 0) {
-    //     for (i = 0; i < labels.length; i++) {
-    //       var label = labels[i];
-    //       console.log(label.name)
-    //     }
-    //   } else {
-    //     console.log('No Labels found.');
-    //   }
-    // })
   })
 }
 
-const dispatchLabels = labels => dispatch => {
-  return dispatch({type: ActionType.Gmail.Label.LOAD_ALL_SUCCESS, labels});
+export const loadThreadList = (successCallback, errorCallback) => {
+  window.gapi.client.gmail.users.threads.list({
+    userId: 'me',
+    labelIds: 'INBOX',
+    maxResults: 10
+  }).execute(
+    response => {
+      if (response.threads){
+        Object.keys(response.threads).forEach(
+          (thread, idx) => {
+            thread_array.push({
+              service: "Gmail",
+              thread: response.threads[thread],
+              messages: []
+            });
+          }
+        )
+      } else {
+        errorCallback(response)
+      }
+    }
+  )
 }
 
 // import RSVP from 'rsvp';

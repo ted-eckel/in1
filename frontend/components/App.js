@@ -5,7 +5,7 @@ import GreetingContainer from './greeting/GreetingContainer'
 // import ActionType from '../actions/ActionType'
 import { fetchItems } from '../actions/PocketActions'
 import { toggleDrawer } from '../actions/AppActions'
-import { checkAuth, load } from '../actions/GoogleActions'
+import { checkAuth, load, loadThreadList } from '../actions/GoogleActions'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import FlatButton from 'material-ui/FlatButton'
 import CircularProgress from 'material-ui/CircularProgress'
@@ -53,7 +53,7 @@ class App extends Component {
   //   console.log("componentDidMount()")
   // }
 
-  componentDidMount() {
+  componentWillMount() {
     const { dispatch } = this.props;
     window.gapi.load('client', () => {
       dispatch({type: ActionType.Gmail.Authorization.REQUEST})
@@ -66,7 +66,9 @@ class App extends Component {
     if (authResult && !authResult.error) {
       dispatch({type: ActionType.Gmail.Authorization.SUCCESS})
       dispatch({type: ActionType.Gmail.Label.LOAD_ALL_REQUEST})
-      load(this.handleLabels.bind(this))
+      load(this.handleLabels.bind(this), this.handleLabelError.bind(this))
+      dispatch({type: ActionType.Gmail.Thread.LOAD_LIST_REQUEST})
+      loadThreadList(this.handleThreadList.bind(this), this.handleThreadListError)
     } else {
       dispatch({type: ActionType.Gmail.Authorization.FAILURE})
     }
@@ -77,12 +79,27 @@ class App extends Component {
     dispatch({type: ActionType.Gmail.Label.LOAD_ALL_SUCCESS, labels})
   }
 
+  handleLabelError = error => {
+    const { dispatch } = this.props;
+    dispatch({type: ActionType.Gmail.Label.LOAD_ALL_FAILURE, error})
+  }
+
   // handleAuthClick = e => {
   //   e.preventDefault();
   //   const { dispatch } = this.props;
   //   dispatch(toggleDrawer());
   //   dispatch(handleAuthClicking());
   // }
+
+  handleThreadList = threadList => {
+    const { dispatch } = this.props;
+    dispatch({type: ActionType.Gmail.Thread.LOAD_LIST_SUCCESS, threadList})
+  }
+
+  handleThreadListError = error => {
+    const { dispatch } = this.props;
+    dispatch({type: ActionType.Gmail.Thread.LOAD_LIST_FAILURE, error})
+  }
 
   handleClick = e => {
     e.preventDefault()

@@ -5,7 +5,7 @@ import GreetingContainer from './greeting/GreetingContainer'
 // import ActionType from '../actions/ActionType'
 import { fetchItems } from '../actions/PocketActions'
 import { toggleDrawer } from '../actions/AppActions'
-import { checkAuth, load, loadThreadList } from '../actions/GoogleActions'
+import { checkAuth, load, loadThreadList, loadThreads } from '../actions/GoogleActions'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import FlatButton from 'material-ui/FlatButton'
 import CircularProgress from 'material-ui/CircularProgress'
@@ -94,11 +94,23 @@ class App extends Component {
   handleThreadList = threadList => {
     const { dispatch } = this.props;
     dispatch({type: ActionType.Gmail.Thread.LOAD_LIST_SUCCESS, threadList})
+    dispatch({type: ActionType.Gmail.Thread.LOAD_REQUEST})
+    loadThreads(this.handleThreads.bind(this), this.handleThreadsError.bind(this))
   }
 
   handleThreadListError = error => {
     const { dispatch } = this.props;
     dispatch({type: ActionType.Gmail.Thread.LOAD_LIST_FAILURE, error})
+  }
+
+  handleThreads = threadMessages => {
+    const { dispatch } = this.props;
+    dispatch({type: ActionType.Gmail.Thread.LOAD_SUCCESS, threadMessages})
+  }
+
+  handleThreadsError = error => {
+    const { dispatch } = this.props;
+    dispatch({type: ActionType.Gmail.Thread.LOAD_FAILURE, error})
   }
 
   handleClick = e => {

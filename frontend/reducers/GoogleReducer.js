@@ -1,10 +1,13 @@
 import ActionType from '../actions/ActionType'
+import union from 'lodash/union'
+import uniq from 'lodash/uniq'
 
 const defaultState = {
   isAuthorized: false,
   isAuthorizing: false,
   labels: {},
-  threads: []
+  threadList: [],
+  threadMessages: []
 };
 
 const GoogleReducer = (state = defaultState, action) => {
@@ -31,10 +34,14 @@ const GoogleReducer = (state = defaultState, action) => {
         ...state,
         labels: action.labels
       };
-    case ActionType.Gmail.ThreadList.LOAD_LIST_SUCCESS:
+    case ActionType.Gmail.Thread.LOAD_LIST_SUCCESS:
+      let threadList = action.threadList;
+      let oldState = union([], state);
+      let nextState = uniq(union(oldState, threadList));
+
       return {
         ...state,
-        threads: action.threads
+        threadList: nextState
       }
     default:
       return state;

@@ -168,14 +168,18 @@ class App extends Component {
       <CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />
     );
 
-    let  googleItems = [];
+    let googleItems = [];
+    let threadIds = [];
 
-    googleThreadMessages.forEach(message => {
-      googleItems.push({
-        service: "google",
-        time: (parseInt(message.internalDate) / 1000),
-        item: message
-      })
+    googleThreadMessages.sort((a, b) => parseInt(b.internalDate) - parseInt(a.internalDate)).forEach(message => {
+      if (!threadIds.includes(message.threadId)) {
+        googleItems.push({
+          service: "google",
+          time: (parseInt(message.internalDate) / 1000),
+          item: message
+        });
+        threadIds.push(message.threadId);
+      }
     })
 
     const combinedElements = items.concat(googleItems).sort((a, b) => parseInt(b.time) - parseInt(a.time));
@@ -239,7 +243,7 @@ class App extends Component {
                           }
                         </span>
                       </div>
-                      <div style={{maxHeight: "350px", overflow: "hidden"}}>
+                      <div style={{maxHeight: "350px", overflow: "hidden", textOverflow: "ellipsis"}}>
                         {
                           (combinedElements[idx].item.image)
                           ? (
@@ -335,16 +339,55 @@ class App extends Component {
             <Paper
               style={{
                 width: "275px",
-                // height: "225px",
-                padding: "10px 0",
-                overflow: "hidden"
+                padding: "10px",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
               }}
             >
-              {getHeader(combinedElements[idx].item.payload.headers, 'From')}
-              <br/>
-              {getHeader(combinedElements[idx].item.payload.headers, 'Subject')}
-              <br/>
-              {unescape(combinedElements[idx].item.snippet)}
+              <a
+                href={"https://mail.google.com/mail/u/0/#inbox/".concat(combinedElements[idx].item.id)}
+                style={{
+                  textDecoration: "none"
+                }}
+                target="_blank"
+                className="pocket-link"
+              >
+                <div
+                  style={{
+                    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
+                    fontSize: "13px"
+                  }}
+                >
+                  <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
+                    <img src="http://www.google.com/s2/favicons?domain=https://www.google.com/gmail/about" />
+                    {" "}
+                  </div>
+                  <span
+                    style={
+                      combinedElements[idx].item.labelIds.includes("UNREAD")
+                      ? {fontWeight: "bold"}
+                      : {fontWeight: "normal"}
+                    }
+                    className="pocket-title"
+                  >
+                    {
+
+                      (getHeader(combinedElements[idx].item.payload.headers, 'From')).replace(/<(.*)>/g, "")
+                    }
+                    <br/>
+                    <br/>
+                    {getHeader(combinedElements[idx].item.payload.headers, 'Subject')}
+                  </span>
+                  <div style={{color: "rgb(117, 117, 117)"}}>
+                    <br/>
+                    {
+                      combinedElements[idx].item.snippet.length > 0
+                      ? unescape(combinedElements[idx].item.snippet) + "..."
+                      : ""
+                    }
+                  </div>
+                </div>
+              </a>
             </Paper>
           </div>
         )

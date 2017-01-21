@@ -25,6 +25,7 @@ import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
 import config from '../config'
 import configureStore from '../store'
+import unescape from 'lodash/unescape'
 // import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 
@@ -179,6 +180,18 @@ class App extends Component {
 
     const combinedElements = items.concat(googleItems).sort((a, b) => parseInt(b.time) - parseInt(a.time));
 
+    const getHeader = (headers, index) => {
+      let header = '';
+
+      headers.forEach(hdr => {
+        if (hdr.name === index){
+          header = hdr.value
+        }
+      })
+
+      return header;
+    }
+
     console.log(combinedElements);
 
     // const childElements = items.map((item, idx) => {
@@ -323,10 +336,15 @@ class App extends Component {
               style={{
                 width: "275px",
                 // height: "225px",
-                padding: "10px 0"
+                padding: "10px 0",
+                overflow: "hidden"
               }}
             >
-              {combinedElements[idx].item.snippet}
+              {getHeader(combinedElements[idx].item.payload.headers, 'From')}
+              <br/>
+              {getHeader(combinedElements[idx].item.payload.headers, 'Subject')}
+              <br/>
+              {unescape(combinedElements[idx].item.snippet)}
             </Paper>
           </div>
         )

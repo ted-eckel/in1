@@ -35,7 +35,7 @@ export const loadThreadList = (successCallback, errorCallback, threadCallback) =
       response => {
         if (response.threads){
           let threadList = response.threads;
-          console.log("threadList:")
+          console.log("threadList:");
           console.log(threadList);
           let threadMessages = [];
           threadList.forEach(threadKey => {

@@ -1,6 +1,51 @@
 import ActionType from '../actions/ActionType'
 import * as APIUtil from '../util/google_api_util'
 import config from '../config'
+import RSVP from 'rsvp'
+
+export const initClient = () => {
+  window.gapi.client.init({
+    'apiKey': config.apiKey,
+    'discoveryDocs': ['https://gmail.googleapis.com/$discovery/rest?version=v1'],
+    'clientId': config.clientId,
+    'scope': config.scope
+  }).then(() => {
+    window.gapi.auth2.getAuthInstance().isSignedIn(updateSigninStus);
+    updateSigninStatus(window.gapi.auth2.getAuthInstance().isSignedIn.get());
+  })
+}
+
+function updateSigninStatus(isSignedIn) {
+  // When signin status changes, this function is called.
+  // If the signin status is changed to signedIn, we make an API call.
+  if (isSignedIn) {
+    makeApiCall();
+  }
+}
+
+export function makeApiCall() {
+  return (dispatch, getState) => {
+    dispatch({type: ActionType.Gmail.Threads.LOAD_LIST_REQUEST})
+    window.gapi.client.gmail.users.threads.list({
+      'userId': 'me'
+    }).then(response => {
+      if (response.threads) {
+        let threadList = response.threads;
+        dispatch({type: ActionType.Gmail.Threads.LOAD_LIST_SUCCESS}, threadList)
+      } else {
+        dispatch({type: ActionType.Gmail.Threads.LOAD_LIST_FAILURE}, response)
+      }
+    })
+  }
+}
+
+// export const handleSignInClick = e => {
+//   window.gapi.auth2.getAuthInstance().signIn();
+// }
+//
+// export const handleSignOutClick = e => {
+//   window.gapi.auth2.getAuthInstance().signOut();
+// }
 
 export const checkAuth = (immediate, callback) => {
   window.gapi.client.setApiKey(config.apiKey);

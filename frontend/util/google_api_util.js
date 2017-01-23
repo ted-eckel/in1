@@ -15,11 +15,11 @@ import config from '../config';
 // }
 
 export const loadGmailApi = () => {
-  gapi.client.load('gmail', 'v1', listLabels);
+  window.gapi.client.load('gmail', 'v1', listLabels);
 }
 
 function listLabels() {
-  var request = gapi.client.gmail.users.labels.list({
+  var request = window.gapi.client.gmail.users.labels.list({
     'userId': 'me'
   });
 

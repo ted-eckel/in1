@@ -6,7 +6,10 @@ const AppReducer = (state = {
   switch (action.type) {
     case ActionType.App.View.TOGGLE_DRAWER:
       let oldState = state.drawerOpen;
-      return {drawerOpen: !oldState}
+      return {
+        ...state,
+        drawerOpen: !oldState
+      }
     default:
       return state;
   }

@@ -1,5 +1,9 @@
 const ActionType = {
   App: {
+    Functionality: {
+      SEARCH: '',
+    },
+
     View: {
       TOGGLE_DRAWER: '',
     },

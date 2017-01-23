@@ -1,11 +1,13 @@
+/** @flow */
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux';
 import GreetingContainer from './greeting/GreetingContainer'
 // import PocketContainer from './pocket/PocketContainer'
 // import ActionType from '../actions/ActionType'
-import { fetchItems } from '../actions/PocketActions'
+import * as PocketActions from '../actions/PocketActions'
 import { toggleDrawer } from '../actions/AppActions'
-import { checkAuth, load, loadThreadList, loadThreads } from '../actions/GoogleActions'
+import { checkAuth, load, loadThreadList, loadThreads, initClient } from '../actions/GoogleActions'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import FlatButton from 'material-ui/FlatButton'
 import CircularProgress from 'material-ui/CircularProgress'
@@ -26,6 +28,27 @@ import MenuItem from 'material-ui/MenuItem'
 import config from '../config'
 import configureStore from '../store'
 import unescape from 'lodash/unescape'
+import * as GmailAppActions from '../actions/Gmail/AppActions'
+import * as LabelActions from '../actions/Gmail/LabelActions'
+import * as ThreadActions from '../actions/Gmail/ThreadActions'
+import { push } from 'react-router-redux';
+import {
+  itemsSelector,
+  isFetchingSelector,
+  errorSelector,
+  drawerOpenSelector,
+  hasMoreThreadsSelector,
+  isAuthorizedSelector,
+  isAuthorizingSelector,
+  isLoadingSelector,
+  labelsSelector,
+  lastMessageInEachThreadSelector,
+  loadedThreadCountSelector,
+  // nextMessageSelector,
+  // prevMessageSelector,
+  searchQuerySelector,
+  threadsSelector,
+} from '../selectors'
 // import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 
@@ -40,15 +63,118 @@ import unescape from 'lodash/unescape'
 { " : "}
 { items[idx].image ? <img style={{ "maxHeight": "100px" }} src={items[idx].image.src}  /> : <span/>} */}
 
+const PAGE_SIZE = 20;
+
+@connect(
+  state => ({
+    items: itemsSelector(state),
+    isFetching: isFetchingSelector(state),
+    error: errorSelector(state),
+    drawerOpen: drawerOpenSelector(state),
+    isAuthorized: isAuthorizedSelector(state),
+    isAuthorizing: isAuthorizingSelector(state),
+    isLoading: isLoadingSelector(state),
+    labels: labelsSelector(state),
+    searchQuery: searchQuerySelector(state),
+    threads: threadsSelector(state),
+    lastMessageInEachThread: lastMessageInEachThreadSelector(state),
+    hasMoreThreads: hasMoreThreadsSelector(state),
+    loadedThreadCount: loadedThreadCountSelector(state),
+    // nextMessage: nextMessageSelector(state),
+    // prevMessage: prevMessageSelector(state),
+  }),
+  dispatch => bindActionCreators({
+    fetchItems: PocketActions.fetchItems,
+    loadLabels: LabelActions.loadAll,
+    loadThreadList: ThreadActions.loadList,
+    refresh: ThreadActions.refresh,
+    markAsRead: ThreadActions.markAsRead,
+    search: GmailAppActions.search,
+    push
+  }, dispatch),
+)
+
+// const mapStateToProps = (state, ownProps) => {
+//   return {
+//     items: state.pocket.items,
+//     googleThreadList: state.google.threadList,
+//     googleThreadMessages: state.google.threadMessages,
+//     isFetching: state.pocket.isFetching,
+//     error: state.pocket.error,
+//     drawerOpen: state.app.drawerOpen
+//   }
+// }
+
 class App extends Component {
 
   static propTypes = {
-    items: PropTypes.array.isRequired,
-    googleThreadList: PropTypes.array.isRequired,
-    googleThreadMessages: PropTypes.array.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    drawerOpen: PropTypes.bool.isRequired
+    // items: PropTypes.array.isRequired,
+    // googleThreadList: PropTypes.array.isRequired,
+    // googleThreadMessages: PropTypes.array.isRequired,
+    // isFetching: PropTypes.bool.isRequired,
+    // dispatch: PropTypes.func.isRequired,
+    // drawerOpen: PropTypes.bool.isRequired,
+    params: PropTypes.object.isRequired
+  }
+
+  state = {
+    maxResultCount: PAGE_SIZE,
+    queryProgress: null,
+  };
+
+  componentWillMount() {
+    this._tryLoad(this.props, this.state);
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    this._tryLoad(nextProps, nextState);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this._tryLoad(nextProps, this.state);
+  }
+
+  _tryLoad(props, state) {
+    this.props.loadThreadList(props.searchQuery, state.maxResultCount);
+  }
+
+  _onRequestMoreItems = () => {
+    this.setState({maxResultCount: this.state.maxResultCount + PAGE_SIZE});
+  };
+
+  _onMessageSelected = (message: ?Object) => {
+    if (message && message.isUnread) {
+      this.props.markAsRead(message.threadID);
+    }
+
+    if (!message) {
+      this.props.push('/')
+    } else {
+      this.props.push(`/thread/${message.threadID}/message/${message.id}/`);
+    }
+  }
+
+  _onQueryChange = (query: string) => {
+    this.setState({
+      queryProgress: query,
+      maxResultCount: PAGE_SIZE,
+    });
+  };
+
+  _onQuerySubmit = (query: string) => {
+    this.props.search(query);
+    this.setState({
+      queryProgress: query,
+      maxResultCount: PAGE_SIZE,
+    });
+  }
+
+  _onRefresh = () => {
+    this.props.refresh();
+  }
+
+  _onLogoClick = () => {
+    window.location.reload();
   }
 
   // componentDidMount() {
@@ -57,13 +183,35 @@ class App extends Component {
   //   console.log("componentDidMount()")
   // }
 
-  componentWillMount() {
-    const { dispatch } = this.props;
-    window.gapi.load('client', () => {
-      dispatch({type: ActionType.Gmail.Authorization.REQUEST})
-      checkAuth(true, this.handleAuth.bind(this));
-    });
-  }
+  // componentWillMount() {
+  //   const { dispatch } = this.props;
+  //   window.gapi.load('client', () => {
+  //     dispatch({type: ActionType.Gmail.Authorization.REQUEST})
+  //     checkAuth(true, this.handleAuth.bind(this));
+  //   });
+  // }
+
+  // componentWillMount() {
+  //   const { dispatch } = this.props;
+  //   window.gapi.load('client')
+  //   .then(() => dispatch({type: ActionType.Gmail.Authorization.REQUEST}))
+  //   .then(() => dispatch(checkAuth(true, this.handleauth.bind(this))))
+  // }
+
+  // componentWillMount() {
+  //   const { dispatch } = this.props;
+  //   window.gapi.client.init({
+  //     'apiKey': config.apiKey,
+  //     'discoveryDocs': ['https://gmail.googleapis.com/$discovery/rest?version=v1'],
+  //     'clientId': config.clientId,
+  //     'scope': config.scope
+  //   }).then(() => gapi.client.gmail.users)
+  // }
+
+  // componentWillMount() {
+  //   const { dispatch } = this.props;
+  //   window.gapi.load('client:auth2', () => dispatch(initClient());
+  // }
 
   //YOU HAVE TO MAKE SURE TO ACTUALLY DISPATCH THE ACTIONS!!!
 
@@ -133,9 +281,9 @@ class App extends Component {
   }
 
   handleLoadMore = () => {
-    const { dispatch, isFetching } = this.props;
+    const { fetchItems, isFetching } = this.props;
     if (!isFetching){
-      dispatch(fetchItems());
+      fetchItems();
       console.log("handleLoadMore()");
     }
   }
@@ -162,7 +310,7 @@ class App extends Component {
   }
 
   render() {
-    const { items, googleThreadList, googleThreadMessages, isFetching } = this.props
+    const { items, /*googleThreadList, googleThreadMessages,*/ isFetching } = this.props
     const isEmpty = items.length === 0
     const elementInfiniteLoad = (
       <CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />
@@ -171,18 +319,18 @@ class App extends Component {
     let googleItems = [];
     let threadIds = [];
 
-    googleThreadMessages.sort((a, b) => parseInt(b.internalDate) - parseInt(a.internalDate)).forEach(message => {
-      if (!threadIds.includes(message.threadId)) {
-        googleItems.push({
-          service: "google",
-          time: (parseInt(message.internalDate) / 1000),
-          item: message
-        });
-        threadIds.push(message.threadId);
-      }
-    })
+    // googleThreadMessages.sort((a, b) => parseInt(b.internalDate) - parseInt(a.internalDate)).forEach(message => {
+    //   if (!threadIds.includes(message.threadId)) {
+    //     googleItems.push({
+    //       service: "google",
+    //       time: (parseInt(message.internalDate) / 1000),
+    //       item: message
+    //     });
+    //     threadIds.push(message.threadId);
+    //   }
+    // })
 
-    const combinedElements = items.concat(googleItems).sort((a, b) => parseInt(b.time) - parseInt(a.time));
+    // const combinedElements = items.concat(googleItems).sort((a, b) => parseInt(b.time) - parseInt(a.time));
 
     const getHeader = (headers, index) => {
       let header = '';
@@ -196,10 +344,10 @@ class App extends Component {
       return header;
     }
 
-    console.log(combinedElements);
+    // console.log(combinedElements);
 
-    // const childElements = items.map((item, idx) => {
-    const childElements = combinedElements.map((item, idx) => {
+    const childElements = items.map((item, idx) => {
+    // const childElements = combinedElements.map((item, idx) => {
       if (item.service === "pocket") {
         return (
           <div
@@ -217,7 +365,7 @@ class App extends Component {
                 }}
                 >
                   <a
-                    href={"https://getpocket.com/a/read/".concat(combinedElements[idx].item.item_id)}
+                    href={"https://getpocket.com/a/read/".concat(items[idx].item.item_id)}
                     style={{
                       textDecoration: "none"
                     }}
@@ -226,7 +374,7 @@ class App extends Component {
                     >
                       <div style={{margin: "0 10px 5px"}}>
                         {
-                          combinedElements[idx].service === "pocket"
+                          items[idx].service === "pocket"
                           ? (
                             <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
                               <img src="http://www.google.com/s2/favicons?domain=https://getpocket.com/" />
@@ -237,15 +385,15 @@ class App extends Component {
                         }
                         <span style={{}} className="pocket-title">
                           {
-                            combinedElements[idx].item.resolved_title
-                            ? combinedElements[idx].item.resolved_title
-                            : combinedElements[idx].item.given_title
+                            items[idx].item.resolved_title
+                            ? items[idx].item.resolved_title
+                            : items[idx].item.given_title
                           }
                         </span>
                       </div>
                       <div style={{maxHeight: "350px", overflow: "hidden", textOverflow: "ellipsis"}}>
                         {
-                          (combinedElements[idx].item.image)
+                          (items[idx].item.image)
                           ? (
                             <div
                               style={{
@@ -259,13 +407,13 @@ class App extends Component {
                                     fontSize: "12px",
                                     color: "darkgray"
                                   }}
-                                  src={combinedElements[idx].item.image.src}
-                                  alt={(combinedElements[idx].item.excerpt ? combinedElements[idx].item.excerpt : "")}
+                                  src={items[idx].item.image.src}
+                                  alt={(items[idx].item.excerpt ? items[idx].item.excerpt : "")}
                                 />
                               </div>
                             )
                             : (
-                              combinedElements[idx].item.excerpt
+                              items[idx].item.excerpt
                               ? (
                                 <div
                                   style={{
@@ -274,7 +422,7 @@ class App extends Component {
                                     color: "darkgray"
                                   }}
                                   >
-                                    {combinedElements[idx].item.excerpt}
+                                    {items[idx].item.excerpt}
                                   </div>
                                 )
                                 : <span />
@@ -284,25 +432,25 @@ class App extends Component {
                         </a>
                         <div style={{margin: "0 0 7px 10px"}}>
                           <a
-                            href={combinedElements[idx].item.given_url}
+                            href={items[idx].item.given_url}
                             style={{
                               textDecoration: "none"
                             }}
                             target="_blank"
                             >
                               <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
-                                <img src={"http://www.google.com/s2/favicons?domain=".concat(combinedElements[idx].item.given_url)} />
+                                <img src={"http://www.google.com/s2/favicons?domain=".concat(items[idx].item.given_url)} />
                                 {" "}
-                                <span className="item-url">{this.urlParser(combinedElements[idx].item.given_url)}</span>
+                                <span className="item-url">{this.urlParser(items[idx].item.given_url)}</span>
                               </div>
                             </a>
                           </div>
                           <div style={{margin: "0 10px 0 20px"}}>
                             {
-                              combinedElements[idx].item.tags
+                              items[idx].item.tags
                               ? (
                                 <div className="tags">
-                                  {Object.keys(combinedElements[idx].item.tags).map((tag, idx) => {
+                                  {Object.keys(items[idx].item.tags).map((tag, idx) => {
                                     return (
                                       <div key={idx} style={{cursor: "pointer"}} className="tag">
                                         {tag}
@@ -345,7 +493,7 @@ class App extends Component {
               }}
             >
               <a
-                href={"https://mail.google.com/mail/u/0/#inbox/".concat(combinedElements[idx].item.id)}
+                href={"https://mail.google.com/mail/u/0/#inbox/".concat(items[idx].item.id)}
                 style={{
                   textDecoration: "none"
                 }}
@@ -364,7 +512,7 @@ class App extends Component {
                   </div>
                   <span
                     style={
-                      combinedElements[idx].item.labelIds.includes("UNREAD")
+                      items[idx].item.labelIds.includes("UNREAD")
                       ? {fontWeight: "bold"}
                       : {fontWeight: "normal"}
                     }
@@ -372,17 +520,17 @@ class App extends Component {
                   >
                     {
 
-                      (getHeader(combinedElements[idx].item.payload.headers, 'From')).replace(/<(.*)>/g, "")
+                      (getHeader(items[idx].item.payload.headers, 'From')).replace(/<(.*)>/g, "")
                     }
                     <br/>
                     <br/>
-                    {getHeader(combinedElements[idx].item.payload.headers, 'Subject')}
+                    {getHeader(items[idx].item.payload.headers, 'Subject')}
                   </span>
                   <div style={{color: "rgb(117, 117, 117)"}}>
                     <br/>
                     {
-                      combinedElements[idx].item.snippet.length > 0
-                      ? unescape(combinedElements[idx].item.snippet) + "..."
+                      items[idx].item.snippet.length > 0
+                      ? unescape(items[idx].item.snippet) + "..."
                       : ""
                     }
                   </div>
@@ -441,16 +589,16 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    items: state.pocket.items,
-    googleThreadList: state.google.threadList,
-    googleThreadMessages: state.google.threadMessages,
-    isFetching: state.pocket.isFetching,
-    error: state.pocket.error,
-    drawerOpen: state.app.drawerOpen
-  }
-}
+// const mapStateToProps = (state, ownProps) => {
+//   return {
+//     items: state.pocket.items,
+//     googleThreadList: state.google.threadList,
+//     googleThreadMessages: state.google.threadMessages,
+//     isFetching: state.pocket.isFetching,
+//     error: state.pocket.error,
+//     drawerOpen: state.app.drawerOpen
+//   }
+// }
 
 // const mapStateToProps = state => {
 //   const {
@@ -466,4 +614,5 @@ const mapStateToProps = (state, ownProps) => {
 //   }
 // }
 
-export default connect(mapStateToProps)(App)
+// export default connect(mapStateToProps)(App)
+export default App

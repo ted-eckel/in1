@@ -27,7 +27,7 @@ import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
 import config from '../config'
 import configureStore from '../store'
-import unescape from 'lodash/unescape'
+import Items from './Items'
 import * as GmailAppActions from '../actions/Gmail/AppActions'
 import * as LabelActions from '../actions/Gmail/LabelActions'
 import * as ThreadActions from '../actions/Gmail/ThreadActions'
@@ -41,6 +41,7 @@ import {
   isAuthorizedSelector,
   isAuthorizingSelector,
   isLoadingSelector,
+  isRequestingSelector,
   labelsSelector,
   lastMessageInEachThreadSelector,
   loadedThreadCountSelector,
@@ -50,18 +51,6 @@ import {
   threadsSelector,
 } from '../selectors'
 // import MasonryInfinite from './pocket/MasonryInfiniteScroller'
-
-
-// if there is are no more items, Pocket will return something like this as a response:
-// {"status":2,"complete":1,"list":[],"error":null,"search_meta":{"search_type":"normal"},"since":1484251363}
-
-{/* <img src={"http://www.google.com/s2/favicons?domain=".concat(items[idx].given_url)} />
-{ " " }
-<a href={items[idx].given_url}>
-  {items[idx].resolved_title}
-</a> : { (new Date(parseInt(items[idx].time_added) * 1000)).toString() }
-{ " : "}
-{ items[idx].image ? <img style={{ "maxHeight": "100px" }} src={items[idx].image.src}  /> : <span/>} */}
 
 const PAGE_SIZE = 20;
 
@@ -74,6 +63,7 @@ const PAGE_SIZE = 20;
     isAuthorized: isAuthorizedSelector(state),
     isAuthorizing: isAuthorizingSelector(state),
     isLoading: isLoadingSelector(state),
+    isRequesting: isRequestingSelector(state),
     labels: labelsSelector(state),
     searchQuery: searchQuerySelector(state),
     threads: threadsSelector(state),
@@ -108,12 +98,6 @@ const PAGE_SIZE = 20;
 class App extends Component {
 
   static propTypes = {
-    // items: PropTypes.array.isRequired,
-    // googleThreadList: PropTypes.array.isRequired,
-    // googleThreadMessages: PropTypes.array.isRequired,
-    // isFetching: PropTypes.bool.isRequired,
-    // dispatch: PropTypes.func.isRequired,
-    // drawerOpen: PropTypes.bool.isRequired,
     params: PropTypes.object.isRequired
   }
 
@@ -281,16 +265,11 @@ class App extends Component {
   }
 
   handleLoadMore = () => {
-    const { fetchItems, isFetching } = this.props;
-    if (!isFetching){
+    const { fetchItems, isFetching, isRequesting } = this.props;
+    if (!isFetching && !isRequesting){
       fetchItems();
       console.log("handleLoadMore()");
     }
-  }
-
-  handleRequestDelete = e => {
-    e.preventDefault();
-    alert('You clicked the delete button.');
   }
 
   handleTouchTap = e => {
@@ -303,34 +282,11 @@ class App extends Component {
     dispatch(toggleDrawer());
   }
 
-  urlParser = url => {
-    let parser = document.createElement('a');
-    parser.href = url;
-    return parser.hostname;
-  }
-
   render() {
-    const { items, /*googleThreadList, googleThreadMessages,*/ isFetching } = this.props
-    const isEmpty = items.length === 0
+    const { isFetching } = this.props
     const elementInfiniteLoad = (
       <CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />
     );
-
-    let googleItems = [];
-    let threadIds = [];
-
-    // googleThreadMessages.sort((a, b) => parseInt(b.internalDate) - parseInt(a.internalDate)).forEach(message => {
-    //   if (!threadIds.includes(message.threadId)) {
-    //     googleItems.push({
-    //       service: "google",
-    //       time: (parseInt(message.internalDate) / 1000),
-    //       item: message
-    //     });
-    //     threadIds.push(message.threadId);
-    //   }
-    // })
-
-    // const combinedElements = items.concat(googleItems).sort((a, b) => parseInt(b.time) - parseInt(a.time));
 
     const getHeader = (headers, index) => {
       let header = '';
@@ -346,201 +302,6 @@ class App extends Component {
 
     // console.log(combinedElements);
 
-    const childElements = items.map((item, idx) => {
-    // const childElements = combinedElements.map((item, idx) => {
-      if (item.service === "pocket") {
-        return (
-          <div
-            key={idx}
-            style={{
-              margin: "15px"
-            }}
-            className="paper"
-            >
-              <Paper
-                style={{
-                  width: "275px",
-                  // height: "225px",
-                  padding: "10px 0"
-                }}
-                >
-                  <a
-                    href={"https://getpocket.com/a/read/".concat(items[idx].item.item_id)}
-                    style={{
-                      textDecoration: "none"
-                    }}
-                    target="_blank"
-                    className="pocket-link"
-                    >
-                      <div style={{margin: "0 10px 5px"}}>
-                        {
-                          items[idx].service === "pocket"
-                          ? (
-                            <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
-                              <img src="http://www.google.com/s2/favicons?domain=https://getpocket.com/" />
-                              {" "}
-                            </div>
-                          )
-                          : <span />
-                        }
-                        <span style={{}} className="pocket-title">
-                          {
-                            items[idx].item.resolved_title
-                            ? items[idx].item.resolved_title
-                            : items[idx].item.given_title
-                          }
-                        </span>
-                      </div>
-                      <div style={{maxHeight: "350px", overflow: "hidden", textOverflow: "ellipsis"}}>
-                        {
-                          (items[idx].item.image)
-                          ? (
-                            <div
-                              style={{
-                                margin: "10px auto",
-                                display: "table"
-                              }}
-                              >
-                                <img
-                                  style={{
-                                    maxWidth: "275px",
-                                    fontSize: "12px",
-                                    color: "darkgray"
-                                  }}
-                                  src={items[idx].item.image.src}
-                                  alt={(items[idx].item.excerpt ? items[idx].item.excerpt : "")}
-                                />
-                              </div>
-                            )
-                            : (
-                              items[idx].item.excerpt
-                              ? (
-                                <div
-                                  style={{
-                                    fontSize: "12px",
-                                    margin: "10px",
-                                    color: "darkgray"
-                                  }}
-                                  >
-                                    {items[idx].item.excerpt}
-                                  </div>
-                                )
-                                : <span />
-                              )
-                            }
-                          </div>
-                        </a>
-                        <div style={{margin: "0 0 7px 10px"}}>
-                          <a
-                            href={items[idx].item.given_url}
-                            style={{
-                              textDecoration: "none"
-                            }}
-                            target="_blank"
-                            >
-                              <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
-                                <img src={"http://www.google.com/s2/favicons?domain=".concat(items[idx].item.given_url)} />
-                                {" "}
-                                <span className="item-url">{this.urlParser(items[idx].item.given_url)}</span>
-                              </div>
-                            </a>
-                          </div>
-                          <div style={{margin: "0 10px 0 20px"}}>
-                            {
-                              items[idx].item.tags
-                              ? (
-                                <div className="tags">
-                                  {Object.keys(items[idx].item.tags).map((tag, idx) => {
-                                    return (
-                                      <div key={idx} style={{cursor: "pointer"}} className="tag">
-                                        {tag}
-                                        <span
-                                          style={{
-                                            fontWeight: "bold",
-                                            fontSize: "12px",
-                                            margin: "0 0 0 5px"
-                                          }}
-                                          onClick={this.handleRequestDelete}
-                                          >
-                                            x
-                                          </span>
-                                        </div>
-                                      )
-                                    })}
-                                  </div>
-                                )
-                                : <span style={{display: "none"}} />
-                              }
-                            </div>
-                          </Paper>
-                        </div>
-                      )
-      } else if (item.service === "google") {
-        return (
-          <div
-            key={idx}
-            style={{
-              margin: "15px"
-            }}
-            className="paper"
-          >
-            <Paper
-              style={{
-                width: "275px",
-                padding: "10px",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }}
-            >
-              <a
-                href={"https://mail.google.com/mail/u/0/#inbox/".concat(items[idx].item.id)}
-                style={{
-                  textDecoration: "none"
-                }}
-                target="_blank"
-                className="pocket-link"
-              >
-                <div
-                  style={{
-                    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
-                    fontSize: "13px"
-                  }}
-                >
-                  <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
-                    <img src="http://www.google.com/s2/favicons?domain=https://www.google.com/gmail/about" />
-                    {" "}
-                  </div>
-                  <span
-                    style={
-                      items[idx].item.labelIds.includes("UNREAD")
-                      ? {fontWeight: "bold"}
-                      : {fontWeight: "normal"}
-                    }
-                    className="pocket-title"
-                  >
-                    {
-
-                      (getHeader(items[idx].item.payload.headers, 'From')).replace(/<(.*)>/g, "")
-                    }
-                    <br/>
-                    <br/>
-                    {getHeader(items[idx].item.payload.headers, 'Subject')}
-                  </span>
-                  <div style={{color: "rgb(117, 117, 117)"}}>
-                    <br/>
-                    {
-                      items[idx].item.snippet.length > 0
-                      ? unescape(items[idx].item.snippet) + "..."
-                      : ""
-                    }
-                  </div>
-                </div>
-              </a>
-            </Paper>
-          </div>
-        )
-      }
-    });
 
 
 
@@ -572,7 +333,7 @@ class App extends Component {
               threshold={200}
               >
               <Masonry>
-                {childElements}
+                <Items />
               </Masonry>
             </InfiniteScroll>
           </div>

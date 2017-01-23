@@ -17,6 +17,7 @@ export const receiveError = error => ({
 })
 
 export const fetchItems = (newParams = {}) => (dispatch, getState) => {
+  dispatch({type: ActionType.App.Functionality.IS_REQUESTING})
   dispatch(requestItems(newParams));
   let params = getState().pocket.params;
   return APIUtil.pocketRetrieve(params)

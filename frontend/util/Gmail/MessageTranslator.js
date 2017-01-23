@@ -9,6 +9,7 @@ type Message = typeof TMessage;
 function translateMessage(rawMessage: Object): Message {
   const msg = rawMessage.payload;
   return {
+    service: 'gmail',
     body: decodeBody(rawMessage),
     date: new Date(pluckHeader(msg.headers, 'Date')),
     from: parseNameAndEmail(pluckHeader(msg.headers, 'From') || ''),

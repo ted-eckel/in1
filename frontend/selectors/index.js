@@ -8,9 +8,11 @@ export const isFetchingSelector = state => state.pocket.isFetching;
 export const errorSelector = state => state.pocket.error;
 export const drawerOpenSelector = state => state.app.drawerOpen;
 
+export const isRequestingSelector = state => state.isRequesting;
+
 const threadListByQuerySelector = state => state.gmail.threadListByQuery;
 const threadsByIDSelector = state => state.gmail.threadsByID;
-const messagesByIDSelector = state => state.gmail.messagesByID;
+export const messagesByIDSelector = state => state.gmail.messagesByID;
 
 export const isAuthorizedSelector = state => state.gmail.authorization.isAuthorized;
 export const isAuthorizingSelector = state => state.gmail.authorization.isAuthorizing;
@@ -132,7 +134,7 @@ export const loadedThreadCountSelector = createSelector([
 //   if (!messages) {
 //     return null;
 //   }
-// 
+//
 //   const selectedMessageIndex = selectedMessageID &&
 //     messages.findIndex(
 //       msg => msg.id === selectedMessageID

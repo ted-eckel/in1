@@ -14,14 +14,18 @@ const itemsReducer = (state = [], action) => {
       let oldState = union([], state);
       let newState = [];
 
-      Object.keys(list).forEach(key => newState.push({
-        service: "pocket",
-        time: list[key].time_added,
-        item: list[key]
-      }));
+      Object.keys(list).forEach(key => {
+        let d = new Date(0);
+        d.setUTCSeconds(list[key].time_added);
+        newState.push({
+          service: 'pocket',
+          date: d,
+          item: list[key]
+        })});
 
       let nextState = uniq(union(oldState, newState));
-      nextState.sort((a, b) => parseInt(b.time) - parseInt(a.time));
+      // nextState.sort((a, b) => parseInt(b.time) - parseInt(a.time));
+      nextState.sort((a, b) => b.date - a.date)
       return nextState;
     default:
       return state;

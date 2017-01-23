@@ -2,6 +2,8 @@ const ActionType = {
   App: {
     Functionality: {
       SEARCH: '',
+      IS_REQUESTING: '',
+      IS_NOT_REQUESTING: '',
     },
 
     View: {

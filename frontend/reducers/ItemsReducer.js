@@ -19,7 +19,15 @@ const allItemsReducer = (state = [], action) => {
       return nextStatePocket;
     case ActionType.Gmail.Thread.LOAD_LIST_SUCCESS:
       let oldStateGmail = union([], state);
-      let newStateGmail = uniqBy(action.messages, 'threadID');
+      // let newStateGmail = uniqBy(action.messages, 'threadID');
+      let newStateGmail = []
+      let threadIDs = []
+      action.messages.sort((a, b) => b.date - a.date).forEach(message => {
+        if (!threadIDs.includes(message.threadID)){
+          threadIDs.push(message.threadID);
+          newStateGmail.push(message);
+        }
+      })
 
       let nextStateGmail = union(oldStateGmail, newStateGmail)
       .sort((a, b) => b.date - a.date)

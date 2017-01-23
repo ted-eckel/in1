@@ -12,12 +12,14 @@ import uniqBy from 'lodash/uniqBy'
 import InfiniteScroll from 'react-infinite-scroller'
 import Masonry from 'react-masonry-component'
 import CircularProgress from 'material-ui/CircularProgress'
+import RSVP from 'rsvp'
 
 import {
   allItemsSelector,
   isFetchingSelector,
   isLoadingSelector,
-  servicesLoadedSelector
+  servicesLoadedSelector,
+  getAllItemsSelector
 } from '../selectors';
 
 @connect(
@@ -25,18 +27,20 @@ import {
     allItems: allItemsSelector(state),
     servicesLoaded: servicesLoadedSelector(state),
     isFetching: isFetchingSelector(state),
-    isLoading: isLoadingSelector(state)
+    isLoading: isLoadingSelector(state),
+    getAllItems: getAllItemsSelector(state)
   }),
   dispatch => bindActionCreators({
     fetchItems: PocketActions.fetchItems,
-    // loadThread: ThreadActions.load,
+    loadThreadList: ThreadActions.loadList,
     // ...ThreadActions,
   }, dispatch),
 )
 
 export default class Items extends Component {
   static propTypes = {
-    style: PropTypes.object
+    style: PropTypes.object,
+    onRequestMoreItems: PropTypes.func.isRequired
   };
 
   componentWillMount = () => {
@@ -53,16 +57,21 @@ export default class Items extends Component {
   }
 
   handleLoadMore = () => {
-    const { fetchItems, isFetching, isLoading } = this.props;
-    if (!isFetching && !isLoading){
-      fetchItems();
-      console.log("handleLoadMore()");
+    const { fetchItems, isFetching, isLoading, loadThreadList, onRequestMoreItems } = this.props;
+    if (!isFetching /*&& !isLoading*/){
+      RSVP.all([
+        fetchItems(),
+        // loadThreadList()
+        onRequestMoreItems()
+      ]).then(console.log("RSVP handleLoadMore()"))
     }
   }
 
   render(): ?ReactComponent {
-    const items = this.props.allItems;
+    // const items = this.props.allItems;
+    const items = this.props.getAllItems;
     const servicesLoaded = this.props.servicesLoaded;
+    const requestMoreItems = this.props.onRequestMoreItems;
 
     const styles = {
       root: {maxWidth: "1525px", margin: "80px auto"}
@@ -73,7 +82,11 @@ export default class Items extends Component {
     );
 
     if (Object.keys(servicesLoaded).length < 2) {
-      return null;
+      return (
+        <div style={{marginTop: "80px"}}>
+          {elementInfiniteLoad}
+        </div>
+      )
     } else {
       const childElements = items.map((item, idx) => {
         if (item.service === "pocket") {
@@ -94,6 +107,7 @@ export default class Items extends Component {
                 subject={items[idx].subject}
                 snippet={items[idx].snippet}
                 labelIDs={items[idx].labelIDs}
+                isUnread={items[idx].isUnread}
               />
             </div>
           )
@@ -104,7 +118,7 @@ export default class Items extends Component {
         <div style={{maxWidth: "1525px", margin: "80px auto"}}>
           <InfiniteScroll
             ref='masonryContainer'
-            loadMore={this.handleLoadMore}
+            loadMore={this.handleLoadMore /*requestMoreItems*/}
             loader={elementInfiniteLoad}
             hasMore
             threshold={200}

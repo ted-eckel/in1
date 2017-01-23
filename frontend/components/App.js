@@ -216,7 +216,9 @@ class App extends Component {
             <MenuItem onClick={this.handleDrawerClose}>Connect to Gmail</MenuItem>
           </Drawer>
           <GreetingContainer />
-          <Items  />
+          <Items
+            onRequestMoreItems={this._onRequestMoreItems}
+          />
           {/* <div style={{maxWidth: "1525px", margin: "80px auto"}}>
             <InfiniteScroll
               ref='masonryContainer'

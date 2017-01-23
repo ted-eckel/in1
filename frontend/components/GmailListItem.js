@@ -11,7 +11,8 @@ export default class GmailListItem extends Component {
     from: PropTypes.object.isRequired,
     subject: PropTypes.string.isRequired,
     snippet: PropTypes.string.isRequired,
-    labelIDs: PropTypes.array.isRequired
+    labelIDs: PropTypes.array.isRequired,
+    isUnread: PropTypes.bool.isRequired
   };
 
   render(){
@@ -20,6 +21,7 @@ export default class GmailListItem extends Component {
     const subject = this.props.subject;
     const snippet = this.props.snippet;
     const labelIDs = this.props.labelIDs;
+    const isUnread = this.props.isUnread;
 
     return (
       <div
@@ -56,7 +58,7 @@ export default class GmailListItem extends Component {
               </div>
               <span
                 style={
-                  labelIDs.includes("UNREAD")
+                  isUnread
                   ? {fontWeight: "bold"}
                   : {fontWeight: "normal"}
                 }

@@ -74,7 +74,7 @@ export const lastMessageInEachThreadSelector = createSelector([
   threads
 ) => {
   return threads && threads.map(
-    thread => messagesByID[_.last(thread.messageIDs)]
+    thread => messagesByID[last(thread.messageIDs)]
   );
 });
 
@@ -99,6 +99,27 @@ export const loadedThreadCountSelector = createSelector([
   const threadList = threadListByQuery[searchQuery];
   return threadList ? threadList.threadIDs.length : 0;
 });
+
+export const getAllItemsSelector = createSelector(
+  lastMessageInEachThreadSelector,
+  itemsSelector,
+  (
+    lastMessageInEachThread,
+    items
+  ) => items.concat(lastMessageInEachThread).sort((a, b) => b.date - a.date)
+);
+
+// export const getAllItemsSelector = createSelector([
+//   itemsSelector,
+//   messagesByIDSelector,
+//   threadsSelector
+// ], (
+//   items,
+//   messagesByID,
+//   threads
+// ) => {
+//   let lastMessageInEach =
+// })
 
 // export const nextMessageSelector = createSelector([
 //   lastMessageInEachThreadSelector,

@@ -6,23 +6,31 @@ import GmailListItem from './GmailListItem'
 import PocketListItem from './PocketListItem'
 import React, {Component, PropTypes} from 'react'
 import * as ThreadActions from '../actions/Gmail/ThreadActions'
+import * as PocketActions from '../actions/PocketActions'
 import values from 'lodash/values'
 import uniqBy from 'lodash/uniqBy'
+import InfiniteScroll from 'react-infinite-scroller'
+import Masonry from 'react-masonry-component'
+import CircularProgress from 'material-ui/CircularProgress'
+
 import {
-  itemsSelector,
-  isRequestingSelector,
-  messagesByIDSelector
+  allItemsSelector,
+  isFetchingSelector,
+  isLoadingSelector,
+  servicesLoadedSelector
 } from '../selectors';
 
 @connect(
   state => ({
-    isRequesting: isRequestingSelector(state),
-    pocketItems: itemsSelector(state),
-    gmailItems: messagesByIDSelector(state)
+    allItems: allItemsSelector(state),
+    servicesLoaded: servicesLoadedSelector(state),
+    isFetching: isFetchingSelector(state),
+    isLoading: isLoadingSelector(state)
   }),
   dispatch => bindActionCreators({
-    loadThread: ThreadActions.load,
-    ...ThreadActions,
+    fetchItems: PocketActions.fetchItems,
+    // loadThread: ThreadActions.load,
+    // ...ThreadActions,
   }, dispatch),
 )
 
@@ -31,68 +39,82 @@ export default class Items extends Component {
     style: PropTypes.object
   };
 
+  componentWillMount = () => {
+    const { fetchItems, isFetching, isLoading } = this.props;
+    if (!isFetching && !isLoading){
+      fetchItems();
+      console.log("Items componentWillMount()")
+    }
+  }
+
   handleRequestDelete = e => {
     e.preventDefault();
     alert('You clicked the delete button.');
   }
 
+  handleLoadMore = () => {
+    const { fetchItems, isFetching, isLoading } = this.props;
+    if (!isFetching && !isLoading){
+      fetchItems();
+      console.log("handleLoadMore()");
+    }
+  }
+
   render(): ?ReactComponent {
-    const isRequesting = this.props.isRequesting;
-    const gmailItems = this.props.gmailItems;
-    const pocketItems = this.props.pocketItems;
+    const items = this.props.allItems;
+    const servicesLoaded = this.props.servicesLoaded;
 
-    let gmailItemsArray = uniqBy((values(gmailItems).sort((a, b) => b.date - a.date)), 'threadID');
-    let items = pocketItems.concat(gmailItemsArray).sort((a, b) => b.date - a.date);
+    const styles = {
+      root: {maxWidth: "1525px", margin: "80px auto"}
+    };
 
-
-    // googleThreadMessages.sort((a, b) => parseInt(b.internalDate) - parseInt(a.internalDate)).forEach(message => {
-    //   if (!threadIds.includes(message.threadId)) {
-    //     googleItems.push({
-    //       service: "google",
-    //       time: (parseInt(message.internalDate) / 1000),
-    //       item: message
-    //     });
-    //     threadIds.push(message.threadId);
-    //   }
-    // })
-
-    // const combinedElements = items.concat(googleItems).sort((a, b) => parseInt(b.time) - parseInt(a.time));
-
-    // if (!items || isRequesting) {
-    //   return null;
-    // }
-
-    // console.log(items);
-
-    const childElements = items.map((item, idx) => {
-      if (item.service === "pocket") {
-        return (
-          <div style={{display: 'inline-block'}} key={idx}>
-            <PocketListItem
-              item={items[idx].item}
-              handleRequestDelete={this.handleRequestDelete}
-            />
-          </div>
-        )
-      } else if (item.service === "gmail") {
-        return (
-          <div style={{display: 'inline-block'}} key={idx}>
-            <GmailListItem
-              item={items[idx].item}
-            />
-          </div>
-        )
-      }
-    })
-
-    return (
-      <div style={[styles.root, this.props.style]}>
-        { childElements }
-      </div>
+    const elementInfiniteLoad = (
+      <CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />
     );
+
+    if (Object.keys(servicesLoaded).length < 2) {
+      return null;
+    } else {
+      const childElements = items.map((item, idx) => {
+        if (item.service === "pocket") {
+          return (
+            <div style={{display: 'inline-block'}} key={idx}>
+              <PocketListItem
+                item={items[idx].item}
+                handleRequestDelete={this.handleRequestDelete}
+              />
+            </div>
+          )
+        } else if (item.service === "gmail") {
+          return (
+            <div style={{display: 'inline-block'}} key={idx}>
+              <GmailListItem
+                gmailId={items[idx].id}
+                from={items[idx].from}
+                subject={items[idx].subject}
+                snippet={items[idx].snippet}
+                labelIDs={items[idx].labelIDs}
+              />
+            </div>
+          )
+        }
+      })
+
+      return (
+        <div style={{maxWidth: "1525px", margin: "80px auto"}}>
+          <InfiniteScroll
+            ref='masonryContainer'
+            loadMore={this.handleLoadMore}
+            loader={elementInfiniteLoad}
+            hasMore
+            threshold={200}
+            >
+              <Masonry>
+                { childElements }
+              </Masonry>
+            </InfiniteScroll>
+          </div>
+        );
+    }
   }
 }
-
-const styles = {
-  root: {}
-};

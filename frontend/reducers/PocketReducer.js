@@ -10,22 +10,22 @@ let nextOffset = 0;
 const itemsReducer = (state = [], action) => {
   switch (action.type) {
     case ActionType.Pocket.Items.LOAD_SUCCESS:
-      let list = action.items.list;
+      // let list = action.items.list;
       let oldState = union([], state);
-      let newState = [];
-
-      Object.keys(list).forEach(key => {
-        let d = new Date(0);
-        d.setUTCSeconds(list[key].time_added);
-        newState.push({
-          service: 'pocket',
-          date: d,
-          item: list[key]
-        })});
+      // let newState = [];
+      let newState = action.items;
+      // Object.keys(list).forEach(key => {
+      //   let d = new Date(0);
+      //   d.setUTCSeconds(list[key].time_added);
+      //   newState.push({
+      //     service: 'pocket',
+      //     date: d,
+      //     item: list[key]
+      //   })});
 
       let nextState = uniq(union(oldState, newState));
       // nextState.sort((a, b) => parseInt(b.time) - parseInt(a.time));
-      nextState.sort((a, b) => b.date - a.date)
+      // nextState.sort((a, b) => b.date - a.date)
       return nextState;
     default:
       return state;

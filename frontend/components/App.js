@@ -3,24 +3,16 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux';
 import GreetingContainer from './greeting/GreetingContainer'
-// import PocketContainer from './pocket/PocketContainer'
-// import ActionType from '../actions/ActionType'
 import * as PocketActions from '../actions/PocketActions'
 import { toggleDrawer } from '../actions/AppActions'
 import { checkAuth, load, loadThreadList, loadThreads, initClient } from '../actions/GoogleActions'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import FlatButton from 'material-ui/FlatButton'
-import CircularProgress from 'material-ui/CircularProgress'
-import Paper from 'material-ui/Paper'
-// import MasonryInfiniteScroller from 'react-masonry-infinite'
-import InfiniteScroll from 'react-infinite-scroller'
+// import FlatButton from 'material-ui/FlatButton'
+// import CircularProgress from 'material-ui/CircularProgress'
+// import Paper from 'material-ui/Paper'
+// import InfiniteScroll from 'react-infinite-scroller'
 import AppBar from 'material-ui/AppBar'
-import Infinite from 'react-infinite'
-// import Masonry from 'masonry-layout'
-import Masonry from 'react-masonry-component'
-// import InView from 'in-view'
-// import MasonryMixin from 'react-masonry-mixin'
-// import Chip from 'material-ui/Chip'
+// import Masonry from 'react-masonry-component'
 import Avatar from 'material-ui/Avatar'
 import SvgIconClear from 'material-ui/svg-icons/content/clear'
 import Drawer from 'material-ui/Drawer'
@@ -41,7 +33,6 @@ import {
   isAuthorizedSelector,
   isAuthorizingSelector,
   isLoadingSelector,
-  isRequestingSelector,
   labelsSelector,
   lastMessageInEachThreadSelector,
   loadedThreadCountSelector,
@@ -50,20 +41,18 @@ import {
   searchQuerySelector,
   threadsSelector,
 } from '../selectors'
-// import MasonryInfinite from './pocket/MasonryInfiniteScroller'
 
 const PAGE_SIZE = 20;
 
 @connect(
   state => ({
     items: itemsSelector(state),
-    isFetching: isFetchingSelector(state),
+    // isFetching: isFetchingSelector(state),
     error: errorSelector(state),
     drawerOpen: drawerOpenSelector(state),
     isAuthorized: isAuthorizedSelector(state),
     isAuthorizing: isAuthorizingSelector(state),
-    isLoading: isLoadingSelector(state),
-    isRequesting: isRequestingSelector(state),
+    // isLoading: isLoadingSelector(state),
     labels: labelsSelector(state),
     searchQuery: searchQuerySelector(state),
     threads: threadsSelector(state),
@@ -83,17 +72,6 @@ const PAGE_SIZE = 20;
     push
   }, dispatch),
 )
-
-// const mapStateToProps = (state, ownProps) => {
-//   return {
-//     items: state.pocket.items,
-//     googleThreadList: state.google.threadList,
-//     googleThreadMessages: state.google.threadMessages,
-//     isFetching: state.pocket.isFetching,
-//     error: state.pocket.error,
-//     drawerOpen: state.app.drawerOpen
-//   }
-// }
 
 class App extends Component {
 
@@ -212,98 +190,12 @@ class App extends Component {
     }
   }
 
-  handleLabels = labels => {
-    const { dispatch } = this.props;
-    dispatch({type: ActionType.Gmail.Label.LOAD_ALL_SUCCESS, labels})
-  }
-
-  handleLabelError = error => {
-    const { dispatch } = this.props;
-    dispatch({type: ActionType.Gmail.Label.LOAD_ALL_FAILURE, error})
-  }
-
-  // handleAuthClick = e => {
-  //   e.preventDefault();
-  //   const { dispatch } = this.props;
-  //   dispatch(toggleDrawer());
-  //   dispatch(handleAuthClicking());
-  // }
-
-  handleThreadList = threadList => {
-    const { dispatch } = this.props;
-    dispatch({type: ActionType.Gmail.Thread.LOAD_LIST_SUCCESS, threadList})
-    // dispatch({type: ActionType.Gmail.Thread.LOAD_REQUEST})
-    // loadThreads(this.handleThreads.bind(this), this.handleThreadsError.bind(this), threadListState)
-  }
-
-  handleThreadListError = error => {
-    const { dispatch } = this.props;
-    dispatch({type: ActionType.Gmail.Thread.LOAD_LIST_FAILURE, error})
-  }
-
-  handleThreads = threadMessages => {
-    const { dispatch } = this.props;
-    dispatch({type: ActionType.Gmail.Thread.LOAD_SUCCESS, threadMessages})
-  }
-
-  handleThreadsError = error => {
-    const { dispatch } = this.props;
-    dispatch({type: ActionType.Gmail.Thread.LOAD_FAILURE, error})
-  }
-
-  handleClick = e => {
-    e.preventDefault()
-    const { dispatch } = this.props;
-    dispatch(fetchItems())
-    console.log("handleClick()")
-  }
-
-  handleRefresh = () => {
-    const { dispatch } = this.props;
-    dispatch(fetchItems());
-    console.log("handleRefresh()");
-  }
-
-  handleLoadMore = () => {
-    const { fetchItems, isFetching, isRequesting } = this.props;
-    if (!isFetching && !isRequesting){
-      fetchItems();
-      console.log("handleLoadMore()");
-    }
-  }
-
-  handleTouchTap = e => {
-    e.preventDefault();
-    alert('You clicked the Chip.');
-  }
-
   handleDrawerClose = () => {
     const { dispatch } = this.props;
     dispatch(toggleDrawer());
   }
 
   render() {
-    const { isFetching } = this.props
-    const elementInfiniteLoad = (
-      <CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />
-    );
-
-    const getHeader = (headers, index) => {
-      let header = '';
-
-      headers.forEach(hdr => {
-        if (hdr.name === index){
-          header = hdr.value
-        }
-      })
-
-      return header;
-    }
-
-    // console.log(combinedElements);
-
-
-
 
     return (
       <MuiThemeProvider style={{width: "100%", height: "100%"}}>
@@ -324,7 +216,8 @@ class App extends Component {
             <MenuItem onClick={this.handleDrawerClose}>Connect to Gmail</MenuItem>
           </Drawer>
           <GreetingContainer />
-          <div style={{maxWidth: "1525px", margin: "80px auto"}}>
+          <Items  />
+          {/* <div style={{maxWidth: "1525px", margin: "80px auto"}}>
             <InfiniteScroll
               ref='masonryContainer'
               loadMore={this.handleLoadMore}
@@ -336,7 +229,7 @@ class App extends Component {
                 <Items />
               </Masonry>
             </InfiniteScroll>
-          </div>
+          </div> */}
           {/* <Masonry>
             {childElements}
           </Masonry> */}

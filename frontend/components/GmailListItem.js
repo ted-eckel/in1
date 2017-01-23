@@ -7,11 +7,19 @@ import unescape from 'lodash/unescape'
 
 export default class GmailListItem extends Component {
   static propTypes = {
-    item: PropTypes.object.isRequired,
+    gmailId: PropTypes.string.isRequired,
+    from: PropTypes.object.isRequired,
+    subject: PropTypes.string.isRequired,
+    snippet: PropTypes.string.isRequired,
+    labelIDs: PropTypes.array.isRequired
   };
 
   render(){
-    const item = this.props.item;
+    const gmailId = this.props.gmailId;
+    const from = this.props.from;
+    const subject = this.props.subject;
+    const snippet = this.props.snippet;
+    const labelIDs = this.props.labelIDs;
 
     return (
       <div
@@ -29,7 +37,7 @@ export default class GmailListItem extends Component {
           }}
         >
           <a
-            href={"https://mail.google.com/mail/u/0/#inbox/".concat(item.id)}
+            href={"https://mail.google.com/mail/u/0/#inbox/".concat(gmailId)}
             style={{
               textDecoration: "none"
             }}
@@ -48,24 +56,24 @@ export default class GmailListItem extends Component {
               </div>
               <span
                 style={
-                  item.labelIds.includes("UNREAD")
+                  labelIDs.includes("UNREAD")
                   ? {fontWeight: "bold"}
                   : {fontWeight: "normal"}
                 }
                 className="pocket-title"
               >
                 {
-                  item.from.name ? item.from.name : item.from.email
+                  from.name ? from.name : from.email
                 }
                 <br/>
                 <br/>
-                {item.subject}
+                {subject}
               </span>
               <div style={{color: "rgb(117, 117, 117)"}}>
                 <br/>
                 {
-                  item.snippet.length > 0
-                  ? unescape(item.snippet) + "..."
+                  snippet.length > 0
+                  ? unescape(snippet) + "..."
                   : ""
                 }
               </div>

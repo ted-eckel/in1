@@ -2,8 +2,11 @@ const ActionType = {
   App: {
     Functionality: {
       SEARCH: '',
-      IS_REQUESTING: '',
-      IS_NOT_REQUESTING: '',
+    },
+
+    Request: {
+      START: '',
+      ALL_STOPPED: '',
     },
 
     View: {

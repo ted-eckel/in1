@@ -35,7 +35,6 @@ export function load(threadID) {
 
 export function loadList(query = '', requestedResultCount = 10) {
   return (dispatch, getState) => {
-    dispatch({type: ActionType.App.Functionality.IS_REQUESTING})
     const {threadListByQuery} = getState().gmail;
     const threadList = threadListByQuery[query];
 
@@ -70,14 +69,12 @@ export function loadList(query = '', requestedResultCount = 10) {
         nextPageToken: listResult.nextPageToken,
         resultSizeEstimate: listResult.resultSizeEstimate,
       });
-      dispatch({type: ActionType.App.Functionality.IS_NOT_REQUESTING});
     }).catch(error => {
       dispatch({
         type: ActionType.Gmail.Thread.LOAD_LIST_FAILURE,
         query,
         requestedResultCount,
       });
-      dispatch({type: ActionType.App.Functionality.IS_NOT_REQUESTING});
     });
   };
 }

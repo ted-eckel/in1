@@ -8,7 +8,8 @@ export const isFetchingSelector = state => state.pocket.isFetching;
 export const errorSelector = state => state.pocket.error;
 export const drawerOpenSelector = state => state.app.drawerOpen;
 
-export const isRequestingSelector = state => state.isRequesting;
+export const allItemsSelector = state => state.items.allItems;
+export const servicesLoadedSelector = state => state.items.servicesLoaded;
 
 const threadListByQuerySelector = state => state.gmail.threadListByQuery;
 const threadsByIDSelector = state => state.gmail.threadsByID;

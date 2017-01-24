@@ -12,8 +12,13 @@ export default class GmailListItem extends Component {
     subject: PropTypes.string.isRequired,
     snippet: PropTypes.string.isRequired,
     labelIDs: PropTypes.array.isRequired,
-    isUnread: PropTypes.bool.isRequired
+    isUnread: PropTypes.bool.isRequired,
+    handleRequestDelete: PropTypes.func.isRequired
   };
+
+  requestDeleteClick = e => {
+    this.props.handleRequestDelete(e)
+  }
 
   render(){
     const gmailId = this.props.gmailId;
@@ -81,6 +86,33 @@ export default class GmailListItem extends Component {
               </div>
             </div>
           </a>
+          <div style={{margin: "10px"}}>
+            {
+              labelIDs
+              ? (
+                <div className="tags">
+                  {labelIDs.map((tag, idx) => {
+                    return (
+                      <div key={idx} style={{cursor: "pointer"}} className="tag">
+                        {tag}
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            fontSize: "12px",
+                            margin: "0 0 0 5px"
+                          }}
+                          onClick={this.requestDeleteClick}
+                          >
+                            x
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+                : <span style={{display: "none"}} />
+              }
+            </div>
         </Paper>
       </div>
     )

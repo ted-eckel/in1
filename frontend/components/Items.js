@@ -108,6 +108,7 @@ export default class Items extends Component {
                 snippet={items[idx].snippet}
                 labelIDs={items[idx].labelIDs}
                 isUnread={items[idx].isUnread}
+                handleRequestDelete={this.handleRequestDelete}
               />
             </div>
           )

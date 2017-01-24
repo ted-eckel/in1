@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect'
 import last from 'lodash/last'
+import slice from 'lodash/slice'
 
 import getUnsubscribeUrl from '../util/Gmail/getUnsubscribeUrl'
 
@@ -108,6 +109,11 @@ export const getAllItemsSelector = createSelector(
     items
   ) => items.concat(lastMessageInEachThread).sort((a, b) => b.date - a.date)
 );
+
+// export const getItemsInBatches = createSelector(
+//   getAllItemsSelector,
+//   ( getAllItems ) => slice(getAllItems, 0, 20)
+// )
 
 // export const getAllItemsSelector = createSelector([
 //   itemsSelector,

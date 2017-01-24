@@ -10,8 +10,8 @@ export default class PocketListItem extends Component {
     handleRequestDelete: PropTypes.func.isRequired
   };
 
-  requestDeleteClick = () => {
-    this.props.handleRequestDelete()
+  requestDeleteClick = e => {
+    this.props.handleRequestDelete(e)
   }
 
   urlParser = url => {

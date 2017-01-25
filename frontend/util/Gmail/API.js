@@ -4,7 +4,6 @@ import ActionType from '../../actions/ActionType'
 import getClientID from './ClientID'
 import RSVP from 'rsvp'
 import configureStore from '../../store'
-import config from '../../config'
 
 let isAvailable = false;
 let pendingRequests = [];
@@ -23,8 +22,8 @@ const tryAuthorize = immediate => {
   store.dispatch({type: ActionType.Gmail.Authorization.REQUEST});
   window.gapi.auth.authorize(
     {
-      client_id: config.clientId,
-      scope: config.scope,
+      client_id: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
+      scope: 'https://www.googleapis.com/auth/gmail.modify',
       immediate
     },
     whenAuthenticated

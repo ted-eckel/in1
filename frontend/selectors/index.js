@@ -39,20 +39,6 @@ export const threadsSelector = createSelector([
     [];
 });
 
-// export const selectedThreadMessagesSelector = createSelector([
-//   threadsByIDSelector,
-//   selectedThreadIDSelector,
-//   messagesByIDSelector,
-// ], (
-//   threadsByID,
-//   selectedThreadID,
-//   messagesByID,
-// ) => {
-//   const selectedThread = threadsByID[selectedThreadID];
-//   return selectedThread &&
-//     selectedThread.messageIDs.map(messageID => messagesByID[messageID]);
-// });
-
 // export const unsubscribeUrlSelector = createSelector([
 //   selectedThreadMessagesSelector,
 //   selectedMessageIDSelector,
@@ -114,65 +100,3 @@ export const getAllItemsSelector = createSelector(
 //   getAllItemsSelector,
 //   ( getAllItems ) => slice(getAllItems, 0, 20)
 // )
-
-// export const getAllItemsSelector = createSelector([
-//   itemsSelector,
-//   messagesByIDSelector,
-//   threadsSelector
-// ], (
-//   items,
-//   messagesByID,
-//   threads
-// ) => {
-//   let lastMessageInEach =
-// })
-
-// export const nextMessageSelector = createSelector([
-//   lastMessageInEachThreadSelector,
-//   selectedMessageIDSelector,
-// ], (
-//   messages,
-//   selectedMessageID
-// ) => {
-//   if (!messages) {
-//     return null;
-//   }
-//
-//   const selectedMessageIndex = selectedMessageID &&
-//     messages.findIndex(
-//       msg => msg.id === selectedMessageID
-//     );
-//
-//   if (!selectedMessageID) {
-//     return messages[0];
-//   } else if (selectedMessageIndex < 0 || selectedMessageIndex === messages.length) {
-//     return null;
-//   } else {
-//     return messages[selectedMessageIndex + 1];
-//   }
-// });
-
-// export const prevMessageSelector = createSelector([
-//   lastMessageInEachThreadSelector,
-//   selectedMessageIDSelector,
-// ], (
-//   messages,
-//   selectedMessageID
-// ) => {
-//   if (!messages) {
-//     return null;
-//   }
-//
-//   const selectedMessageIndex = selectedMessageID &&
-//     messages.findIndex(
-//       msg => msg.id === selectedMessageID
-//     );
-//
-//   if (!selectedMessageID) {
-//     return messages[0];
-//   } else if (selectedMessageIndex < 0 || selectedMessageIndex === 0) {
-//     return null;
-//   } else {
-//     return messages[selectedMessageIndex - 1];
-//   }
-// });

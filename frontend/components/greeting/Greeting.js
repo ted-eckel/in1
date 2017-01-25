@@ -9,6 +9,21 @@ import Toggle from 'material-ui/Toggle';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Menu from 'material-ui/svg-icons/navigation/menu';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import SvgIcon from 'material-ui/SvgIcon'
+import {blueGrey900} from 'material-ui/styles/colors'
+import ReactTooltip from 'react-tooltip'
+
+const iconStyles = {
+  marginRight: "24px"
+}
+
+const listButton = () => (
+  <IconButton tooltip="Grid View">
+    <div className="group" style={{display: "inline-block", paddingTop: "10px", marginRight: "15px"}}>
+      <img style={{width: "27px", opacity: ".54"}} src="gridview.svg" alt="Grid View" />
+    </div>
+  </IconButton>
+)
 
 const sessionLinks = () => (
   <nav className="login-signup">
@@ -35,10 +50,11 @@ const logged = (props) => (
 
 logged.muiName = 'IconMenu'
 
-const personalGreeting = (currentUser, logout, toggleDrawer) => (
+const /*personal*/Greeting = ({/*currentUser,*/ logout, toggleDrawer}) => (
   <AppBar
-    title="in1"
+    title="in1box"
     style={{
+      backgroundColor: "#546E7A",
       zIndex: 2
     }}
     iconElementLeft={
@@ -48,12 +64,28 @@ const personalGreeting = (currentUser, logout, toggleDrawer) => (
       </IconButton>
     }
     iconElementRight={
-      <FlatButton
-        label="Logout"
-        onClick={logout}
-      />
+      <div>
+        <img
+          className="tooltip--bottom appbar-button"
+          style={{
+            width: "27px",
+            display: "inline-block",
+            paddingTop: "10px",
+            marginRight: "15px",
+            cursor: "pointer"
+          }}
+          src="gridview.svg"
+          alt="Grid View"
+          data-tip="Grid View" />
+        <ReactTooltip place="bottom" type="dark" effect="solid" />
+        <FlatButton
+          style={{bottom: "10px", color: "#fff"}}
+          label="Logout"
+          onClick={logout}
+        />
+      </div>
     }
-    style={{position: "fixed", top: "0"}}/>
+  />
 );
 
 {/* <hgroup className="header-group">
@@ -61,8 +93,8 @@ const personalGreeting = (currentUser, logout, toggleDrawer) => (
   <button className="header-button" onClick={logout}>Log Out</button>
 </hgroup> */}
 
-const Greeting = ({ currentUser, logout, toggleDrawer }) => (
-  currentUser ? personalGreeting(currentUser, logout, toggleDrawer) : sessionLinks()
-);
+// const Greeting = ({ /*currentUser,*/ logout, toggleDrawer }) => (
+//   currentUser ? personalGreeting(/*currentUser,*/ logout, toggleDrawer) : sessionLinks()
+// );
 
 export default Greeting;

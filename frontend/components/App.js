@@ -153,11 +153,16 @@ class App extends Component {
             <br/>
             <br/>
             <br/>
-            <MenuItem onClick={this.handleDrawerClose}>Connect to Pocket</MenuItem>
+            <MenuItem onClick={this.handleDrawerClose}>
+              <a href="auth/pocket">
+                Connect to Pocket
+              </a>
+            </MenuItem>
             <MenuItem onClick={this.handleDrawerClose}>Connect to Gmail</MenuItem>
           </Drawer>
           <GreetingContainer />
           <Items
+            drawerOpen={this.props.drawerOpen}
             onRequestMoreItems={this._onRequestMoreItems}
           />
         </div>

@@ -11,6 +11,7 @@ const ActionType = {
 
     View: {
       TOGGLE_DRAWER: '',
+      TOGGLE_LIST_TYPE: '',
     },
   },
 

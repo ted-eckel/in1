@@ -40,7 +40,8 @@ import {
 export default class Items extends Component {
   static propTypes = {
     style: PropTypes.object,
-    onRequestMoreItems: PropTypes.func.isRequired
+    onRequestMoreItems: PropTypes.func.isRequired,
+    drawerOpen: PropTypes.bool.isRequired
   };
 
   componentWillMount = () => {
@@ -72,6 +73,10 @@ export default class Items extends Component {
     const items = this.props.getAllItems;
     const servicesLoaded = this.props.servicesLoaded;
     const requestMoreItems = this.props.onRequestMoreItems;
+    const drawerOpen = this.props.drawerOpen;
+
+    const drawerOpenStyles = {maxWidth: "1200px", margin: "20px 0 0 276px"}
+    const drawerClosedStyles = {maxWidth: "1525px", margin: "20px auto"}
 
     const styles = {
       root: {maxWidth: "1525px", margin: "80px auto"}
@@ -116,7 +121,7 @@ export default class Items extends Component {
       })
 
       return (
-        <div style={{maxWidth: "1525px", margin: "80px auto"}}>
+        <div style={drawerOpen ? drawerOpenStyles : drawerClosedStyles}>
           <InfiniteScroll
             ref='masonryContainer'
             loadMore={this.handleLoadMore /*requestMoreItems*/}

@@ -194,3 +194,17 @@
 .pocket-link:hover .pocket-title {
   color: #50bcb6;
 }
+
+.group:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.appbar-button {
+  opacity: .54
+}
+
+.appbar-button:hover {
+  opacity: .87;
+}

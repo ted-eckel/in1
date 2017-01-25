@@ -18,7 +18,7 @@
     user: current_user).html_safe %>
   </script>
   <main id="root"></main>
-  <script src="https://apis.google.com/js/client.js?onload=handleGoogleClientLoad"></script>
+  <!-- <script src="https://apis.google.com/js/client.js?onload=handleGoogleClientLoad"></script> -->
 <% else %>
   <form action="/api/session" method="post" name="login_form" >
     <%= auth_token_input %>

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { logout } from '../../actions/session_actions';
 import { toggleDrawer } from '../../actions/AppActions';
-import Greeting from './greeting';
+import Greeting from './Greeting';
 
 const mapStateToProps = ({ session }) => ({
   currentUser: session.currentUser

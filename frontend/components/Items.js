@@ -48,7 +48,6 @@ export default class Items extends Component {
     const { fetchItems, isFetching, isLoading } = this.props;
     if (!isFetching && !isLoading){
       fetchItems();
-      console.log("Items componentWillMount()")
     }
   }
 

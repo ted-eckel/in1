@@ -96,6 +96,18 @@ export const getAllItemsSelector = createSelector(
   ) => items.concat(lastMessageInEachThread).sort((a, b) => b.date - a.date)
 );
 
+export const getAllItemsSelectorTwo = createSelector(
+  messagesByIDSelector,
+  itemsSelector,
+  (
+    messagesByID,
+    items
+  ) => {
+    const messages = Object.keys(messagesByID).map((id => messagesByID[id]));
+    return items.concat(messages).sort((a, b) => b.date - a.date)
+  }
+);
+
 // export const getItemsInBatches = createSelector(
 //   getAllItemsSelector,
 //   ( getAllItems ) => slice(getAllItems, 0, 20)

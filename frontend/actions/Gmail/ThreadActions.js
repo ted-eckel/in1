@@ -33,7 +33,7 @@ export function load(threadID) {
   };
 }
 
-export function loadList(query = '', requestedResultCount = 10) {
+export function loadList(query = '', requestedResultCount = 20) {
   return (dispatch, getState) => {
     const {threadListByQuery} = getState().gmail;
     const threadList = threadListByQuery[query];

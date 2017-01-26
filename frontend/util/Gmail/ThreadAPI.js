@@ -34,6 +34,7 @@ export function list(
     return API.execute(window.gapi.client.gmail.users.threads.list({
       userId: 'me',
       maxResults: options.maxResults,
+      labelIds: 'INBOX',
       q: options.query || null,
       pageToken: options.pageToken || null,
     })).then(listResponse => {

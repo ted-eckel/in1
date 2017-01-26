@@ -19,7 +19,8 @@ import {
   isFetchingSelector,
   isLoadingSelector,
   servicesLoadedSelector,
-  getAllItemsSelector
+  getAllItemsSelector,
+  getAllItemsSelectorTwo
 } from '../selectors';
 
 @connect(
@@ -28,7 +29,8 @@ import {
     servicesLoaded: servicesLoadedSelector(state),
     isFetching: isFetchingSelector(state),
     isLoading: isLoadingSelector(state),
-    getAllItems: getAllItemsSelector(state)
+    getAllItems: getAllItemsSelector(state),
+    getAllItemsTwo: getAllItemsSelectorTwo(state)
   }),
   dispatch => bindActionCreators({
     fetchItems: PocketActions.fetchItems,
@@ -68,8 +70,7 @@ export default class Items extends Component {
   }
 
   render(): ?ReactComponent {
-    // const items = this.props.allItems;
-    const items = this.props.getAllItems;
+    const items = this.props.getAllItems /*this.props.getAllItemsTwo*/;
     const servicesLoaded = this.props.servicesLoaded;
     const requestMoreItems = this.props.onRequestMoreItems;
     const drawerOpen = this.props.drawerOpen;
@@ -98,6 +99,7 @@ export default class Items extends Component {
             <div style={{display: 'inline-block'}} key={idx}>
               <PocketListItem
                 item={items[idx].item}
+                date={items[idx].date.toString()}
                 handleRequestDelete={this.handleRequestDelete}
               />
             </div>
@@ -113,6 +115,10 @@ export default class Items extends Component {
                 labelIDs={items[idx].labelIDs}
                 isUnread={items[idx].isUnread}
                 handleRequestDelete={this.handleRequestDelete}
+
+                threadID={items[idx].threadID}
+                hasAttachment={items[idx].hasAttachment}
+                date={items[idx].date.toString()}
               />
             </div>
           )

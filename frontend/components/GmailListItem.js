@@ -13,7 +13,11 @@ export default class GmailListItem extends Component {
     snippet: PropTypes.string.isRequired,
     labelIDs: PropTypes.array.isRequired,
     isUnread: PropTypes.bool.isRequired,
-    handleRequestDelete: PropTypes.func.isRequired
+    handleRequestDelete: PropTypes.func.isRequired,
+
+    threadID: PropTypes.string.isRequired,
+    hasAttachment: PropTypes.bool.isRequired,
+    date: PropTypes.string.isRequired
   };
 
   requestDeleteClick = e => {
@@ -27,6 +31,10 @@ export default class GmailListItem extends Component {
     const snippet = this.props.snippet;
     const labelIDs = this.props.labelIDs;
     const isUnread = this.props.isUnread;
+
+    const threadID = this.props.threadID;
+    const hasAttachment = this.props.hasAttachment.toString();
+    const date = this.props.date;
 
     return (
       <div
@@ -113,6 +121,16 @@ export default class GmailListItem extends Component {
                 : <span style={{display: "none"}} />
               }
             </div>
+
+            {/* <div style={{margin: "10px"}}>
+              messageID: {gmailId}
+              <br/>
+              threadID: {threadID}
+              <br/>
+              hasAttachment: {hasAttachment}
+              <br/>
+              date: {date}
+            </div> */}
         </Paper>
       </div>
     )

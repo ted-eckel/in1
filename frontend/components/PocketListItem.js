@@ -7,7 +7,8 @@ import Paper from 'material-ui/Paper'
 export default class PocketListItem extends Component {
   static propTypes = {
     item: PropTypes.object.isRequired,
-    handleRequestDelete: PropTypes.func.isRequired
+    handleRequestDelete: PropTypes.func.isRequired,
+    date: PropTypes.string.isRequired
   };
 
   requestDeleteClick = e => {
@@ -22,6 +23,7 @@ export default class PocketListItem extends Component {
 
   render(){
     const item = this.props.item;
+    const date = this.props.date;
 
     return (
       <div
@@ -139,6 +141,10 @@ export default class PocketListItem extends Component {
                             : <span style={{display: "none"}} />
                           }
                         </div>
+
+                        {/* <div style={{margin: "10px"}}>
+                          {date}
+                        </div> */}
                       </Paper>
                     </div>
     )

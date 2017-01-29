@@ -13,7 +13,8 @@ import Items from './Items'
 import * as GmailAppActions from '../actions/Gmail/AppActions'
 import * as LabelActions from '../actions/Gmail/LabelActions'
 import * as ThreadActions from '../actions/Gmail/ThreadActions'
-import { push } from 'react-router-redux';
+import { push } from 'react-router-redux'
+import API from '../util/Gmail/API'
 import {
   itemsSelector,
   isFetchingSelector,
@@ -29,6 +30,7 @@ import {
   // nextMessageSelector,
   // prevMessageSelector,
   searchQuerySelector,
+  servicesLoadedSelector,
   threadsSelector,
 } from '../selectors'
 
@@ -49,6 +51,7 @@ const PAGE_SIZE = 20;
     lastMessageInEachThread: lastMessageInEachThreadSelector(state),
     hasMoreThreads: hasMoreThreadsSelector(state),
     loadedThreadCount: loadedThreadCountSelector(state),
+    servicesLoaded: servicesLoadedSelector(state)
     // nextMessage: nextMessageSelector(state),
     // prevMessage: prevMessageSelector(state),
   }),
@@ -121,6 +124,11 @@ class App extends Component {
     });
   }
 
+  _onLoginClick = () => {
+    API.login();
+    handleDrawerClose();
+  };
+
   _onRefresh = () => {
     this.props.refresh();
   }
@@ -153,12 +161,31 @@ class App extends Component {
             <br/>
             <br/>
             <br/>
-            <MenuItem onClick={this.handleDrawerClose}>
-              <a href="auth/pocket">
-                Connect to Pocket
-              </a>
-            </MenuItem>
-            <MenuItem onClick={this.handleDrawerClose}>Connect to Gmail</MenuItem>
+            {
+              Object.keys(this.props.servicesLoaded).includes('pocket')
+              ? null
+              : (
+                  <MenuItem onClick={this.handleDrawerClose}>
+                    <a href="auth/pocket">
+                      Connect to Pocket
+                    </a>
+                  </MenuItem>
+                )
+            }
+            {
+              Object.keys(this.props.servicesLoaded).includes('gmail')
+              ? null
+              : (<MenuItem onClick={this._onLoginClick}>Connect to Gmail</MenuItem>)
+            }
+            {
+              Object.keys(this.props.servicesLoaded).length === 2
+              ? (
+                  <div style={{margin: '0 auto', display: 'table'}}>
+                    All possible services connected!
+                  </div>
+                )
+              : null
+            }
           </Drawer>
           <GreetingContainer />
           <Items

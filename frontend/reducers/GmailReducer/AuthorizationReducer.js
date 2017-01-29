@@ -26,6 +26,12 @@ const AuthorizationReducer = (state = defaultState, action) => {
         isAuthorized: false,
         isAuthorizing: false,
       };
+    case ActionType.Gmail.Thread.LOAD_LIST_SUCCESS:
+      return {
+        ...state,
+        isAuthorized: true,
+        isAuthorizing: false,
+      };
   }
   return state;
 };

@@ -12,6 +12,8 @@ export const drawerOpenSelector = state => state.app.drawerOpen;
 export const allItemsSelector = state => state.items.allItems;
 export const servicesLoadedSelector = state => state.items.servicesLoaded;
 
+export const identitiesSelector = state => state.session.currentUser.identities;
+
 const threadListByQuerySelector = state => state.gmail.threadListByQuery;
 const threadsByIDSelector = state => state.gmail.threadsByID;
 export const messagesByIDSelector = state => state.gmail.messagesByID;
@@ -23,6 +25,17 @@ export const labelsSelector = state => state.gmail.labels;
 export const searchQuerySelector = state => state.gmail.app.searchQuery;
 // export const selectedMessageIDSelector = state => state.routing.params.messageID;
 // export const selectedThreadIDSelector = state => state.routing.params.threadID;
+
+export const allAccountsCountSelector = createSelector([
+  identitiesSelector,
+  isAuthorizedSelector
+], (
+  identities,
+  isAuthorized
+) => {
+  let gmail = isAuthorized ? 1 : 0;
+  return identities.length + gmail;
+})
 
 export const threadsSelector = createSelector([
   searchQuerySelector,

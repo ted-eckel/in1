@@ -9,7 +9,11 @@ const mapStateToProps = ({ session }) => ({
 
 const mapDispatchToProps = dispatch => ({
   logout: () => dispatch(logout()),
-  toggleDrawer: () => dispatch(toggleDrawer())
+  toggleDrawer: () => dispatch(toggleDrawer()),
+  logoutRefresh: () => {
+    dispatch(logout());
+    window.setTimeout(window.location.reload, 2000);
+  }
 });
 
 export default connect(

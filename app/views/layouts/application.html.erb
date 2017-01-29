@@ -13,7 +13,9 @@
 <br /> -->
 <%= yield %>
 
-<script src="https://apis.google.com/js/client.js?onload=handleGoogleClientLoad"></script>
+<% if current_user %>
+  <script src="https://apis.google.com/js/client.js?onload=handleGoogleClientLoad"></script>
+<% end %>
 <!-- <script src="https://apis.google.com/js/api.js?onload=handleGoogleClientLoad"> -->
 </script>
 </body>

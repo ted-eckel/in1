@@ -14,32 +14,120 @@
 
 <% if current_user %>
   <script id="bootstrap-current-user" type="text/javascript">
-    window.currentUser = <%= render("api/users/user.json.jbuilder",
-    user: current_user).html_safe %>
+    window.currentUser = <%= render("api/users/user.json.jbuilder", user: current_user).html_safe %>
   </script>
   <main id="root"></main>
   <!-- <script src="https://apis.google.com/js/client.js?onload=handleGoogleClientLoad"></script> -->
 <% else %>
-  <form action="/api/session" method="post" name="login_form" >
-    <%= auth_token_input %>
-    <label for="username">Username</label>
-    <input type="text" name="user[username]" value="">
-    <br>
-    <label for="password">Password</label>
-    <input type="password" name="user[password]" value="">
-    <br>
-    <button type="submit" value="Sign in">Sign in</button>
-  </form>
-  <br/>
-  <br/>
-  <form action="/api/user" method="post" name="signup_form" >
-    <%= auth_token_input %>
-    <label for="username">Username</label>
-    <input type="text" name="user[username]" value="">
-    <br>
-    <label for="password">Password</label>
-    <input type="password" name="user[password]" value="">
-    <br>
-    <button type="submit" value="Sign in">Sign Up</button>
-  </form>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-light_blue.min.css" />
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
+    <header class="mdl-layout__header">
+      <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">in1box</span>
+        <div class="mdl-layout-spacer"></div>
+      </div>
+      <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+        <a href="#fixed-tab-1" class="mdl-layout__tab is-active">Sign Up</a>
+        <a href="#fixed-tab-2" class="mdl-layout__tab">Login</a>
+      </div>
+    </header>
+    <main class="mdl-layout__content">
+      <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+        <i
+          style="margin:38px auto;display:table;font-weight:400;font-size:79px;color:#40555f;cursor:default"
+          class="material-icons"
+          >
+          inbox
+        </i>
+        <div class="titleIntro">
+          in1box is a modern inbox, showing items from multiple services in one place
+        </div>
+        <div class="minimal-wrapper">
+          <div class="minimal-body">
+            <div class="MinimalLoginForm">
+              <div class="signin">
+                <form action="/api/user" method="post" name="signup_form" class="minimal-form" >
+                  <%= auth_token_input %>
+                  <div class="success-notification-light"></div>
+                  <ol>
+                    <li class="Row">
+                      <div class="mdl-textfield mdl-js-textfield" id="row-form">
+                        <input class="mdl-textfield__input" type="text" name="user[username]" value="">
+                        <label class="mdl-textfield__label" for="username">Username</label>
+                      </div>
+                    </li>
+                    <li class="Row">
+                      <div class="mdl-textfield mdl-js-textfield" id="row-form">
+                        <input class="mdl-textfield__input" type="password" name="user[password]" value="">
+                        <label class="mdl-textfield__label" for="password">Password</label>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <button type="submit" value="Sign Up"
+                          class="mdl-button mdl-js-button mdl-button--raised
+                          mdl-js-ripple-effect mdl-button--primary mdl-color-text--white
+                          Btn Btn_emph Btn_super">
+                          Create Account
+                        </button>
+                      </div>
+                    </li>
+                  </ol>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="mdl-layout__tab-panel" id="fixed-tab-2">
+        <i
+          style="margin:38px auto;display:table;font-weight:400;font-size:79px;color:#40555f;cursor:default"
+          class="material-icons"
+          >
+          inbox
+        </i>
+        <div class="titleIntro">
+          in1box is a modern inbox, showing items from multiple services in one place
+        </div>
+        <div class="minimal-wrapper">
+          <div class="minimal-body">
+            <div class="MinimalLoginForm">
+              <div class="signin">
+                <form action="/api/session" method="post" name="login_form" class="minimal-form" >
+                  <%= auth_token_input %>
+                  <div class="success-notification-light"></div>
+                  <ol>
+                    <li class="Row">
+                      <div class="mdl-textfield mdl-js-textfield" id="row-form">
+                        <input class="mdl-textfield__input" type="text" name="user[username]" value="">
+                        <label class="mdl-textfield__label" for="username">Username</label>
+                      </div>
+                    </li>
+                    <li class="Row">
+                      <div class="mdl-textfield mdl-js-textfield" id="row-form">
+                        <input class="mdl-textfield__input" type="password" name="user[password]" value="">
+                        <label class="mdl-textfield__label" for="password">Password</label>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <button type="submit" value="Login"
+                          class="mdl-button mdl-js-button mdl-button--raised
+                          mdl-js-ripple-effect mdl-button--primary mdl-color-text--white
+                          Btn Btn_emph Btn_super">
+                          Login
+                        </button>
+                      </div>
+                    </li>
+                  </ol>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 <% end %>

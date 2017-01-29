@@ -208,3 +208,55 @@
 .appbar-button:hover {
   opacity: .87;
 }
+
+.minimal-wrapper {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 10px;
+  display: block;
+}
+
+
+ .minimal-body {
+   background: #fff;
+   max-width: 384px;
+   margin: 50px auto 28px;
+   border: 1px solid #dedede;
+   text-align: left;
+   display: block;
+ }
+
+ .MinimalLoginForm {
+   display: block;
+ }
+
+ .minimal-form {
+   margin: 32px;
+ }
+
+ .Row {
+   margin-bottom: 2rem;
+ }
+
+ .Row:before, .Row:after {
+   display: table;
+   content: "";
+ }
+
+ .Row:after {
+   clear: both;
+ }
+
+ .Btn {
+   width: 100%;
+ }
+
+ .titleIntro {
+   margin: 38px auto;
+   display: table;
+   font-family: Roboto, sans-serif;
+   font-weight: 400;
+   font-size: 20px;
+   color: #40555f;
+ }

@@ -50,7 +50,7 @@ const logged = (props) => (
 
 logged.muiName = 'IconMenu'
 
-const /*personal*/Greeting = ({/*currentUser,*/ logout, toggleDrawer}) => (
+const /*personal*/Greeting = ({/*currentUser,*/ logout, logoutRefresh, toggleDrawer}) => (
   <AppBar
     title="in1box"
     style={{
@@ -78,11 +78,13 @@ const /*personal*/Greeting = ({/*currentUser,*/ logout, toggleDrawer}) => (
           alt="Grid View"
           data-tip="Grid View" />
         <ReactTooltip place="bottom" type="dark" effect="solid" />
-        <FlatButton
-          style={{bottom: "10px", color: "#fff"}}
-          label="Logout"
-          onClick={logout}
-        />
+        <a href="/">
+          <FlatButton
+            style={{bottom: "10px", color: "#fff"}}
+            label="Logout"
+            onClick={logout}
+          />
+        </a>
       </div>
     }
   />

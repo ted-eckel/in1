@@ -20,7 +20,8 @@ import {
   isLoadingSelector,
   servicesLoadedSelector,
   getAllItemsSelector,
-  getAllItemsSelectorTwo
+  getAllItemsSelectorTwo,
+  allAccountsCountSelector
 } from '../selectors';
 
 @connect(
@@ -30,7 +31,8 @@ import {
     isFetching: isFetchingSelector(state),
     isLoading: isLoadingSelector(state),
     getAllItems: getAllItemsSelector(state),
-    getAllItemsTwo: getAllItemsSelectorTwo(state)
+    getAllItemsTwo: getAllItemsSelectorTwo(state),
+    allAccountsCount: allAccountsCountSelector(state)
   }),
   dispatch => bindActionCreators({
     fetchItems: PocketActions.fetchItems,
@@ -65,7 +67,7 @@ export default class Items extends Component {
         fetchItems(),
         // loadThreadList()
         onRequestMoreItems()
-      ]).then(console.log("RSVP handleLoadMore()"))
+      ])
     }
   }
 
@@ -74,6 +76,7 @@ export default class Items extends Component {
     const servicesLoaded = this.props.servicesLoaded;
     const requestMoreItems = this.props.onRequestMoreItems;
     const drawerOpen = this.props.drawerOpen;
+    const allAccountsCount = this.props.allAccountsCount;
 
     const drawerOpenStyles = {maxWidth: "1200px", margin: "20px 0 0 276px"}
     const drawerClosedStyles = {maxWidth: "1525px", margin: "20px auto"}
@@ -86,7 +89,20 @@ export default class Items extends Component {
       <CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />
     );
 
-    if (Object.keys(servicesLoaded).length < 2) {
+    if (allAccountsCount === 0) {
+      return(
+        <div style={{
+          display: 'table',
+          margin: '45px auto',
+          fontFamily: 'Roboto, sans-serif',
+          fontWeight: '400',
+          fontSize: '20px',
+          color: '#40555f'
+        }}>
+          Click a link in the sidebar to authorize a service
+        </div>
+      )
+    } else if (Object.keys(servicesLoaded).length < allAccountsCount) {
       return (
         <div style={{marginTop: "80px"}}>
           {elementInfiniteLoad}

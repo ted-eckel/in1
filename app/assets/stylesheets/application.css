@@ -70,7 +70,8 @@
  }
 
  body {
-   background: #f2f2f2
+   background: #f2f2f2;
+   /*overflow: visible !important;*/
  }
 
  html::-webkit-scrollbar {
@@ -188,11 +189,11 @@
 }
 
 .item-url:hover {
-  color: #50bcb6;
+  color: #3FC3FF;
 }
 
 .pocket-link:hover .pocket-title {
-  color: #50bcb6;
+  color: #3FC3FF;
 }
 
 .group:after {

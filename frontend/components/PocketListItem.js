@@ -28,13 +28,13 @@ export default class PocketListItem extends Component {
     return (
       <div
         style={{
-          margin: "15px"
+          margin: "8px"
         }}
         className="paper"
         >
           <Paper
             style={{
-              width: "275px",
+              width: "240px",
               // height: "225px",
               padding: "10px 0"
             }}
@@ -60,7 +60,7 @@ export default class PocketListItem extends Component {
                       }
                     </span>
                   </div>
-                  <div style={{maxHeight: "350px", overflow: "hidden", textOverflow: "ellipsis"}}>
+                  <div style={{maxHeight: "270px", overflow: "hidden", textOverflow: "ellipsis"}}>
                     {
                       (item.image)
                       ? (
@@ -72,7 +72,7 @@ export default class PocketListItem extends Component {
                           >
                             <img
                               style={{
-                                maxWidth: "275px",
+                                maxWidth: "240px",
                                 fontSize: "12px",
                                 color: "darkgray"
                               }}
@@ -99,7 +99,7 @@ export default class PocketListItem extends Component {
                         }
                       </div>
                     </a>
-                    <div style={{margin: "0 0 7px 10px"}}>
+                    <div style={{margin: "10px 0 7px 10px"}}>
                       <a
                         href={item.given_url}
                         style={{

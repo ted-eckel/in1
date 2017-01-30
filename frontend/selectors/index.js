@@ -7,6 +7,8 @@ import getUnsubscribeUrl from '../util/Gmail/getUnsubscribeUrl'
 export const itemsSelector = state => state.pocket.items;
 export const isFetchingSelector = state => state.pocket.isFetching;
 export const errorSelector = state => state.pocket.error;
+export const endOfListSelector = state => state.pocket.endOfList;
+
 export const drawerOpenSelector = state => state.app.drawerOpen;
 
 export const allItemsSelector = state => state.items.allItems;

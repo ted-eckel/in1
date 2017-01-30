@@ -82,7 +82,8 @@ const ActionType = {
     Items: {
       LOAD_REQUEST: '',
       LOAD_SUCCESS: '',
-      LOAD_FAILURE: ''
+      LOAD_FAILURE: '',
+      END_OF_LIST: '',
     }
   }
 };

@@ -39,13 +39,13 @@ export default class GmailListItem extends Component {
     return (
       <div
         style={{
-          margin: "15px"
+          margin: "8px"
         }}
         className="paper"
       >
         <Paper
           style={{
-            width: "275px",
+            width: "240px",
             padding: "10px",
             overflow: "hidden",
             textOverflow: "ellipsis"

@@ -55,7 +55,9 @@ const /*personal*/Greeting = ({/*currentUser,*/ logout, logoutRefresh, toggleDra
     title="in1box"
     style={{
       backgroundColor: "#546E7A",
-      zIndex: 2
+      zIndex: 2,
+      position: "fixed",
+      top: 0
     }}
     iconElementLeft={
       <IconButton

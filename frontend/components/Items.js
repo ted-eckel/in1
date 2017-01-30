@@ -21,7 +21,8 @@ import {
   servicesLoadedSelector,
   getAllItemsSelector,
   getAllItemsSelectorTwo,
-  allAccountsCountSelector
+  allAccountsCountSelector,
+  endOfListSelector
 } from '../selectors';
 
 @connect(
@@ -32,7 +33,8 @@ import {
     isLoading: isLoadingSelector(state),
     getAllItems: getAllItemsSelector(state),
     getAllItemsTwo: getAllItemsSelectorTwo(state),
-    allAccountsCount: allAccountsCountSelector(state)
+    allAccountsCount: allAccountsCountSelector(state),
+    endOfList: endOfListSelector(state),
   }),
   dispatch => bindActionCreators({
     fetchItems: PocketActions.fetchItems,
@@ -61,14 +63,21 @@ export default class Items extends Component {
   }
 
   handleLoadMore = () => {
-    const { fetchItems, isFetching, isLoading, loadThreadList, onRequestMoreItems } = this.props;
-    if (!isFetching /*&& !isLoading*/){
-      RSVP.all([
-        fetchItems(),
-        // loadThreadList()
-        onRequestMoreItems()
-      ])
+    const { fetchItems, isFetching, isLoading, loadThreadList, onRequestMoreItems, servicesLoaded, endOfList } = this.props;
+    const pocketGet = () => {
+      if (!isFetching && Object.keys(servicesLoaded).includes('pocket') && !endOfList){
+        fetchItems()
+      }
     }
+    const gmailGet = () => {
+      if (!isLoading && Object.keys(servicesLoaded).includes('gmail')) {
+        onRequestMoreItems()
+      }
+    }
+    RSVP.all([
+      pocketGet(),
+      gmailGet()
+    ])
   }
 
   render(): ?ReactComponent {
@@ -77,16 +86,37 @@ export default class Items extends Component {
     const requestMoreItems = this.props.onRequestMoreItems;
     const drawerOpen = this.props.drawerOpen;
     const allAccountsCount = this.props.allAccountsCount;
+    const endOfList = this.props.endOfList;
 
-    const drawerOpenStyles = {maxWidth: "1200px", margin: "20px 0 0 276px"}
-    const drawerClosedStyles = {maxWidth: "1525px", margin: "20px auto"}
+    const drawerOpenStyles = {
+      marginLeft: "266px",
+      transition: "margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms",
+    }
+
+    const drawerClosedStyles = {
+      marginLeft: "0",
+      transition: "margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms",
+    }
 
     const styles = {
-      root: {maxWidth: "1525px", margin: "80px auto"}
+      root: {maxWidth: "1296px", margin: "80px auto"}
     };
 
     const elementInfiniteLoad = (
-      <CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />
+      endOfList
+      ? (
+          <div style={{
+            display: 'table',
+            margin: '45px auto',
+            fontFamily: 'Roboto, sans-serif',
+            fontWeight: '400',
+            fontSize: '18px',
+            color: '#40555f'
+          }}>
+            End of your inbox!
+          </div>
+        )
+      : (<CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />)
     );
 
     if (allAccountsCount === 0) {
@@ -143,19 +173,21 @@ export default class Items extends Component {
 
       return (
         <div style={drawerOpen ? drawerOpenStyles : drawerClosedStyles}>
-          <InfiniteScroll
-            ref='masonryContainer'
-            loadMore={this.handleLoadMore /*requestMoreItems*/}
-            loader={elementInfiniteLoad}
-            hasMore
-            threshold={200}
-            >
-              <Masonry>
-                { childElements }
-              </Masonry>
-            </InfiniteScroll>
+          <div style={{maxWidth: "1296px", margin: "75px auto"}}>
+            <InfiniteScroll
+              ref='masonryContainer'
+              loadMore={this.handleLoadMore /*requestMoreItems*/}
+              loader={elementInfiniteLoad}
+              hasMore
+              threshold={200}
+              >
+                <Masonry>
+                  { childElements }
+                </Masonry>
+              </InfiniteScroll>
           </div>
-        );
+        </div>
+      );
     }
   }
 }

@@ -72,9 +72,19 @@ const errorReducer = (state = null, action) => {
   }
 }
 
+const endOfListReducer = (state = false, action) => {
+  switch (action.type) {
+    case ActionType.Pocket.Items.END_OF_LIST:
+      return true
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   items: itemsReducer,
   params: paramsReducer,
   isFetching: isFetchingReducer,
-  error: errorReducer
+  error: errorReducer,
+  endOfList: endOfListReducer
 })

@@ -149,44 +149,47 @@ class App extends Component {
     return (
       <MuiThemeProvider style={{width: "100%", height: "100%"}}>
         <div>
-          <Drawer
-            open={this.props.drawerOpen}
-            docked={false}
-            onRequestChange={this.handleDrawerClose}
-            containerStyle={{zIndex: 1}}
-            overlayStyle={{display: "none"}}
-          >
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            {
-              Object.keys(this.props.servicesLoaded).includes('pocket')
-              ? null
-              : (
-                  <MenuItem onClick={this.handleDrawerClose}>
-                    <a href="auth/pocket">
+          <div>
+            <Drawer
+              open={this.props.drawerOpen}
+              docked={true}
+              onRequestChange={this.handleDrawerClose}
+              containerStyle={{zIndex: 1, backgroundColor: "transparent", boxShadow: "none"}}
+              overlayStyle={{display: "none"}}
+              style={{}}
+              >
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                {
+                  Object.keys(this.props.servicesLoaded).includes('pocket')
+                  ? null
+                  : (
+                    <MenuItem onClick={this.handleDrawerClose}>
+                      <a href="auth/pocket">
                       Connect to Pocket
                     </a>
                   </MenuItem>
                 )
-            }
-            {
-              Object.keys(this.props.servicesLoaded).includes('gmail')
-              ? null
-              : (<MenuItem onClick={this._onLoginClick}>Connect to Gmail</MenuItem>)
-            }
-            {
-              Object.keys(this.props.servicesLoaded).length === 2
-              ? (
+              }
+              {
+                Object.keys(this.props.servicesLoaded).includes('gmail')
+                ? null
+                : (<MenuItem onClick={this._onLoginClick}>Connect to Gmail</MenuItem>)
+              }
+              {
+                Object.keys(this.props.servicesLoaded).length === 2
+                ? (
                   <div style={{margin: '0 auto', display: 'table'}}>
                     All possible services connected!
                   </div>
                 )
-              : null
-            }
-          </Drawer>
+                : null
+              }
+            </Drawer>
+          </div>
           <GreetingContainer />
           <Items
             drawerOpen={this.props.drawerOpen}

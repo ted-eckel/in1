@@ -25,11 +25,31 @@ export const receiveError = error => ({
   error
 })
 
+// export const fetchItems = (newParams = {}) => (dispatch, getState) => {
+//   dispatch(requestItems(newParams));
+//   let params = getState().pocket.params;
+//   return APIUtil.pocketRetrieve(params)
+//   .then(items => {
+//     console.log(items);
+//     if (items.status !== 2) {
+//       dispatch(receiveItems(items))
+//     } else {
+//       dispatch({type: ActionType.Pocket.Items.END_OF_LIST})
+//     }
+//   });
+// }
+
 export const fetchItems = (newParams = {}) => (dispatch, getState) => {
   dispatch(requestItems(newParams));
   let params = getState().pocket.params;
   return APIUtil.pocketRetrieve(params)
-  .then(items => dispatch(receiveItems(items)));
+  .then(items => {
+    if (items.status !== 2) {
+      return dispatch(receiveItems(items));
+    } else {
+      return dispatch({type: ActionType.Pocket.Items.END_OF_LIST})
+    }
+  });
 }
 
 // const shouldFetchItems = state => {

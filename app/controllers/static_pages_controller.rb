@@ -1,4 +1,5 @@
 class StaticPagesController < ApplicationController
+
   def root
     # find_or_create_identity
   end

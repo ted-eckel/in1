@@ -5,7 +5,7 @@ import * as ThreadAPI from '../../util/Gmail/ThreadAPI';
 
 export function load(threadID) {
   return (dispatch, getState) => {
-    const {threadsByID} = getState();
+    const {threadsByID} = getState().gmail;
     if (threadsByID.hasOwnProperty(threadID)) {
       // Already loading
       return;

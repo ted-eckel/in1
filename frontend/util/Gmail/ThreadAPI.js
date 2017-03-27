@@ -1,7 +1,7 @@
 /** @flow */
 
 import ActionType from '../../actions/ActionType'
-import API from './API'
+import API from '../API'
 import map from 'lodash/map'
 import MessageTranslator from './MessageTranslator'
 
@@ -21,7 +21,7 @@ export function getByID(
   });
 }
 
-declare class ListResult {
+declare class ThreadListResult {
   nextPageToken: ?string;
   resultSizeEstimate: number;
   items: Array<Object>;
@@ -29,7 +29,7 @@ declare class ListResult {
 
 export function list(
   options: {maxResults: number; query: ?string; pageToken: ?string}
-): Promise<ListResult> {
+): Promise<ThreadListResult> {
   return API.wrap(() => {
     return API.execute(window.gapi.client.gmail.users.threads.list({
       userId: 'me',

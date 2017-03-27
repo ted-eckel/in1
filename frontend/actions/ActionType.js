@@ -15,6 +15,40 @@ const ActionType = {
     },
   },
 
+  Drive: {
+    App: {
+      SEARCH: '',
+    },
+
+    Authorization: {
+      REQUEST: '',
+      SUCCESS: '',
+      FAILURE: '',
+    },
+
+    File: {
+      ARCHIVE_REQUEST: '',
+      ARCHIVE_SUCCESS: '',
+      ARCHIVE_FAILURE: '',
+      
+      LOAD_REQUEST: '',
+      LOAD_SUCCESS: '',
+      LOAD_FAILURE: '',
+
+      LOAD_LIST_REQUEST: '',
+      LOAD_LIST_SUCCESS: '',
+      LOAD_LIST_FAILURE: '',
+
+      STAR_REQUEST: '',
+      STAR_SUCCESS: '',
+      STAR_FAILURE: '',
+
+      UNSTAR_REQUEST: '',
+      UNSTAR_SUCCESS: '',
+      UNSTAR_FAILURE: '',
+    },
+  },
+
   Gmail: {
     App: {
       SEARCH: '',

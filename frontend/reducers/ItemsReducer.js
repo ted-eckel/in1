@@ -5,49 +5,70 @@ import uniqBy from 'lodash/uniqBy'
 import { combineReducers } from 'redux'
 import ActionType from '../actions/ActionType'
 
-// const allItemsReducer = (state = [], action) => {
+// const servicesItemsReducer = (state = {}, action) => {
 //   switch (action.type) {
 //     case ActionType.Pocket.Items.LOAD_SUCCESS:
-//       let oldStatePocket = union([], state);
-//       let newStatePocket = action.items;
-//
-//       let nextStatePocket = uniq(union(oldStatePocket, newStatePocket))
-//       .sort((a, b) => b.date - a.date)
-//
-//       return nextStatePocket;
-//     case ActionType.Gmail.Thread.LOAD_LIST_SUCCESS:
-//       let oldStateGmail = union([], state);
-//       // let newStateGmail = uniqBy(action.messages, 'threadID');
-//       let newStateGmail = []
-//       let threadIDs = []
-//       action.messages.sort((a, b) => b.date - a.date).forEach(message => {
-//         if (!threadIDs.includes(message.threadID)){
-//           threadIDs.push(message.threadID);
-//           newStateGmail.push(message);
-//         }
-//       })
-//
-//       let nextStateGmail = union(oldStateGmail, newStateGmail)
-//       .sort((a, b) => b.date - a.date)
-//
-//       return nextStateGmail;
+//       return {
+//         ...state,
+//         pocket: true
+//       }
+//     case ActionType.Gmail.Authorization.SUCCESS:
+//       return {
+//         ...state,
+//         gmail: true
+//       }
+//     case ActionType.Gmail.Authorization.FAILURE:
+//       return {
+//         ...state,
+//         gmail: false
+//       }
+//     case ActionType.Drive.Authorization.SUCCESS:
+//       return {
+//         ...state,
+//         drive: true
+//       }
+//     case ActionType.Drive.Authorization.FAILURE:
+//       return {
+//         ...state,
+//         drive: false
+//       }
 //     default:
 //       return state;
 //   }
 // }
 
-const servicesItemsReducer = (state = {}, action) => {
+const servicesItemsReducer = (state = [], action) => {
   switch (action.type) {
     case ActionType.Pocket.Items.LOAD_SUCCESS:
-      return {
-        ...state,
-        pocket: true
-      }
+      let oldPocketState = union([], state);
+      let newPocketState = ['pocket'];
+      let nextPocketState = union(oldPocketState, newPocketState);
+      return nextPocketState;
+    case ActionType.Gmail.Authorization.SUCCESS:
+      let oldGmailSuccessState = union([], state);
+      let newGmailSuccessState = ['gmail'];
+      let nextGmailSuccessState = union(oldGmailSuccessState, newGmailSuccessState);
+      return nextGmailSuccessState;
     case ActionType.Gmail.Thread.LOAD_LIST_SUCCESS:
-      return {
-        ...state,
-        gmail: true
-      }
+      // let oldGmailSuccessState = union([], state);
+      // let newGmailSuccessState = ['gmail'];
+      // let nextGmailSuccessState = uniq(union(oldGmailSuccessState, newGmailSuccessState));
+      // return nextGmailSuccessState;
+    case ActionType.Gmail.Authorization.FAILURE:
+      let oldGmailFailureState = union([], state);
+      let newGmailFailureState = ['gmail'];
+      let nextGmailFailureState = union(oldGmailFailureState, newGmailFailureState);
+      return nextGmailFailureState;
+    case ActionType.Drive.Authorization.SUCCESS:
+      let oldDriveSuccessState = union([], state);
+      let newDriveSuccessState = ['drive'];
+      let nextDriveSuccessState = union(oldDriveSuccessState, newDriveSuccessState);
+      return nextDriveSuccessState;
+    case ActionType.Drive.Authorization.FAILURE:
+      let oldDriveFailureState = union([], state);
+      let newDriveFailureState = ['drive'];
+      let nextDriveFailureState = union(oldDriveFailureState, newDriveFailureState);
+      return nextDriveFailureState;
     default:
       return state;
   }

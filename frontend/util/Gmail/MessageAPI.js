@@ -1,7 +1,7 @@
 /** @flow */
 
 const ActionType = require('./ActionType');
-const API = require('./API');
+const API = require('../API');
 const MessageTranslator = require('./MessageTranslator');
 const RSVP = require('rsvp');
 const _ = require('lodash');

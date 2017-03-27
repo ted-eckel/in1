@@ -1,7 +1,7 @@
 /** @flow */
 /* global gapi */
 
-const API = require('./API');
+const API = require('../API');
 
 function list() {
   return API.wrap(() =>

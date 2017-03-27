@@ -25,20 +25,6 @@ export const receiveError = error => ({
   error
 })
 
-// export const fetchItems = (newParams = {}) => (dispatch, getState) => {
-//   dispatch(requestItems(newParams));
-//   let params = getState().pocket.params;
-//   return APIUtil.pocketRetrieve(params)
-//   .then(items => {
-//     console.log(items);
-//     if (items.status !== 2) {
-//       dispatch(receiveItems(items))
-//     } else {
-//       dispatch({type: ActionType.Pocket.Items.END_OF_LIST})
-//     }
-//   });
-// }
-
 export const fetchItems = (newParams = {}) => (dispatch, getState) => {
   dispatch(requestItems(newParams));
   let params = getState().pocket.params;
@@ -51,28 +37,3 @@ export const fetchItems = (newParams = {}) => (dispatch, getState) => {
     }
   });
 }
-
-// const shouldFetchItems = state => {
-//   const pocket = state.pocket
-//   if (pocket.items.length === 0) {
-//     return true
-//   }
-//   if (pocket.isFetching) {
-//     return false
-//   }
-//   return false
-// }
-
-// export const fetchItemsIfNeeded = state => (dispatch, getState) => {
-//   if (shouldFetchItems(getState())) {
-//     return dispatch(fetchItems(getState()))
-//   }
-// }
-
-// const fetchSuccess = items => dispatch => dispatch(receiveItems(items));
-// const fetchError = error => dispatch => dispatch(receiveError(error));
-//
-// export const fetchItems = params => dispatch => {
-//   dispatch(requestItems(params));
-//   return APIUtil.pocketRetrieve(params, fetchSuccess, fetchError);
-// }

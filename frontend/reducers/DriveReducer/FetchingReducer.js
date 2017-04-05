@@ -8,9 +8,9 @@ module.exports = (state = false, action) => {
     //   return true;
     // case ActionType.Drive.Authorization.SUCCESS:
     //   return false;
-    case ActionType.Drive.File.LOAD_LIST_REQUEST:
+    case ActionType.Drive.File.FETCH_LIST_REQUEST:
       return true;
-    case ActionType.Drive.File.LOAD_LIST_SUCCESS:
+    case ActionType.Drive.File.FETCH_LIST_SUCCESS:
       return false;
   }
   return state;

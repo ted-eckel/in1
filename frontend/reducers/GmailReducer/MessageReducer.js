@@ -5,8 +5,8 @@ import filter from 'lodash/filter'
 
 module.exports = (messagesByID = {}, action) => {
   switch (action.type) {
-    case ActionType.Gmail.Thread.LOAD_SUCCESS:
-    case ActionType.Gmail.Thread.LOAD_LIST_SUCCESS:
+    case ActionType.Gmail.Thread.FETCH_SUCCESS:
+    case ActionType.Gmail.Thread.FETCH_LIST_SUCCESS:
       return action.messages.reduce(
         (newMessagesByID, message) => {
           newMessagesByID[message.id] = message

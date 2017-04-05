@@ -8,8 +8,4 @@ export const pocketRetrieve = options => {
 		url: '/api/pocket_retrieve',
 		data: options
 	});
-	// return API.wrap(() => {
-	// 	return API.executeTwo(
-	// 	)
-	// })
 };

@@ -3,7 +3,7 @@ import ActionType from '../../actions/ActionType'
 module.exports = (threadListByQuery = {}, action) => {
   const threadList = threadListByQuery[action.query];
   switch (action.type) {
-    case ActionType.Gmail.Thread.LOAD_LIST_REQUEST:
+    case ActionType.Gmail.Thread.FETCH_LIST_REQUEST:
       if (threadList) {
         return {
           ...threadListByQuery,
@@ -24,7 +24,7 @@ module.exports = (threadListByQuery = {}, action) => {
         },
       };
 
-    case ActionType.Gmail.Thread.LOAD_LIST_SUCCESS:
+    case ActionType.Gmail.Thread.FETCH_LIST_SUCCESS:
       const newThreadIDs = action.threads.map(thread => thread.id);
       return {
         ...threadListByQuery,

@@ -2,52 +2,83 @@ import { createSelector } from 'reselect'
 import last from 'lodash/last'
 import slice from 'lodash/slice'
 import union from 'lodash/union'
+import concat from 'lodash/concat'
 
-import getUnsubscribeUrl from '../util/Gmail/getUnsubscribeUrl'
 
 export const itemsSelector = state => state.pocket.items;
-export const isFetchingSelector = state => state.pocket.isFetching;
+export const pocketIsFetchingSelector = state => state.pocket.isFetching;
 export const errorSelector = state => state.pocket.error;
 export const endOfListSelector = state => state.pocket.endOfList;
 
 export const drawerOpenSelector = state => state.app.drawerOpen;
-
-// export const allItemsSelector = state => state.items.allItems;
-export const servicesLoadedSelector = state => state.items.servicesLoaded;
 
 export const identitiesSelector = state => state.session.currentUser.identities;
 
 const threadListByQuerySelector = state => state.gmail.threadListByQuery;
 const threadsByIDSelector = state => state.gmail.threadsByID;
 export const messagesByIDSelector = state => state.gmail.messagesByID;
-
 export const isAuthorizedSelector = state => state.gmail.authorization.isAuthorized;
 export const isAuthorizingSelector = state => state.gmail.authorization.isAuthorizing;
-export const isLoadingSelector = state => state.isLoading;
 export const labelsSelector = state => state.gmail.labels;
 export const searchQuerySelector = state => state.gmail.app.searchQuery;
-// export const selectedMessageIDSelector = state => state.routing.params.messageID;
-// export const selectedThreadIDSelector = state => state.routing.params.threadID;
+
 export const driveIsAuthorizedSelector = state => state.drive.authorization.isAuthorized;
 export const driveIsAuthorizingSelector = state => state.drive.authorization.isAuthorizing;
 
-export const gmailIsLoadingSelector = state => state.gmail.isLoading;
-export const driveIsLoadingSelector = state => state.drive.isLoading;
+export const gmailIsFetchingSelector = state => state.gmail.isFetching;
+export const driveIsFetchingSelector = state => state.drive.isFetching;
 
 export const drivePageTokenSelector = state => state.drive.nextPageToken;
-export const driveFilesSelector = state => state.drive.files;
+export const driveFilesSelector = state => state.drive.fileList;
 
-// export const isLoadingCombinedSelector = createSelector([
-//   isFetchingSelector,
-//   gmailIsLoadingSelector,
-//   driveIsLoadingSelector
-// ], (
-//   isFetching,
-//   gmailIsLoading,
-//   driveIsLoading
-// ) => {
-//   return (!isFetching && !gmailIsLoading && !driveIsLoading)
-// })
+export const pocketAuthSelector = state => state.pocket.authorization.isAuthorized;
+export const servicesSelector = state => state.services;
+
+export const isFetchingSelector = createSelector([
+  pocketIsFetchingSelector,
+  driveIsFetchingSelector,
+  gmailIsFetchingSelector
+], (
+  pocketIsFetching,
+  driveIsFetching,
+  gmailIsFetching
+) => {
+  let anyAreFetching = false;
+  if (
+    pocketIsFetching ||
+    driveIsFetching ||
+    gmailIsFetching
+  ) {anyAreFetching = true};
+  return {
+    any: anyAreFetching,
+    pocket: pocketIsFetching,
+    drive: driveIsFetching,
+    gmail: gmailIsFetching
+  }
+})
+
+export const allAuthSelector = createSelector([
+  pocketAuthSelector,
+  isAuthorizedSelector,
+  driveIsAuthorizedSelector
+], (
+  pocketAuth,
+  gmailAuth,
+  driveAuth
+) => {
+  let allAuth = null;
+  if (
+    pocketAuth !== null &&
+    gmailAuth !== null &&
+    driveAuth !== null
+  ) { allAuth = true };
+  return {
+    all: allAuth,
+    pocket: pocketAuth,
+    gmail: gmailAuth,
+    drive: driveAuth
+  }
+})
 
 export const allAccountsCountSelector = createSelector([
   identitiesSelector,
@@ -153,12 +184,14 @@ export const loadedThreadCountSelector = createSelector([
 export const getAllItemsSelector = createSelector([
   lastMessageInEachThreadSelector,
   itemsSelector,
-  driveFilesSelector
+  driveFilesSelector,
+  isFetchingSelector
 ], (
     lastMessageInEachThread,
     items,
-    driveFiles
-  ) => union(items, lastMessageInEachThread, driveFilesSelector).sort((a, b) => b.date - a.date) /*items.concat(lastMessageInEachThread).sort((a, b) => b.date - a.date)*/
+    driveFiles,
+    isFetching
+  ) => concat(items, lastMessageInEachThread, driveFiles).sort((a, b) => b.date - a.date) /*items.concat(lastMessageInEachThread).sort((a, b) => b.date - a.date)*/
 );
 
 export const getAllItemsSelectorTwo = createSelector(

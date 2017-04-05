@@ -12,20 +12,20 @@ export function load(threadID) {
     }
 
     dispatch({
-      type: ActionType.Gmail.Thread.LOAD_REQUEST,
+      type: ActionType.Gmail.Thread.FETCH_REQUEST,
       threadID,
     });
 
     ThreadAPI.getByID({id: threadID}).then(({thread, messages}) => {
       dispatch({
-        type: ActionType.Gmail.Thread.LOAD_SUCCESS,
+        type: ActionType.Gmail.Thread.FETCH_SUCCESS,
         threadID,
         thread,
         messages,
       });
     }).catch(error => {
       dispatch({
-        type: ActionType.Gmail.Thread.LOAD_FAILURE,
+        type: ActionType.Gmail.Thread.FETCH_FAILURE,
         threadID,
         error,
       });
@@ -33,50 +33,85 @@ export function load(threadID) {
   };
 }
 
-export function loadList(query = '', requestedResultCount = 20) {
-  return (dispatch, getState) => {
-    const {threadListByQuery} = getState().gmail;
-    const threadList = threadListByQuery[query];
+export const loadList = (query = '', requestedResultCount = 20) => (dispatch, getState) => {
+  const {threadListByQuery} = getState().gmail;
+  const threadList = threadListByQuery[query];
 
-    let pageToken = null;
-    let resultsStillNeeded = requestedResultCount;
-    if (threadList) {
-      resultsStillNeeded = requestedResultCount - threadList.threadIDs.length;
-      pageToken = threadList.nextPageToken;
-
-      if (resultsStillNeeded <= 0 || !pageToken || threadList.isFetching) {
-        return;
-      }
+  let pageToken = null;
+  if (threadList) {
+    pageToken = threadList.nextPageToken;
+    if (!pageToken) {
+      return;
     }
+  }
 
+  dispatch({
+    type: ActionType.Gmail.Thread.FETCH_LIST_REQUEST,
+    query,
+    requestedResultCount,
+  });
+
+  ThreadAPI.list({
+    query,
+    pageToken,
+    maxResults: requestedResultCount,
+  // }).then(listResult => {
+  // window.gapi.client.gmail.users.threads.list({
+  //   userId: 'me',
+  //   maxResults: requestedResultCount,
+  //   labelIds: 'INBOX',
+  //   q: query || null,
+  //   pageToken: pageToken || null,
+  // }).then(listResponse => {
+  //   const threadIDs = (listResponse.result.threads || []).map(m => m.id);
+  //
+  //   if (!threadIDs.length) {
+  //     return {
+  //       nextPageToken: null,
+  //       resultSizeEstimate: 0,
+  //       threads: [],
+  //       messages: [],
+  //     };
+  //   }
+  //
+  //   const batch = window.gapi.client.newBatch();
+  //
+  //   const threadRequest = id => {
+  //     return window.gapi.client.gmail.users.threads.get({userId: 'me', id})
+  //   }
+  //
+  //   threadIDs.forEach(id => {
+  //     batch.add(threadRequest(id), {'id': id})
+  //   })
+  //
+  //   return batch.then(batchResponse => {
+  //     const results = threadIDs.map(threadID => batchResponse.result[threadID].result);
+  //     const {threads, messages} = ThreadAPI.processThreadResults(results);
+  //
+  //     return {
+  //       nextPageToken: listResponse.result.nextPageToken,
+  //       resultSizeEstimate: listResponse.result.resultSizeEstimate,
+  //       threads,
+  //       messages,
+  //     }
+  //   })
+  }).then(listResult => {
     dispatch({
-      type: ActionType.Gmail.Thread.LOAD_LIST_REQUEST,
+      type: ActionType.Gmail.Thread.FETCH_LIST_SUCCESS,
       query,
       requestedResultCount,
+      threads: listResult.threads,
+      messages: listResult.messages,
+      nextPageToken: listResult.nextPageToken,
+      resultSizeEstimate: listResult.resultSizeEstimate,
     });
-
-    ThreadAPI.list({
+  }, error => {
+    dispatch({
+      type: ActionType.Gmail.Thread.FETCH_LIST_FAILURE,
       query,
-      pageToken,
-      maxResults: resultsStillNeeded,
-    }).then(listResult => {
-      dispatch({
-        type: ActionType.Gmail.Thread.LOAD_LIST_SUCCESS,
-        query,
-        requestedResultCount,
-        threads: listResult.threads,
-        messages: listResult.messages,
-        nextPageToken: listResult.nextPageToken,
-        resultSizeEstimate: listResult.resultSizeEstimate,
-      });
-    }).catch(error => {
-      dispatch({
-        type: ActionType.Gmail.Thread.LOAD_LIST_FAILURE,
-        query,
-        requestedResultCount,
-      });
-    });
-  };
+      requestedResultCount,
+    })
+  })
 }
 
 export function refresh() {

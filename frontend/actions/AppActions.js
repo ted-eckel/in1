@@ -1,10 +1,12 @@
 import ActionType from '../actions/ActionType'
-import {fetchItems as fetchPocketItems} from './PocketActions'
-import {loadList as loadGmailItems} from './Gmail/ThreadActions'
 
 export const toggleDrawer = () => ({
   type: ActionType.App.View.TOGGLE_DRAWER,
 })
+
+export const fetchEverything = promiseArray => dispatch => {
+  return dispatch => Promise.all(promiseArray)
+}
 
 // export const fetchItems = (newParams = {}, query = '', requestedResultCount = 10) => dispatch => ({
 //   Promise.all([

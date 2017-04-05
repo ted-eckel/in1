@@ -1,14 +1,14 @@
 import ActionType from '../actions/ActionType'
-import * as APIUtil from '../util/pocket_api_util'
+import * as APIUtil from '../util/PocketAPI'
 
 export const requestItems = params => ({
-  type: ActionType.Pocket.Items.LOAD_REQUEST,
+  type: ActionType.Pocket.Items.FETCH_REQUEST,
   params
 })
 
 export const receiveItems = items => (
   {
-    type: ActionType.Pocket.Items.LOAD_SUCCESS,
+    type: ActionType.Pocket.Items.FETCH_SUCCESS,
     items: Object.keys(items.list).map(key => {
       let d = new Date(0);
       d.setUTCSeconds(items.list[key].time_added);
@@ -21,7 +21,7 @@ export const receiveItems = items => (
 )
 
 export const receiveError = error => ({
-  type: ActionType.Pocket.Items.LOAD_FAILURE,
+  type: ActionType.Pocket.Items.FETCH_FAILURE,
   error
 })
 

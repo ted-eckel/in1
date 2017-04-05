@@ -7,7 +7,7 @@ import ActionType from '../actions/ActionType'
 
 // const servicesItemsReducer = (state = {}, action) => {
 //   switch (action.type) {
-//     case ActionType.Pocket.Items.LOAD_SUCCESS:
+//     case ActionType.Pocket.Items.FETCH_SUCCESS:
 //       return {
 //         ...state,
 //         pocket: true
@@ -39,7 +39,7 @@ import ActionType from '../actions/ActionType'
 
 const servicesItemsReducer = (state = [], action) => {
   switch (action.type) {
-    case ActionType.Pocket.Items.LOAD_SUCCESS:
+    case ActionType.Pocket.Items.FETCH_SUCCESS:
       let oldPocketState = union([], state);
       let newPocketState = ['pocket'];
       let nextPocketState = union(oldPocketState, newPocketState);
@@ -49,7 +49,7 @@ const servicesItemsReducer = (state = [], action) => {
       let newGmailSuccessState = ['gmail'];
       let nextGmailSuccessState = union(oldGmailSuccessState, newGmailSuccessState);
       return nextGmailSuccessState;
-    case ActionType.Gmail.Thread.LOAD_LIST_SUCCESS:
+    case ActionType.Gmail.Thread.FETCH_LIST_SUCCESS:
       // let oldGmailSuccessState = union([], state);
       // let newGmailSuccessState = ['gmail'];
       // let nextGmailSuccessState = uniq(union(oldGmailSuccessState, newGmailSuccessState));

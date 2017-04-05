@@ -16,8 +16,21 @@
   <script id="bootstrap-current-user" type="text/javascript">
     window.currentUser = <%= render("api/users/user.json.jbuilder", user: current_user).html_safe %>
   </script>
+  <% if session['pocket_omniauth_data'] %>
+    <script id="pocket-omniauth" type="text/javascript">
+      window.pocketAuthorized = true
+    </script>
+  <% else %>
+    <script id="pocket-omniauth" type="text/javascript">
+      window.pocketAuthorized = false
+    </script>
+  <% end %>
+  <script async defer src="https://apis.google.com/js/api.js"
+    onload="this.onload=function(){};handleGoogleClientLoad()"
+    onreadystatechange="if (this.readyState === 'complete') this.onload()">
+  </script>
+  <!-- <script async defer src="https://apis.google.com/js/api.js"></script> -->
   <main id="root"></main>
-  <!-- <script src="https://apis.google.com/js/client.js?onload=handleGoogleClientLoad"></script> -->
 <% else %>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-light_blue.min.css" />

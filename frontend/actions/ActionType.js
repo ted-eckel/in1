@@ -13,6 +13,14 @@ const ActionType = {
       TOGGLE_DRAWER: '',
       TOGGLE_LIST_TYPE: '',
     },
+
+    Session: {
+      LOGIN: '',
+      LOGOUT: '',
+      SIGNUP: '',
+      RECEIVE_CURRENT_USER: '',
+      RECEIVE_ERRORS: '',
+    },
   },
 
   Drive: {
@@ -30,14 +38,14 @@ const ActionType = {
       ARCHIVE_REQUEST: '',
       ARCHIVE_SUCCESS: '',
       ARCHIVE_FAILURE: '',
-      
-      LOAD_REQUEST: '',
-      LOAD_SUCCESS: '',
-      LOAD_FAILURE: '',
 
-      LOAD_LIST_REQUEST: '',
-      LOAD_LIST_SUCCESS: '',
-      LOAD_LIST_FAILURE: '',
+      FETCH_REQUEST: '',
+      FETCH_SUCCESS: '',
+      FETCH_FAILURE: '',
+
+      FETCH_LIST_REQUEST: '',
+      FETCH_LIST_SUCCESS: '',
+      FETCH_LIST_FAILURE: '',
 
       STAR_REQUEST: '',
       STAR_SUCCESS: '',
@@ -61,9 +69,9 @@ const ActionType = {
     },
 
     Label: {
-      LOAD_ALL_REQUEST: '',
-      LOAD_ALL_SUCCESS: '',
-      LOAD_ALL_FAILURE: '',
+      FETCH_ALL_REQUEST: '',
+      FETCH_ALL_SUCCESS: '',
+      FETCH_ALL_FAILURE: '',
     },
 
     Message: {
@@ -76,13 +84,13 @@ const ActionType = {
     },
 
     Thread: {
-      LOAD_REQUEST: '',
-      LOAD_SUCCESS: '',
-      LOAD_FAILURE: '',
+      FETCH_REQUEST: '',
+      FETCH_SUCCESS: '',
+      FETCH_FAILURE: '',
 
-      LOAD_LIST_REQUEST: '',
-      LOAD_LIST_SUCCESS: '',
-      LOAD_LIST_FAILURE: '',
+      FETCH_LIST_REQUEST: '',
+      FETCH_LIST_SUCCESS: '',
+      FETCH_LIST_FAILURE: '',
 
       ARCHIVE_REQUEST: '',
       ARCHIVE_SUCCESS: '',
@@ -113,10 +121,16 @@ const ActionType = {
   },
 
   Pocket: {
+    Authorization: {
+      REQUEST: '',
+      SUCCESS: '',
+      FAILURE: '',
+    },
+
     Items: {
-      LOAD_REQUEST: '',
-      LOAD_SUCCESS: '',
-      LOAD_FAILURE: '',
+      FETCH_REQUEST: '',
+      FETCH_SUCCESS: '',
+      FETCH_FAILURE: '',
       END_OF_LIST: '',
     }
   }

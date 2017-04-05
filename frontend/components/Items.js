@@ -1,125 +1,34 @@
 /** @flow */
 
-// import {connect} from 'react-redux'
-// import {bindActionCreators} from 'redux'
 import GmailListItem from './GmailListItem'
 import PocketListItem from './PocketListItem'
-import React, {Component, PropTypes} from 'react'
-
-// import * as ThreadActions from '../actions/Gmail/ThreadActions'
-// import * as PocketActions from '../actions/PocketActions'
-// import * as DriveActions from '../actions/Drive/FileActions'
+import DriveListItem from './DriveListItem'
+import React, { Component, PropTypes } from 'react'
 
 import InfiniteScroll from 'react-infinite-scroller'
 import Masonry from 'react-masonry-component'
 import CircularProgress from 'material-ui/CircularProgress'
-// import RSVP from 'rsvp'
-
-// import {
-//   isFetchingSelector,
-//   isLoadingSelector,
-//   servicesLoadedSelector,
-//   getAllItemsSelector,
-//   getAllItemsSelectorTwo,
-//   allAccountsCountSelector,
-//   allAccountsSelector,
-//   endOfListSelector,
-//
-//   driveIsLoadingSelector,
-//   gmailIsLoadingSelector,
-// } from '../selectors';
-
-// @connect(
-//   state => ({
-//     // allItems: allItemsSelector(state),
-//     servicesLoaded: servicesLoadedSelector(state),
-//     isFetching: isFetchingSelector(state),
-//     isLoading: isLoadingSelector(state),
-//     getAllItems: getAllItemsSelector(state),
-//     getAllItemsTwo: getAllItemsSelectorTwo(state),
-//     allAccountsCount: allAccountsCountSelector(state),
-//     allAccounts: allAccountsSelector(state),
-//     endOfList: endOfListSelector(state),
-//
-//     driveIsLoading: driveIsLoadingSelector(state),
-//     gmailIsLoading: gmailIsLoadingSelector(state)
-//   }),
-//   dispatch => bindActionCreators({
-//     fetchItems: PocketActions.fetchItems,
-//     loadThreadList: ThreadActions.loadList,
-//     driveLoadList: DriveActions.loadList
-//     // ...ThreadActions,
-//   }, dispatch),
-// )
 
 export default class Items extends Component {
   static propTypes = {
     style: PropTypes.object,
-    onRequestMoreItems: PropTypes.func.isRequired,
     drawerOpen: PropTypes.bool.isRequired,
-    allAccounts: PropTypes.array.isRequired,
-    endOfList: PropTypes.bool.isRequired,
-    allAccountsCount: PropTypes.number.isRequired,
-    servicesLoaded: PropTypes.array.isRequired,
-    getAllItems: PropTypes.array.isRequired,
     handleRequestDelete: PropTypes.func.isRequired,
+    allAuth: PropTypes.object.isRequired,
     handleLoadMore: PropTypes.func.isRequired,
-    fetchItems: PropTypes.func.isRequired
+    items: PropTypes.array.isRequired,
   };
 
-  componentWillMount = () => {
-    const { fetchItems, isFetching, isLoading } = this.props;
-    if (!isFetching && !isLoading){
-      fetchItems();
-    }
+  componentDidUpdate(){
+    console.log('items:');
+    console.log(this.props.items);
   }
 
-  // handleRequestDelete = e => {
-  //   e.preventDefault();
-  //   alert('You clicked the delete button.');
-  // }
+  render() {
 
-  // handleLoadMore = () => {
-  //   const { fetchItems, isFetching, isLoading, loadThreadList, onRequestMoreItems, servicesLoaded, endOfList, allAccounts, driveIsLoading, gmailIsLoading } = this.props;
-  //   const pocketGet = () => {
-  //     if (!isFetching && (/*Object.keys(servicesLoaded)*/allAccounts.includes('pocket') && servicesLoaded.pocket === true) && !endOfList){
-  //       fetchItems()
-  //     }
-  //   }
-  //   const gmailGet = () => {
-  //     if (/*!isLoading*/ !gmailIsLoading && (/*Object.keys(servicesLoaded)*/allAccounts.includes('gmail')) && servicesLoaded.gmail === true) {
-  //       onRequestMoreItems()
-  //     }
-  //   }
-  //   const driveGet = () => {
-  //     if (/*!isLoading*/ !driveIsLoading && (/*Object.keys(servicesLoaded)*/allAccounts.includes('drive')) && servicesLoaded.drive === true) {
-  //       console.log('driveLoadList');
-  //       driveLoadList()
-  //     }
-  //   }
-  //
-  //   pocketGet()
-  //   gmailGet()
-  //   driveGet()
-  //   // RSVP.all([
-  //   // ])
-  //   // if (/*Object.keys(servicesLoaded*/allAccounts.length === 3){
-  //   // }
-  // }
-
-  render(): ?ReactComponent {
-
-    const items = this.props.getAllItems /*this.props.getAllItemsTwo*/;
-    const servicesLoaded = this.props.servicesLoaded;
-    // const requestMoreItems = this.props.onRequestMoreItems;
+    const items = this.props.items;
     const drawerOpen = this.props.drawerOpen;
-    const allAccountsCount = this.props.allAccountsCount;
     const endOfList = this.props.endOfList;
-    const allAccounts = this.props.allAccounts;
-
-    console.log(allAccounts);
-    console.log('items:');
-    console.log(items);
 
     const drawerOpenStyles = {
       marginLeft: "266px",
@@ -140,7 +49,7 @@ export default class Items extends Component {
       ? (
           <div style={{
             display: 'table',
-            margin: '45px auto',
+            margin: '125px auto',
             fontFamily: 'Roboto, sans-serif',
             fontWeight: '400',
             fontSize: '18px',
@@ -152,11 +61,15 @@ export default class Items extends Component {
       : (<CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />)
     );
 
-    if (allAccountsCount === 0) {
+    if (
+      this.props.allAuth.pocket === false &&
+      this.props.allAuth.gmail === false &&
+      this.props.allAuth.drive === false
+    ) {
       return(
         <div style={{
           display: 'table',
-          margin: '45px auto',
+          margin: '125px auto',
           fontFamily: 'Roboto, sans-serif',
           fontWeight: '400',
           fontSize: '20px',
@@ -165,7 +78,13 @@ export default class Items extends Component {
           Click a link in the sidebar to authorize a service
         </div>
       )
-    } else if (Object.keys(servicesLoaded).length < allAccountsCount) {
+    } else if (
+      (
+        this.props.allAuth.pocket !== null ||
+        this.props.allAuth.gmail !== null ||
+        this.props.allAuth.drive !== null
+      ) && items === []
+    ) {
       return (
         <div style={{marginTop: "80px"}}>
           {elementInfiniteLoad}
@@ -201,6 +120,16 @@ export default class Items extends Component {
               />
             </div>
           )
+        } else if (item.service === "drive") {
+          return (
+            <div style={{display: 'inline-block'}} key={idx}>
+              <DriveListItem
+                file={items[idx].file}
+                date={items[idx].date.toString()}
+                handleRequestDelete={this.props.handleRequestDelete}
+              />
+            </div>
+          )
         }
       })
 
@@ -209,7 +138,7 @@ export default class Items extends Component {
           <div style={{maxWidth: "1296px", margin: "75px auto"}}>
             <InfiniteScroll
               ref='masonryContainer'
-              loadMore={this.props.handleLoadMore /*requestMoreItems*/}
+              loadMore={this.props.handleLoadMore}
               loader={elementInfiniteLoad}
               hasMore
               threshold={200}

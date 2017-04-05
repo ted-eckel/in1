@@ -37,100 +37,59 @@ export default class GmailListItem extends Component {
     const date = this.props.date;
 
     return (
-      <div
-        style={{
-          margin: "8px"
-        }}
-        className="paper"
-      >
-        <Paper
-          style={{
+      <div style={{margin: "8px"}} className="paper">
+        <Paper style={{
             width: "240px",
             padding: "10px",
             overflow: "hidden",
             textOverflow: "ellipsis"
-          }}
-        >
-          <a
-            href={"https://mail.google.com/mail/u/0/#inbox/".concat(gmailId)}
-            style={{
-              textDecoration: "none"
-            }}
-            target="_blank"
-            className="pocket-link"
-          >
-            <div
-              style={{
-                fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
-                fontSize: "13px"
-              }}
-            >
+          }}>
+          <a href={"https://mail.google.com/mail/u/0/#inbox/".concat(gmailId)}
+            style={{textDecoration: "none"}} target="_blank"
+            className="pocket-link">
+            <div style={{fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
+                fontSize: "13px"}}>
               <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
                 <img src="http://www.google.com/s2/favicons?domain=https://www.google.com/gmail/about" />
                 {" "}
               </div>
-              <span
-                style={
+              <span style={
                   isUnread
                   ? {fontWeight: "bold"}
-                  : {fontWeight: "normal"}
-                }
-                className="pocket-title"
-              >
-                {
-                  from.name ? from.name : from.email
-                }
+                  : {fontWeight: "normal"}}
+                className="pocket-title">
+                { from.name ? from.name : from.email }
                 <br/>
                 <br/>
                 {subject}
               </span>
               <div style={{color: "rgb(117, 117, 117)"}}>
                 <br/>
-                {
-                  snippet.length > 0
+                {snippet.length > 0
                   ? unescape(snippet) + "..."
-                  : ""
-                }
+                  : ""}
               </div>
             </div>
           </a>
           <div style={{margin: "10px"}}>
-            {
-              labelIDs
-              ? (
-                <div className="tags">
+            {labelIDs
+              ? (<div className="tags">
                   {labelIDs.map((tag, idx) => {
                     return (
                       <div key={idx} style={{cursor: "pointer"}} className="tag">
                         {tag}
-                        <span
-                          style={{
+                        <span style={{
                             fontWeight: "bold",
                             fontSize: "12px",
-                            margin: "0 0 0 5px"
-                          }}
-                          onClick={this.requestDeleteClick}
-                          >
+                            margin: "0 0 0 5px"}}
+                          onClick={this.requestDeleteClick}>
                             x
-                          </span>
-                        </div>
-                      )
+                        </span>
+                      </div>)
                     })}
-                  </div>
-                )
-                : <span style={{display: "none"}} />
-              }
+                  </div>)
+              : <span style={{display: "none"}} />}
             </div>
-
-            {/* <div style={{margin: "10px"}}>
-              messageID: {gmailId}
-              <br/>
-              threadID: {threadID}
-              <br/>
-              hasAttachment: {hasAttachment}
-              <br/>
-              date: {date}
-            </div> */}
         </Paper>
       </div>
     )

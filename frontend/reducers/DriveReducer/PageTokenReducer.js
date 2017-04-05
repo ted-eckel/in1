@@ -2,7 +2,7 @@ import ActionType from '../../actions/ActionType'
 
 const pageTokenReducer = (state = null, action) => {
   switch (action.type) {
-    case ActionType.Drive.File.LOAD_LIST_SUCCESS:
+    case ActionType.Drive.File.FETCH_LIST_SUCCESS:
       return action.nextPageToken
     default:
       return state

@@ -9,7 +9,7 @@ let nextOffset = 0;
 
 const itemsReducer = (state = [], action) => {
   switch (action.type) {
-    case ActionType.Pocket.Items.LOAD_SUCCESS:
+    case ActionType.Pocket.Items.FETCH_SUCCESS:
       let oldState = union([], state);
       let newState = action.items;
       let nextState = uniq(union(oldState, newState));
@@ -25,9 +25,9 @@ const paramsReducer = (state = {
     offset: 0
 }, action) => {
   switch (action.type) {
-    case ActionType.Pocket.Items.LOAD_REQUEST:
+    case ActionType.Pocket.Items.FETCH_REQUEST:
       return update(state, {$merge: action.params})
-    case ActionType.Pocket.Items.LOAD_SUCCESS:
+    case ActionType.Pocket.Items.FETCH_SUCCESS:
       let nextState = merge({}, state);
       nextState.offset += 20;
       return nextState;
@@ -38,11 +38,11 @@ const paramsReducer = (state = {
 
 const isFetchingReducer = (state = false, action) => {
   switch (action.type) {
-    case ActionType.Pocket.Items.LOAD_REQUEST:
+    case ActionType.Pocket.Items.FETCH_REQUEST:
       return true
-    case ActionType.Pocket.Items.LOAD_SUCCESS:
+    case ActionType.Pocket.Items.FETCH_SUCCESS:
       return false
-    case ActionType.Pocket.Items.LOAD_FAILURE:
+    case ActionType.Pocket.Items.FETCH_FAILURE:
       return false
     default:
       return state;
@@ -51,7 +51,7 @@ const isFetchingReducer = (state = false, action) => {
 
 const errorReducer = (state = null, action) => {
   switch (action.type) {
-    case ActionType.Pocket.Items.LOAD_FAILURE:
+    case ActionType.Pocket.Items.FETCH_FAILURE:
       return action.error
     default:
       return state;
@@ -67,10 +67,38 @@ const endOfListReducer = (state = false, action) => {
   }
 }
 
+const authorizationReducer = (state = {
+  isAuthorized: null,
+  isAuthorizing: false
+}, action) => {
+  switch (action.type) {
+    case ActionType.Pocket.Authorization.REQUEST:
+      return {
+        ...state,
+        isAuthorizing: true,
+      }
+    case ActionType.Pocket.Authorization.SUCCESS:
+      return {
+        ...state,
+        isAuthorized: true,
+        isAuthorizing: false,
+      }
+    case ActionType.Pocket.Authorization.FAILURE:
+      return {
+        ...state,
+        isAuthorized: false,
+        isAuthorizing: false,
+      }
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   items: itemsReducer,
   params: paramsReducer,
   isFetching: isFetchingReducer,
   error: errorReducer,
-  endOfList: endOfListReducer
+  endOfList: endOfListReducer,
+  authorization: authorizationReducer,
 })

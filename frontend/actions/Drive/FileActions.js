@@ -2,20 +2,19 @@ import ActionType from '../ActionType';
 import * as FileAPI from '../../util/Drive/FileAPI';
 import { drivePageTokenSelector } from '../../selectors/index'
 
-export function loadList(
+export const loadList = (
   // q = "'root' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false",
   q = "(not appProperties has { key='state' and value='archived' }) and mimeType != 'application/vnd.google-apps.folder' and trashed = false",
   fields = "nextPageToken, files",
   spaces = 'drive,photos',
   pageSize = 20
-) {
-  return (dispatch, getState) => {
+) => (dispatch, getState) => {
     let { nextPageToken } = getState().drive;
     let pageToken = nextPageToken;
 
 
     dispatch({
-      type: ActionType.Drive.File.LOAD_LIST_REQUEST,
+      type: ActionType.Drive.File.FETCH_LIST_REQUEST,
       q,
       fields,
       spaces,
@@ -31,7 +30,7 @@ export function loadList(
       pageToken
     }).then(listResult => {
       dispatch({
-        type: ActionType.Drive.File.LOAD_LIST_SUCCESS,
+        type: ActionType.Drive.File.FETCH_LIST_SUCCESS,
         q,
         fields,
         spaces,
@@ -39,14 +38,13 @@ export function loadList(
         files: listResult.files,
         nextPageToken: listResult.nextPageToken,
       });
-    }).catch(error => {
+    }, error => {
       dispatch({
-        type: ActionType.Drive.File.LOAD_LIST_FAILURE,
+        type: ActionType.Drive.File.FETCH_LIST_FAILURE,
         q,
         fields,
         spaces,
         pageSize
-      });
-    });
-  };
-}
+      })
+    })
+  }

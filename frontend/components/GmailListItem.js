@@ -35,34 +35,35 @@ export default class GmailListItem extends Component {
     const threadID = this.props.threadID;
     const hasAttachment = this.props.hasAttachment.toString();
     const date = this.props.date;
+    const unreadFont = isUnread ? 'bold' : 'normal';
 
     return (
       <div style={{margin: "8px"}} className="paper">
         <Paper style={{
             width: "240px",
-            padding: "10px",
+            padding: "9px",
             overflow: "hidden",
             textOverflow: "ellipsis"
           }}>
           <a href={"https://mail.google.com/mail/u/0/#inbox/".concat(gmailId)}
             style={{textDecoration: "none"}} target="_blank"
             className="pocket-link">
-            <div style={{fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
+            <div style={{fontFamily: "Roboto, RobotoDraft, Helvetica, Arial, sans-serif",
                 fontSize: "13px"}}>
               <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
-                <img src="http://www.google.com/s2/favicons?domain=https://www.google.com/gmail/about" />
-                {" "}
+                <img src="http://www.google.com/s2/favicons?domain=https://www.google.com/gmail/about"
+                  style={{verticalAlign: 'bottom'}} />
+                <span style={{fontWeight: unreadFont, display: 'inline-block',
+                  marginLeft: '7px'}}
+                  className="pocket-title">
+                  { from.name ? from.name : from.email }
+                </span>
               </div>
-              <span style={
-                  isUnread
-                  ? {fontWeight: "bold"}
-                  : {fontWeight: "normal"}}
-                className="pocket-title">
-                { from.name ? from.name : from.email }
-                <br/>
-                <br/>
-                {subject}
-              </span>
+                <span style={{fontWeight: unreadFont, display: 'inline-block',
+                  marginTop: '9px'}}
+                  className='pocket-title'>
+                  {subject}
+                </span>
               <div style={{color: "rgb(117, 117, 117)"}}>
                 <br/>
                 {snippet.length > 0
@@ -71,7 +72,7 @@ export default class GmailListItem extends Component {
               </div>
             </div>
           </a>
-          <div style={{margin: "10px"}}>
+          <div style={{margin: "9px"}}>
             {labelIDs
               ? (<div className="tags">
                   {labelIDs.map((tag, idx) => {

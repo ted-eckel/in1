@@ -48,17 +48,18 @@ export default class PocketListItem extends Component {
                 className="pocket-link"
                 >
                   <div style={{margin: "0 10px 5px"}}>
-                    <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
-                      <img src="http://www.google.com/s2/favicons?domain=https://getpocket.com/" />
-                      {" "}
+                    <div style={{display: "inline-block"}}>
+                      <img src="http://www.google.com/s2/favicons?domain=https://getpocket.com/"
+                        style={{verticalAlign: 'text-top'}} />
+                      <span style={{display: 'inline-block', marginLeft: '7px',}}
+                        className="pocket-title">
+                        {
+                          item.resolved_title
+                          ? item.resolved_title
+                          : item.given_title
+                        }
+                      </span>
                     </div>
-                    <span style={{}} className="pocket-title">
-                      {
-                        item.resolved_title
-                        ? item.resolved_title
-                        : item.given_title
-                      }
-                    </span>
                   </div>
                   <div style={{maxHeight: "270px", overflow: "hidden", textOverflow: "ellipsis"}}>
                     {
@@ -87,7 +88,7 @@ export default class PocketListItem extends Component {
                             <div
                               style={{
                                 fontSize: "12px",
-                                margin: "10px",
+                                margin: "5px 9px 0px 9px",
                                 color: "darkgray"
                               }}
                               >
@@ -99,7 +100,7 @@ export default class PocketListItem extends Component {
                         }
                       </div>
                     </a>
-                    <div style={{margin: "10px 0 7px 10px"}}>
+                    <div style={{margin: "9px 9px 0px 9px"}}>
                       <a
                         href={item.given_url}
                         style={{

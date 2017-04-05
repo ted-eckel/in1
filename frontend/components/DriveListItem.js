@@ -16,34 +16,32 @@ export default class DriveListItem extends Component {
   render(){
     const file = this.props.file;
     const date = this.props.date;
+    const viewedFont = file.viewedByMe ? 'normal' : 'bold';
 
     return (
       <div style={{margin: "8px"}} className="paper">
         <Paper style={{
             width: "240px",
-            padding: "10px",
             overflow: "hidden",
             textOverflow: "ellipsis"
           }}>
           <a href={file.webViewLink} style={{textDecoration: "none"}}
             target="_blank" className="pocket-link">
-            <div style={{margin: "10px auto", display: "table"}}>
-              <img style={{maxWidth: "240px", fontSize: "12px", color: "darkgray"}}
+            <div>
+              <img style={{width: "240px", fontSize: "12px", color: "darkgray"}}
                 src={file.thumbnailLink} />
             </div>
             <div style={{fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
-                fontSize: "13px"}}>
-              <div style={{display: "inline-block", margin: "0 10px 0 0"}}>
-                <img src={file.iconLink} />
-                {" "}
+                fontSize: "13px", margin: '9px'}}>
+              <div style={{whiteSpace: 'nowrap'}}>
+                <img src={file.iconLink} style={{verticalAlign: 'bottom'}} />
+                <span style={{fontWeight: viewedFont, overflow: 'hidden',
+                        display: 'inline-block', marginLeft: '7px',
+                        textOverflow: 'ellipsis', maxWidth: '195px'}}
+                  className="pocket-title">
+                  { file.name }
+                </span>
               </div>
-              <span style={
-                  file.viewedByMe
-                  ? {fontWeight: "normal"}
-                  : {fontWeight: "bold"}}
-                className="pocket-title">
-                { file.name }
-              </span>
             </div>
           </a>
         </Paper>

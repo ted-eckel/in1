@@ -5,14 +5,15 @@ import map from 'lodash/map'
 import MessageTranslator from './MessageTranslator'
 
 export function getByID(options: {id: string}) {
-  window.gapi.client.gmail.users.threads.get({userId: 'me', id: options.id})
+  return window.gapi.client.gmail.users.threads.get({userId: 'me', id: options.id})
   .then(response => {
-  const {threads, messages} = processThreadResults([response.result]);
-  return {
-    messages,
-    thread: threads[0],
-  }
-})}
+    const {threads, messages} = processThreadResults([response.result]);
+    return {
+      messages,
+      thread: threads[0],
+    }
+  })
+}
 
 export const list = (options) => {
   let label = null;
@@ -74,7 +75,7 @@ export function processThreadResults(results) {
 }
 
 export function markAsRead(options: {threadID: string}) {
-  window.gapi.client.gmail.users.threads.modify({
+  return window.gapi.client.gmail.users.threads.modify({
     userId: 'me',
     id: options.threadID,
     removeLabelIds: ['UNREAD'],
@@ -82,7 +83,7 @@ export function markAsRead(options: {threadID: string}) {
 }
 
 export function archive(options: {threadID: string}) {
-  window.gapi.client.gmail.users.threads.modify({
+  return window.gapi.client.gmail.users.threads.modify({
     userId: 'me',
     id: options.threadID,
     removeLabelIds: ['INBOX'],
@@ -90,7 +91,7 @@ export function archive(options: {threadID: string}) {
 }
 
 export function moveToInbox(options: {threadID: string}) {
-  window.gapi.client.gmail.users.threads.modify({
+  return window.gapi.client.gmail.users.threads.modify({
     userId: 'me',
     id: options.threadID,
     addLabelIds: ['INBOX'],
@@ -98,7 +99,7 @@ export function moveToInbox(options: {threadID: string}) {
 }
 
 export function markAsUnread(options: {threadID: string}) {
-  window.gapi.client.gmail.users.threads.modify({
+  return window.gapi.client.gmail.users.threads.modify({
     userId: 'me',
     id: options.threadID,
     addLabelIds: ['UNREAD'],
@@ -106,7 +107,7 @@ export function markAsUnread(options: {threadID: string}) {
 }
 
 export function unstar(options: {threadID: string}) {
-  window.gapi.client.gmail.users.threads.modify({
+  return window.gapi.client.gmail.users.threads.modify({
     userId: 'me',
     id: options.threadID,
     removeLabelIds: ['STARRED'],
@@ -114,7 +115,7 @@ export function unstar(options: {threadID: string}) {
 }
 
 export function star(options: {threadID: string}) {
-  window.gapi.client.gmail.users.threads.modify({
+  return window.gapi.client.gmail.users.threads.modify({
     userId: 'me',
     id: options.threadID,
     addLabelIds: ['STARRED'],

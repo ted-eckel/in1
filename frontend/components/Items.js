@@ -19,6 +19,7 @@ export default class Items extends Component {
     items: PropTypes.array.isRequired,
     gmailTrashThread: PropTypes.func.isRequired,
     gmailThreadsByID: PropTypes.object.isRequired,
+    gmailArchiveThread: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -141,6 +142,7 @@ export default class Items extends Component {
                 isUnread={items[idx].isUnread}
                 handleRequestDelete={this.props.handleRequestDelete}
                 gmailTrashThread={this.props.gmailTrashThread}
+                gmailArchiveThread={this.props.gmailArchiveThread}
                 threadID={items[idx].threadID}
                 hasAttachment={items[idx].hasAttachment}
                 date={items[idx].date.toString()}

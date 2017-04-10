@@ -49,6 +49,7 @@ import {
     dispatchAllItems: AppActions.dispatchAllItems,
     gmailLoadThreadList: GmailThreadActions.loadList,
     gmailTrashThread: GmailThreadActions.trash,
+    gmailArchiveThread: GmailThreadActions.archive,
     driveFetchFiles: FileActions.loadList,
     gmailAuthRequest: GoogleActions.gmailAuthRequest,
     driveAuthRequest: GoogleActions.driveAuthRequest,
@@ -178,6 +179,7 @@ class App extends Component {
             items={this.props.getAllItems}
             endOfList={this.props.endOfList}
             gmailTrashThread={this.props.gmailTrashThread}
+            gmailArchiveThread={this.props.gmailArchiveThread}
             gmailThreadsByID={this.props.gmailThreadsByID}
           />
         </div>

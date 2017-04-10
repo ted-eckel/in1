@@ -135,26 +135,17 @@ export function markAsUnread(threadID: string) {
   };
 }
 
-export function archive(threadID: string) {
-  return dispatch => {
-    dispatch({
-      type: ActionType.Gmail.Thread.ARCHIVE_REQUEST,
-      threadID,
-    });
+export const archive = threadID => dispatch => {
+  dispatch({
+    type: ActionType.Gmail.Thread.ARCHIVE_REQUEST,
+    threadID
+  });
 
-    ThreadAPI.archive({threadID}).then(() =>
-      dispatch({
-        type: ActionType.Gmail.Thread.ARCHIVE_SUCCESS,
-        threadID,
-      })
-    ).catch(error =>
-      dispatch({
-        type: ActionType.Gmail.Thread.ARCHIVE_FAILURE,
-        threadID,
-        error,
-      })
-    );
-  };
+  ThreadAPI.archive({threadID}).then(res => {
+    dispatch({type: ActionType.Gmail.Thread.ARCHIVE_SUCCESS, threadID, res})
+  }, err => {
+    dispatch({type: ActionType.Gmail.Thread.ARCHIVE_FAILURE, threadID, err})
+  })
 }
 
 export function moveToInbox(threadID: string) {

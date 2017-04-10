@@ -16,6 +16,7 @@ export default class GmailListItem extends Component {
     isUnread: PropTypes.bool.isRequired,
     handleRequestDelete: PropTypes.func.isRequired,
     gmailTrashThread: PropTypes.func.isRequired,
+    gmailArchiveThread: PropTypes.func.isRequired,
     threadID: PropTypes.string.isRequired,
     hasAttachment: PropTypes.bool.isRequired,
     date: PropTypes.string.isRequired,
@@ -26,9 +27,12 @@ export default class GmailListItem extends Component {
     this.props.handleRequestDelete(e)
   }
 
-  gmailTrashThread = e => {
-    e.preventDefault();
+  gmailTrashThread = () => {
     this.props.gmailTrashThread(this.props.threadID);
+  }
+
+  gmailArchiveThread = () => {
+    this.props.gmailArchiveThread(this.props.threadID);
   }
 
   render(){
@@ -108,6 +112,10 @@ export default class GmailListItem extends Component {
               <FontIcon className='material-icons item-toolbar-button'
                 onClick={this.gmailTrashThread}>
                 delete
+              </FontIcon>
+              <FontIcon className='material-icons item-toolbar-button'
+                onClick={this.gmailArchiveThread}>
+                archive
               </FontIcon>
             </div>
         </Paper>

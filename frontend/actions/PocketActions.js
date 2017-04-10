@@ -35,5 +35,7 @@ export const fetchItems = (newParams = {}) => (dispatch, getState) => {
     } else {
       return dispatch({type: ActionType.Pocket.Items.END_OF_LIST})
     }
+  }, error => {
+    return dispatch(receiveError(error))
   });
 }

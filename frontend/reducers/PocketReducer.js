@@ -5,8 +5,6 @@ import { combineReducers } from 'redux'
 import update from 'react/lib/update'
 import ActionType from '../actions/ActionType'
 
-let nextOffset = 0;
-
 const itemsReducer = (state = [], action) => {
   switch (action.type) {
     case ActionType.Pocket.Items.FETCH_SUCCESS:

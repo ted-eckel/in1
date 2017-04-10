@@ -17,21 +17,54 @@ export default class Items extends Component {
     allAuth: PropTypes.object.isRequired,
     handleLoadMore: PropTypes.func.isRequired,
     items: PropTypes.array.isRequired,
+    gmailTrashThread: PropTypes.func.isRequired,
+    gmailThreadsByID: PropTypes.object.isRequired,
   };
 
-  componentDidUpdate(){
-    console.log('items:');
-    console.log(this.props.items);
+  constructor() {
+    super();
+    this.state = {
+      masonryWidth: null
+    }
   }
+
+  componentWillMount() {
+    this.updateDimensions();
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", this.updateDimensions.bind(this))
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions.bind(this))
+  }
+
+  updateDimensions() {
+    if (window.innerWidth >= 1547) {
+      this.setState({masonryWidth: '1280px'})
+    } else if (window.innerWidth < 1547 && window.innerWidth >= 1291 ) {
+      this.setState({masonryWidth: '1024px'})
+    } else if (window.innerWidth < 1291 && window.innerWidth >= 1035) {
+      this.setState({masonryWidth: '768px'})
+    } else if (window.innerWidth < 1035 && window.innerWidth >= 779) {
+      this.setState({masonryWidth: '512px'})
+    } else if (window.innerWidth < 779) {
+      this.setState({masonryWidth: '256px'})
+    }
+  }
+
+
 
   render() {
 
     const items = this.props.items;
     const drawerOpen = this.props.drawerOpen;
     const endOfList = this.props.endOfList;
+    const gmailThreadsByID = this.props.gmailThreadsByID;
 
     const drawerOpenStyles = {
-      marginLeft: "266px",
+      marginLeft: "256px",
       transition: "margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms",
     }
 
@@ -41,7 +74,7 @@ export default class Items extends Component {
     }
 
     const styles = {
-      root: {maxWidth: "1296px", margin: "80px auto"}
+      root: {width: this.state.masonryWidth, margin: "75px auto"}
     };
 
     const elementInfiniteLoad = (
@@ -58,7 +91,7 @@ export default class Items extends Component {
             End of your inbox!
           </div>
         )
-      : (<CircularProgress size={80} thickness={6} style={{display: "block", margin: "0 auto"}} />)
+      : (<CircularProgress size={80} thickness={6} style={{display: "block", margin: "300px auto 0"}} />)
     );
 
     if (
@@ -78,13 +111,7 @@ export default class Items extends Component {
           Click a link in the sidebar to authorize a service
         </div>
       )
-    } else if (
-      (
-        this.props.allAuth.pocket !== null ||
-        this.props.allAuth.gmail !== null ||
-        this.props.allAuth.drive !== null
-      ) && items === []
-    ) {
+    } else if (!this.props.allAuth.all) {
       return (
         <div style={{marginTop: "80px"}}>
           {elementInfiniteLoad}
@@ -92,7 +119,7 @@ export default class Items extends Component {
       )
     } else {
       const childElements = items.map((item, idx) => {
-        if (item.service === "pocket") {
+        if (item && item.service === "pocket") {
           return (
             <div style={{display: 'inline-block'}} key={idx}>
               <PocketListItem
@@ -102,7 +129,7 @@ export default class Items extends Component {
               />
             </div>
           )
-        } else if (item.service === "gmail") {
+        } else if (item && item.service === "gmail") {
           return (
             <div style={{display: 'inline-block'}} key={idx}>
               <GmailListItem
@@ -113,14 +140,15 @@ export default class Items extends Component {
                 labelIDs={items[idx].labelIDs}
                 isUnread={items[idx].isUnread}
                 handleRequestDelete={this.props.handleRequestDelete}
-
+                gmailTrashThread={this.props.gmailTrashThread}
                 threadID={items[idx].threadID}
                 hasAttachment={items[idx].hasAttachment}
                 date={items[idx].date.toString()}
+                messageCount={gmailThreadsByID[items[idx].threadID].messageIDs.length}
               />
             </div>
           )
-        } else if (item.service === "drive") {
+        } else if (item && item.service === "drive") {
           return (
             <div style={{display: 'inline-block'}} key={idx}>
               <DriveListItem
@@ -135,18 +163,13 @@ export default class Items extends Component {
 
       return (
         <div style={drawerOpen ? drawerOpenStyles : drawerClosedStyles}>
-          <div style={{maxWidth: "1296px", margin: "75px auto"}}>
-            <InfiniteScroll
-              ref='masonryContainer'
-              loadMore={this.props.handleLoadMore}
-              loader={elementInfiniteLoad}
-              hasMore
-              threshold={200}
-              >
-                <Masonry>
-                  { childElements }
-                </Masonry>
-              </InfiniteScroll>
+          <div style={styles.root}>
+            <InfiniteScroll loader={elementInfiniteLoad} hasMore threshold={80}
+              ref='masonryContainer' loadMore={this.props.handleLoadMore}>
+              <Masonry>
+                { childElements }
+              </Masonry>
+            </InfiniteScroll>
           </div>
         </div>
       );

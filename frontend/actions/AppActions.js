@@ -1,13 +1,18 @@
 import ActionType from '../actions/ActionType'
+import * as PocketAPI from '../util/PocketAPI'
+import * as GnailAPI from '../util/Gmail/ThreadAPI'
 
 export const toggleDrawer = () => ({
   type: ActionType.App.View.TOGGLE_DRAWER,
 })
 
-export const fetchEverything = promiseArray => dispatch => {
-  return dispatch => Promise.all(promiseArray)
-}
+export const fetchEverything = promiseArray => dispatch => Promise.all(promiseArray);
 
+
+export const dispatchAllItems = items => ({
+  type: ActionType.App.Items.FETCH_SUCCESS,
+  items
+})
 // export const fetchItems = (newParams = {}, query = '', requestedResultCount = 10) => dispatch => ({
 //   Promise.all([
 //     dispatch(fetchPocketItems()),

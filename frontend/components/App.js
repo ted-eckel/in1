@@ -24,11 +24,12 @@ import {
   getAllItemsSelector,
   endOfListSelector,
   allAuthSelector,
-  servicesSelector,
-  isFetchingSelector
+  isFetchingSelector,
+  hasMoreThreadsSelector,
+  threadsByIDSelector,
 } from '../selectors'
 
-const PAGE_SIZE = 20;
+// const PAGE_SIZE = 20;
 
 @connect(
   state => ({
@@ -36,15 +37,18 @@ const PAGE_SIZE = 20;
     searchQuery: searchQuerySelector(state),
     getAllItems: getAllItemsSelector(state),
     endOfList: endOfListSelector(state),
+    gmailHasMoreThreads: hasMoreThreadsSelector(state),
     allAuth: allAuthSelector(state),
-    services: servicesSelector(state),
     isFetching: isFetchingSelector(state),
+    gmailThreadsByID: threadsByIDSelector(state),
   }),
   dispatch => bindActionCreators({
     fetchPocketItems: PocketActions.fetchItems,
     toggleDrawer: AppActions.toggleDrawer,
     fetchEverything: AppActions.fetchEverything,
+    dispatchAllItems: AppActions.dispatchAllItems,
     gmailLoadThreadList: GmailThreadActions.loadList,
+    gmailTrashThread: GmailThreadActions.trash,
     driveFetchFiles: FileActions.loadList,
     gmailAuthRequest: GoogleActions.gmailAuthRequest,
     driveAuthRequest: GoogleActions.driveAuthRequest,
@@ -65,29 +69,26 @@ class App extends Component {
   handleLoadMore = () => {
     const {
       fetchPocketItems, endOfList, allAuth, isFetching, driveFetchFiles,
-      searchQuery, services, gmailLoadThreadList, fetchEverything
+      searchQuery, gmailLoadThreadList, fetchEverything, gmailHasMoreThreads,
+      dispatchAllItems, getAllItems
     } = this.props;
 
-    const fetchGmail = (searchQuery, maxResultCount) => {
-      if (allAuth.gmail === true && isFetching.gmail === false) {
-        gmailLoadThreadList(searchQuery, maxResultCount);
-      }
-    }
+    let promiseArray = []
 
-    const fetchPocket = () => {
-      if (allAuth.pocket === true && isFetching.pocket === false) {
-        fetchPocketItems()
+    if (allAuth.all && !isFetching.any) {
+      if (allAuth.gmail && gmailHasMoreThreads) {
+        promiseArray.push(gmailLoadThreadList(searchQuery));
       }
-    }
 
-    const fetchDrive = () => {
-      if (allAuth.drive === true & isFetching.drive === false) {
-        driveFetchFiles()
+      if (allAuth.pocket) {
+        promiseArray.push(fetchPocketItems());
       }
-    }
 
-    if (allAuth.all !== null && isFetching.any === false) {
-      fetchEverything([fetchGmail(), fetchPocket(), fetchDrive()]);
+      if (allAuth.drive) {
+        promiseArray.push(driveFetchFiles());
+      }
+
+      fetchEverything(promiseArray)
     }
   }
 
@@ -117,6 +118,7 @@ class App extends Component {
         let isSignedIn = GoogleAuth.isSignedIn.get();
         if (isSignedIn) {
           let currentUser = GoogleAuth.currentUser.get();
+          // console.log(`currentUserEmail: ${currentUser.getBasicProfile().getEmail()}`)
           let scopes = currentUser.getGrantedScopes();
 
           if (scopes.includes("https://www.googleapis.com/auth/gmail.modify")){
@@ -144,7 +146,6 @@ class App extends Component {
             driveAuthFailure()
           }
         } else {
-          console.log("isSignedIn = false");
           driveAuthFailure();
           gmailAuthFailure();
         }
@@ -176,6 +177,8 @@ class App extends Component {
             drawerOpen={this.props.drawerOpen}
             items={this.props.getAllItems}
             endOfList={this.props.endOfList}
+            gmailTrashThread={this.props.gmailTrashThread}
+            gmailThreadsByID={this.props.gmailThreadsByID}
           />
         </div>
       </MuiThemeProvider>

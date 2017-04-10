@@ -4,7 +4,7 @@ import { drivePageTokenSelector } from '../../selectors/index'
 
 export const loadList = (
   // q = "'root' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false",
-  q = "(not appProperties has { key='state' and value='archived' }) and mimeType != 'application/vnd.google-apps.folder' and trashed = false",
+  q = `(not appProperties has { key='state' and value='archived' }) and mimeType != 'application/vnd.google-apps.folder' and trashed = false`,
   fields = "nextPageToken, files",
   spaces = 'drive,photos',
   pageSize = 20

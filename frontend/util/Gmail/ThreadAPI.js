@@ -15,10 +15,12 @@ export function getByID(options: {id: string}) {
 })}
 
 export const list = (options) => {
+  let label = null;
+  if (!options.query) {label = 'INBOX'};
   return window.gapi.client.gmail.users.threads.list({
     userId: 'me',
     maxResults: options.maxResults,
-    labelIds: 'INBOX',
+    labelIds: label,
     q: options.query || null,
     pageToken: options.pageToken || null,
   }).then(listResponse => {
@@ -116,5 +118,12 @@ export function star(options: {threadID: string}) {
     userId: 'me',
     id: options.threadID,
     addLabelIds: ['STARRED'],
+  })
+}
+
+export function trash(options: {threadID: string}){
+  return window.gapi.client.gmail.users.threads.trash({
+    userId: 'me',
+    id: options.threadID
   })
 }

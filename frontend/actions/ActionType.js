@@ -4,6 +4,10 @@ const ActionType = {
       SEARCH: '',
     },
 
+    Items: {
+      FETCH_SUCCESS: '',
+    },
+
     Request: {
       START: '',
       ALL_STOPPED: '',
@@ -117,6 +121,10 @@ const ActionType = {
       UNSTAR_REQUEST: '',
       UNSTAR_SUCCESS: '',
       UNSTAR_FAILURE: '',
+
+      TRASH_REQUEST: '',
+      TRASH_SUCCESS: '',
+      TRASH_FAILURE: '',
     }
   },
 

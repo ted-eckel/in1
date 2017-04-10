@@ -15,7 +15,7 @@ export const drawerOpenSelector = state => state.app.drawerOpen;
 export const identitiesSelector = state => state.session.currentUser.identities;
 
 const threadListByQuerySelector = state => state.gmail.threadListByQuery;
-const threadsByIDSelector = state => state.gmail.threadsByID;
+export const threadsByIDSelector = state => state.gmail.threadsByID;
 export const messagesByIDSelector = state => state.gmail.messagesByID;
 export const isAuthorizedSelector = state => state.gmail.authorization.isAuthorized;
 export const isAuthorizingSelector = state => state.gmail.authorization.isAuthorizing;
@@ -32,7 +32,6 @@ export const drivePageTokenSelector = state => state.drive.nextPageToken;
 export const driveFilesSelector = state => state.drive.fileList;
 
 export const pocketAuthSelector = state => state.pocket.authorization.isAuthorized;
-export const servicesSelector = state => state.services;
 
 export const isFetchingSelector = createSelector([
   pocketIsFetchingSelector,
@@ -67,16 +66,21 @@ export const allAuthSelector = createSelector([
   driveAuth
 ) => {
   let allAuth = null;
+  let countAuth = 0;
   if (
     pocketAuth !== null &&
     gmailAuth !== null &&
     driveAuth !== null
   ) { allAuth = true };
+  if (pocketAuth === true) { countAuth += 1 }
+  if (gmailAuth === true) { countAuth += 1 }
+  if (driveAuth === true) { countAuth += 1 }
   return {
     all: allAuth,
     pocket: pocketAuth,
     gmail: gmailAuth,
-    drive: driveAuth
+    drive: driveAuth,
+    count: countAuth
   }
 })
 
@@ -127,7 +131,7 @@ export const threadsSelector = createSelector([
   threadListByQuery,
   threadsByID,
 ) => {
-  const threadList = threadListByQuery[searchQuery];
+  const threadList = searchQuery ? threadListByQuery[searchQuery] : threadListByQuery['labelIds:INBOX'];
   return threadList ?
     threadList.threadIDs.map(threadID => threadsByID[threadID]) :
     [];
@@ -166,7 +170,7 @@ export const hasMoreThreadsSelector = createSelector([
   searchQuery,
   threadListByQuery,
 ) => {
-  const threadList = threadListByQuery[searchQuery];
+  const threadList = searchQuery ? threadListByQuery[searchQuery] : threadListByQuery['labelIds:INBOX'];
   return !threadList || !!threadList.nextPageToken;
 });
 
@@ -177,7 +181,7 @@ export const loadedThreadCountSelector = createSelector([
   searchQuery,
   threadListByQuery,
 ) => {
-  const threadList = threadListByQuery[searchQuery];
+  const threadList = searchQuery ? threadListByQuery[searchQuery] : threadListByQuery['labelIds:INBOX'];
   return threadList ? threadList.threadIDs.length : 0;
 });
 
@@ -185,28 +189,42 @@ export const getAllItemsSelector = createSelector([
   lastMessageInEachThreadSelector,
   itemsSelector,
   driveFilesSelector,
-  isFetchingSelector
+  isFetchingSelector,
+  allAuthSelector,
 ], (
     lastMessageInEachThread,
     items,
     driveFiles,
-    isFetching
-  ) => concat(items, lastMessageInEachThread, driveFiles).sort((a, b) => b.date - a.date) /*items.concat(lastMessageInEachThread).sort((a, b) => b.date - a.date)*/
-);
-
-export const getAllItemsSelectorTwo = createSelector(
-  messagesByIDSelector,
-  itemsSelector,
-  (
-    messagesByID,
-    items
+    isFetching,
+    allAuth,
   ) => {
-    const messages = Object.keys(messagesByID).map((id => messagesByID[id]));
-    return items.concat(messages).sort((a, b) => b.date - a.date)
+    let driveCurrent;
+    let gmailCurrent;
+    let pocketCurrent;
+
+    if (allAuth.all) {
+      if (isFetching.pocket) {
+        pocketCurrent = Object.freeze(items);
+      }
+
+      if (isFetching.gmail) {
+        gmailCurrent = Object.freeze(lastMessageInEachThread);
+      }
+
+      if (isFetching.drive) {
+        driveCurrent = Object.freeze(driveFiles);
+      }
+
+      if (isFetching.any) {
+        return concat(pocketCurrent, gmailCurrent, driveCurrent).sort((a, b) => b.date - a.date);
+      } else {
+        pocketCurrent = null;
+        driveCurrent = null;
+        gmailCurrent = null;
+        return concat(items, lastMessageInEachThread, driveFiles).sort((a, b) => b.date - a.date);
+      }
+    } else {
+      return [];
+    }
   }
 );
-
-// export const getItemsInBatches = createSelector(
-//   getAllItemsSelector,
-//   ( getAllItems ) => slice(getAllItems, 0, 20)
-// )

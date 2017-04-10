@@ -35,7 +35,7 @@ export function load(threadID) {
 
 export const loadList = (query = '', requestedResultCount = 20) => (dispatch, getState) => {
   const {threadListByQuery} = getState().gmail;
-  const threadList = threadListByQuery[query];
+  const threadList = query ? threadListByQuery[query] : threadListByQuery['labelIds:INBOX'];
 
   let pageToken = null;
   if (threadList) {
@@ -55,46 +55,6 @@ export const loadList = (query = '', requestedResultCount = 20) => (dispatch, ge
     query,
     pageToken,
     maxResults: requestedResultCount,
-  // }).then(listResult => {
-  // window.gapi.client.gmail.users.threads.list({
-  //   userId: 'me',
-  //   maxResults: requestedResultCount,
-  //   labelIds: 'INBOX',
-  //   q: query || null,
-  //   pageToken: pageToken || null,
-  // }).then(listResponse => {
-  //   const threadIDs = (listResponse.result.threads || []).map(m => m.id);
-  //
-  //   if (!threadIDs.length) {
-  //     return {
-  //       nextPageToken: null,
-  //       resultSizeEstimate: 0,
-  //       threads: [],
-  //       messages: [],
-  //     };
-  //   }
-  //
-  //   const batch = window.gapi.client.newBatch();
-  //
-  //   const threadRequest = id => {
-  //     return window.gapi.client.gmail.users.threads.get({userId: 'me', id})
-  //   }
-  //
-  //   threadIDs.forEach(id => {
-  //     batch.add(threadRequest(id), {'id': id})
-  //   })
-  //
-  //   return batch.then(batchResponse => {
-  //     const results = threadIDs.map(threadID => batchResponse.result[threadID].result);
-  //     const {threads, messages} = ThreadAPI.processThreadResults(results);
-  //
-  //     return {
-  //       nextPageToken: listResponse.result.nextPageToken,
-  //       resultSizeEstimate: listResponse.result.resultSizeEstimate,
-  //       threads,
-  //       messages,
-  //     }
-  //   })
   }).then(listResult => {
     dispatch({
       type: ActionType.Gmail.Thread.FETCH_LIST_SUCCESS,
@@ -111,6 +71,19 @@ export const loadList = (query = '', requestedResultCount = 20) => (dispatch, ge
       query,
       requestedResultCount,
     })
+  })
+}
+
+export const trash = threadID => dispatch => {
+  dispatch({
+    type: ActionType.Gmail.Thread.TRASH_REQUEST,
+    threadID
+  });
+
+  ThreadAPI.trash({threadID}).then(res => {
+    dispatch({type: ActionType.Gmail.Thread.TRASH_SUCCESS, threadID, res})
+  }, err => {
+    dispatch({type: ActionType.Gmail.Thread.TRASH_FAILURE, threadID, err})
   })
 }
 

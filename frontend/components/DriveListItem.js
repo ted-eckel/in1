@@ -17,6 +17,7 @@ export default class DriveListItem extends Component {
     const file = this.props.file;
     const date = this.props.date;
     const viewedFont = file.viewedByMe ? 'normal' : 'bold';
+    const filePicture = file.thumbnailLink ? file.thumbnailLink : file.iconLink;
 
     return (
       <div style={{margin: "8px"}} className="paper">
@@ -26,22 +27,20 @@ export default class DriveListItem extends Component {
             textOverflow: "ellipsis"
           }}>
           <a href={file.webViewLink} style={{textDecoration: "none"}}
-            target="_blank" className="pocket-link">
-            <div>
-              <img style={{width: "240px", fontSize: "12px", color: "darkgray"}}
-                src={file.thumbnailLink} />
-            </div>
+            target="_blank" className="item-link">
             <div style={{fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
-                fontSize: "13px", margin: '9px'}}>
-              <div style={{whiteSpace: 'nowrap'}}>
+                fontSize: "13px", padding: '12px 15px'}}>
+              <div className="drive-title">
                 <img src={file.iconLink} style={{verticalAlign: 'bottom'}} />
-                <span style={{fontWeight: viewedFont, overflow: 'hidden',
-                        display: 'inline-block', marginLeft: '7px',
-                        textOverflow: 'ellipsis', maxWidth: '195px'}}
-                  className="pocket-title">
+                <span style={{fontWeight: viewedFont}}
+                  className="item-title highlight">
                   { file.name }
                 </span>
               </div>
+            </div>
+            <div style={{maxHeight: '170px', overflow: 'hidden'}}>
+              <img style={{width: "240px", fontSize: "12px", color: "darkgray"}}
+                src={file.thumbnailLink} />
             </div>
           </a>
         </Paper>

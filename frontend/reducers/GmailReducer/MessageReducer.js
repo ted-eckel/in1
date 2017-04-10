@@ -36,6 +36,13 @@ module.exports = (messagesByID = {}, action) => {
         {isInInbox: false},
       );
 
+    case ActionType.Gmail.Thread.TRASH_REQUEST:
+      return _updateMessagesWhere(
+        messagesByID,
+        {threadID: action.threadID, isInInbox: true},
+        {isInInbox: false}
+      );
+
     case ActionType.Gmail.Thread.STAR_REQUEST:
       return _updateMessagesWhere(
         messagesByID,

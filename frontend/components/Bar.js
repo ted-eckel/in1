@@ -71,13 +71,12 @@ const Bar = ({logout, logoutRefresh, toggleDrawer}) => (
     iconElementRight={
       <div>
         <img
-          className="tooltip--bottom appbar-button"
+          className="tooltip--bottom toolbar-button"
           style={{
             width: "27px",
             display: "inline-block",
             paddingTop: "10px",
-            marginRight: "15px",
-            cursor: "pointer"
+            marginRight: "15px"
           }}
           src="gridview.svg"
           alt="Grid View"

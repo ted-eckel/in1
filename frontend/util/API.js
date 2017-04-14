@@ -6,7 +6,7 @@ export const login = () => {
   return window.gapi.auth2.getAuthInstance().then(GoogleAuth => {
     let isSignedIn = GoogleAuth.isSignedIn.get();
     if (isSignedIn) {
-      gmailClientInit()
+      this.gmailClientInit()
     } else {
       GoogleAuth.signIn().then(() => gmailClientInit());
     }
@@ -43,7 +43,7 @@ export const driveLogin = () => {
   return window.gapi.auth2.getAuthInstance().then(GoogleAuth => {
     let isSignedIn = GoogleAuth.isSignedIn.get();
     if (isSignedIn) {
-      driveClientInit()
+      this.driveClientInit()
     } else {
       GoogleAuth.signIn().then(() => driveClientInit());
     }

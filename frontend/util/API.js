@@ -59,9 +59,9 @@ String.prototype.checkInclusion = function(strArray) {
   return true;
 }
 
-const gmailTryAuthorize = immediate => {
-  store.dispatch({type: ActionType.Gmail.Authorization.REQUEST});
-  window.gapi.auth.authorize(
+const gmailTryAuthorize = immediate => dispatch => {
+  dispatch({type: ActionType.Gmail.Authorization.REQUEST});
+  return window.gapi.auth.authorize(
     {
       client_id: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
       scope: 'https://www.googleapis.com/auth/gmail.modify',
@@ -71,9 +71,9 @@ const gmailTryAuthorize = immediate => {
   );
 }
 
-const driveTryAuthorize = immediate => {
-  store.dispatch({type: ActionType.Drive.Authorization.REQUEST});
-  window.gapi.auth.authorize(
+const driveTryAuthorize = immediate => dispatch => {
+  dispatch({type: ActionType.Drive.Authorization.REQUEST});
+  return window.gapi.auth.authorize(
     {
       client_id: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
       scope: ["https://www.googleapis.com/auth/drive",

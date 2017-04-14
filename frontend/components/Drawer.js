@@ -43,7 +43,7 @@ export default class Drawer extends Component {
           <br/>
           <br/>
           {
-            this.props.allAuth.pocket !== null
+            this.props.allAuth.pocket !== false
             ? null
             : (
                 <MenuItem onClick={this.handleDrawerClose}>
@@ -54,19 +54,17 @@ export default class Drawer extends Component {
               )
           }
           {
-            this.props.allAuth.gmail !== null
+            this.props.allAuth.gmail !== false
             ? null
             : (<MenuItem onClick={this.onGmailAuthClick}>Connect to Gmail</MenuItem>)
           }
           {
-            this.props.allAuth.drive !== null
+            this.props.allAuth.drive !== false
             ? null
             : (<MenuItem onClick={this.onDriveAuthClick}>Connect to Google Drive</MenuItem>)
           }
           {
-            this.props.allAuth.pocket !== null &&
-            this.props.allAuth.gmail !== null &&
-            this.props.allAuth.drive !== null
+            this.props.allAuth.all === true
             ? (
               <div style={{margin: '0 auto', display: 'table'}}>
                 All possible services connected!

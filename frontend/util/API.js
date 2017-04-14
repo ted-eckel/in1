@@ -15,7 +15,7 @@ export const login = () => dispatch => {
 
 const gmailClientInit = () => dispatch => {
   dispatch({type: ActionType.Gmail.Authorization.REQUEST})
-  window.gapi.client.init({
+  return window.gapi.client.init({
     discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"],
     clientId: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
     scope: "https://www.googleapis.com/auth/gmail.modify"
@@ -28,7 +28,7 @@ const gmailClientInit = () => dispatch => {
 
 const driveClientInit = () => dispatch => {
   dispatch({type: ActionType.Drive.Authorization.REQUEST})
-  window.gapi.client.init({
+  return window.gapi.client.init({
     discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
     clientId: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
     scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata https://www.googleapis.com/auth/drive.photos.readonly"

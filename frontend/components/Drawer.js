@@ -9,6 +9,8 @@ export default class Drawer extends Component {
     drawerOpen: PropTypes.bool.isRequired,
     toggleDrawer: PropTypes.func.isRequired,
     allAuth: PropTypes.object.isRequired,
+    gmailLogin: PropTypes.func.isRequired,
+    driveLogin: PropTypes.func.isRequired,
   }
 
   handleDrawerClose = () => {
@@ -16,15 +18,17 @@ export default class Drawer extends Component {
   }
 
   onGmailAuthClick = () => {
-    API.login();
+    // API.login();
     this.handleDrawerClose();
+    this.props.gmailLogin();
   };
 
   onDriveAuthClick = () => {
     // 'root' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false
     // gapi.client.drive.files.list({q: "'root' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false", fields: "nextPageToken, files"}).execute(response => console.log(response))
-    API.driveLogin();
+    // API.driveLogin();
     this.handleDrawerClose();
+    this.props.driveLogin();
   };
 
   render() {

@@ -2,7 +2,7 @@
 
 import ActionType from '../actions/ActionType'
 
-export const login = () => dispatch => {
+export const login = () => {
   return window.gapi.auth2.getAuthInstance().then(GoogleAuth => {
     let isSignedIn = GoogleAuth.isSignedIn.get();
     if (isSignedIn) {
@@ -39,7 +39,7 @@ const driveClientInit = () => dispatch => {
   })
 }
 
-export const driveLogin = () => dispatch => {
+export const driveLogin = () => {
   return window.gapi.auth2.getAuthInstance().then(GoogleAuth => {
     let isSignedIn = GoogleAuth.isSignedIn.get();
     if (isSignedIn) {

@@ -64,7 +64,9 @@ export default class Drawer extends Component {
             : (<MenuItem onClick={this.onDriveAuthClick}>Connect to Google Drive</MenuItem>)
           }
           {
-            this.props.allAuth.all === true
+            this.props.allAuth.gmail &&
+            this.props.allAuth.drive &&
+            this.props.allAuth.pocket
             ? (
               <div style={{margin: '0 auto', display: 'table'}}>
                 All possible services connected!

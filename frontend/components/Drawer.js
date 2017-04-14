@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import MuiDrawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
-import API from '../util/API'
+import * as API from '../util/API'
 
 export default class Drawer extends Component {
   static propTypes = {

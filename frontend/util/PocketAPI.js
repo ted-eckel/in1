@@ -5,3 +5,19 @@ export const pocketRetrieve = options => {
 		data: options
 	});
 };
+
+export const pocketModify = options => {
+	return $.ajax({
+		method: 'POST',
+		url: 'api/pocket_modify',
+		data: options
+	})
+}
+
+export const pocketAdd = options => {
+	return $.ajax({
+		method: 'POST',
+		url: 'api/pocket_add',
+		data: options
+	})
+}

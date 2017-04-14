@@ -44,6 +44,8 @@ import {
   }),
   dispatch => bindActionCreators({
     fetchPocketItems: PocketActions.fetchItems,
+    pocketArchiveItem: PocketActions.archiveItem,
+    pocketDeleteItem: PocketActions.deleteItem,
     toggleDrawer: AppActions.toggleDrawer,
     fetchEverything: AppActions.fetchEverything,
     dispatchAllItems: AppActions.dispatchAllItems,
@@ -181,6 +183,8 @@ class App extends Component {
             gmailTrashThread={this.props.gmailTrashThread}
             gmailArchiveThread={this.props.gmailArchiveThread}
             gmailThreadsByID={this.props.gmailThreadsByID}
+            pocketArchiveItem={this.props.pocketArchiveItem}
+            pocketDeleteItem={this.props.pocketDeleteItem}
           />
         </div>
       </MuiThemeProvider>

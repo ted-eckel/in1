@@ -79,9 +79,7 @@ const Bar = ({logout, logoutRefresh, toggleDrawer}) => (
             marginRight: "15px"
           }}
           src="gridview.svg"
-          alt="Grid View"
-          data-tip="Grid View" />
-        <ReactTooltip place="bottom" type="dark" effect="solid" />
+          alt="Grid View" />
         <a href="/">
           <FlatButton
             style={{bottom: "10px", color: "#fff"}}

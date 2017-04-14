@@ -129,6 +129,10 @@ const ActionType = {
   },
 
   Pocket: {
+    App: {
+      SEARCH: '',
+    },
+
     Authorization: {
       REQUEST: '',
       SUCCESS: '',
@@ -140,8 +144,20 @@ const ActionType = {
       FETCH_SUCCESS: '',
       FETCH_FAILURE: '',
       END_OF_LIST: '',
-    }
-  }
+
+      ARCHIVE_REQUEST: '',
+      ARCHIVE_SUCCESS: '',
+      ARCHIVE_FAILURE: '',
+
+      DELETE_REQUEST: '',
+      DELETE_SUCCESS: '',
+      DELETE_FAILURE: '',
+
+      UNARCHIVE_REQUEST: '',
+      UNARCHIVE_SUCCESS: '',
+      UNARCHIVE_FAILURE: '',
+    },
+  },
 };
 
 const ActionTypeHax = ActionType;

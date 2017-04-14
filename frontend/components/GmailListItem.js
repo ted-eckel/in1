@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import Paper from 'material-ui/Paper'
 import unescape from 'lodash/unescape'
 import FontIcon from 'material-ui/FontIcon'
+import ReactTooltip from 'react-tooltip'
 
 // if there is are no more items, Pocket will return something like this as a response:
 // {"status":2,"complete":1,"list":[],"error":null,"search_meta":{"search_type":"normal"},"since":1484251363}
@@ -65,10 +66,10 @@ export default class GmailListItem extends Component {
           <a href={"https://mail.google.com/mail/u/0/#inbox/".concat(gmailId)}
             target="_blank" className="item-link">
             <div className="gmail-link">
-              <div style={{whiteSpace: 'nowrap'}}>
+              <div className='gmail-title'>
                 <img src="http://www.google.com/s2/favicons?domain=https://www.google.com/gmail/about"
                   style={{verticalAlign: 'bottom'}} />
-                <span style={{fontWeight: unreadFont}} className="item-title highlight gmail-title">
+                <span style={{fontWeight: unreadFont}} className="item-title highlight">
                   { from }
                   <span style={{fontWeight: 'normal'}}>
                     { messageCount <= 1 ? null : ' (' + messageCount + ')' }
@@ -95,14 +96,14 @@ export default class GmailListItem extends Component {
                     return (
                       <div key={idx} style={{cursor: "pointer"}} className="tag">
                         {removeCategory(tag)}
-                         <span onClick={this.requestDeleteClick}>
+                         {/* <span onClick={this.requestDeleteClick}>
                             <FontIcon className='material-icons'
                               style={{margin: '0 1px 0',
                               fontSize: '12px', top: '2px',
                               transition: 'inherit', color: 'inherit'}}>
                               clear
                             </FontIcon>
-                        </span>
+                        </span> */}
                       </div>)
                     })}
                   </div>)
@@ -110,13 +111,14 @@ export default class GmailListItem extends Component {
             </div>
             <div className='item-toolbar'>
               <FontIcon className='material-icons item-toolbar-button'
-                onClick={this.gmailTrashThread}>
+                onClick={this.gmailTrashThread} data-tip='trash'>
                 delete
               </FontIcon>
               <FontIcon className='material-icons item-toolbar-button'
-                onClick={this.gmailArchiveThread}>
-                archive
+                onClick={this.gmailArchiveThread} data-tip='archive'>
+                done
               </FontIcon>
+              <ReactTooltip place="bottom" type="dark" effect="solid" />
             </div>
         </Paper>
       </div>

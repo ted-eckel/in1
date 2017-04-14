@@ -20,6 +20,8 @@ export default class Items extends Component {
     gmailTrashThread: PropTypes.func.isRequired,
     gmailThreadsByID: PropTypes.object.isRequired,
     gmailArchiveThread: PropTypes.func.isRequired,
+    pocketArchiveItem: PropTypes.func.isRequired,
+    pocketDeleteItem: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -127,6 +129,8 @@ export default class Items extends Component {
                 item={items[idx].item}
                 date={items[idx].date.toString()}
                 handleRequestDelete={this.props.handleRequestDelete}
+                archiveItem={this.props.pocketArchiveItem}
+                deleteItem={this.props.pocketDeleteItem}
               />
             </div>
           )

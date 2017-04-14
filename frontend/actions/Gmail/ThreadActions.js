@@ -35,7 +35,7 @@ export function load(threadID) {
 
 export const loadList = (query = '', requestedResultCount = 20) => (dispatch, getState) => {
   const {threadListByQuery} = getState().gmail;
-  const threadList = query ? threadListByQuery[query] : threadListByQuery['labelIds:INBOX'];
+  const threadList = threadListByQuery[query];
 
   let pageToken = null;
   if (threadList) {

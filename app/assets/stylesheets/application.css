@@ -110,7 +110,7 @@
    line-height: 24px;
    position: relative;
    margin: 0 16px 8px 0;
-   padding: 0 1px 0 12px;
+   padding: 0 7px 0 12px;
    background: #eee;
    -webkit-border-bottom-right-radius: 3px;
    border-bottom-right-radius: 3px;
@@ -253,8 +253,9 @@ pocket-title {
 }
 
 .toolbar-button {
-  opacity: .54;
-  cursor: pointer;
+  opacity: 0;
+  /*opacity: .54;*/
+  /*cursor: pointer;*/
 }
 
 .item-toolbar-button {
@@ -271,10 +272,10 @@ pocket-title {
   opacity: .87;
 }
 
-.toolbar-button:hover {
+/* TODO:.toolbar-button:hover {
   opacity: .87;
   cursor: pointer;
-}
+} */
 
 .minimal-wrapper {
   position: relative;

@@ -1,84 +1,50 @@
 import ActionType from '../../actions/ActionType'
 
-module.exports = (threadListByQuery = {}, action) => {
-  const threadList = action.query ? threadListByQuery[action.query] : threadListByQuery['labelIds:INBOX'];
+export default (threadListByQuery = {}, action) => {
+  const threadList = threadListByQuery[action.query];
   switch (action.type) {
     case ActionType.Gmail.Thread.FETCH_LIST_REQUEST:
       if (threadList) {
-        if (threadList === threadListByQuery['labelIds:INBOX']) {
-          return {
-            ...threadListByQuery,
-            'labelIds:INBOX': {
-              ...threadList,
-              isFetching: true,
-            },
-          }
-        } else {
-          return {
-            ...threadListByQuery,
-            [action.query]: {
-              ...threadList,
-              isFetching: true,
-            },
-          }
+        return {
+          ...threadListByQuery,
+          [action.query]: {
+            ...threadList,
+            isFetching: true,
+          },
         }
       } else {
-        if (!action.query) {
-          return {
-            ...threadListByQuery,
-            'labelIds:INBOX': {
-              threadIDs: [],
-              nextPageToken: null,
-              resultSizeEstimate: null,
-              isFetching: true,
-            }
-          }
-        } else {
-          return {
-            ...threadListByQuery,
-            [action.query]: {
-              threadIDs: [],
-              nextPageToken: null,
-              resultSizeEstimate: null,
-              isFetching: true,
-            }
+        return {
+          ...threadListByQuery,
+          [action.query]: {
+            threadIDs: [],
+            nextPageToken: null,
+            resultSizeEstimate: null,
+            isFetching: true,
           }
         }
       }
 
     case ActionType.Gmail.Thread.FETCH_LIST_SUCCESS:
       const newThreadIDs = action.threads.map(thread => thread.id);
-      if (action.query) {
-        return {
-          ...threadListByQuery,
-          [action.query]: {
-            threadIDs: [...threadList.threadIDs, ...newThreadIDs],
-            nextPageToken: action.nextPageToken,
-            resultSizeEstimate: action.resultSizeEstimate,
-            isFetching: false
-          }
-        }
-      } else {
-        return {
-          ...threadListByQuery,
-          'labelIds:INBOX': {
-            threadIDs: [...threadList.threadIDs, ...newThreadIDs],
-            nextPageToken: action.nextPageToken,
-            resultSizeEstimate: action.resultSizeEstimate,
-            isFetching: false
-          }
+      return {
+        ...threadListByQuery,
+        [action.query]: {
+          threadIDs: [...threadList.threadIDs, ...newThreadIDs],
+          nextPageToken: action.nextPageToken,
+          resultSizeEstimate: action.resultSizeEstimate,
+          isFetching: false
         }
       }
 
+
     case ActionType.Gmail.Thread.REFRESH:
-      console.log('clearing the store')
       return {};
 
     case ActionType.Gmail.Thread.ARCHIVE_REQUEST:
-      return removeThread(threadListByQuery, action.threadID, /labelIds\:\s*INBOX/);
+      return removeThread(threadListByQuery, action.threadID, /^$/);
 
     case ActionType.Gmail.Thread.MOVE_TO_INBOX_REQUEST:
-      return removeMatchingQueries(threadListByQuery, /labelIds\:\s*INBOX/);
+      return removeMatchingQueries(threadListByQuery, /^$/);
 
     case ActionType.Gmail.Thread.UNSTAR_REQUEST:
       return removeThread(
@@ -88,7 +54,7 @@ module.exports = (threadListByQuery = {}, action) => {
       );
 
     case ActionType.Gmail.Thread.TRASH_REQUEST:
-      return removeThread(threadListByQuery, action.threadID, /labelIds\:\s*INBOX/);
+      return removeThread(threadListByQuery, action.threadID, /^$/);
   }
   return threadListByQuery;
 };

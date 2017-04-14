@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import Paper from 'material-ui/Paper'
+import FontIcon from 'material-ui/FontIcon'
 
 // if there is are no more items, Pocket will return something like this as a response:
 // {"status":2,"complete":1,"list":[],"error":null,"search_meta":{"search_type":"normal"},"since":1484251363}
@@ -8,11 +9,21 @@ export default class PocketListItem extends Component {
   static propTypes = {
     item: PropTypes.object.isRequired,
     handleRequestDelete: PropTypes.func.isRequired,
-    date: PropTypes.string.isRequired
+    date: PropTypes.string.isRequired,
+    archiveItem: PropTypes.func.isRequired,
+    deleteItem: PropTypes.func.isRequired,
   };
 
   requestDeleteClick = e => {
     this.props.handleRequestDelete(e)
+  }
+
+  archiveItem = () => {
+    this.props.archiveItem(this.props.item.item_id)
+  }
+
+  deleteItem = () => {
+    this.props.deleteItem(this.props.item.item_id)
   }
 
   urlParser = url => {
@@ -26,10 +37,13 @@ export default class PocketListItem extends Component {
     const date = this.props.date;
 
     const imgExc = item.image ?
-      (<div style={{margin: "5px auto 0", display: "table"}}>
-        <img style={{maxWidth: "240px", fontSize: "12px",  color: "darkgray"}}
+      (<div title={item.excerpt ? item.excerpt : ""} style={{
+        backgroundImage: `url(${item.image.src})`,
+        fontSize: '12px', color: 'darkgray', height: '150px',
+        backgroundPosition: 'center center', backgroundSize: 'cover'}}>
+        {/* <img style={{maxWidth: "240px", fontSize: "12px",  color: "darkgray"}}
               src={item.image.src}
-              alt={(item.excerpt ? item.excerpt : "")} />
+              alt={(item.excerpt ? item.excerpt : "")} /> */}
       </div>) :
       (item.excerpt ?
         (<div style={{fontSize: "12px", margin: "5px 9px 0px 9px", color: "darkgray"}}>
@@ -38,22 +52,22 @@ export default class PocketListItem extends Component {
         (<span />)
       );
 
-    const tags = item.tags ?
-      (<div className="tags">
-        {Object.keys(item.tags).map((tag, idx) => {
-          return (
-            <div key={idx} style={{cursor: "pointer"}} className="tag">
-                {tag}
-              <span style={{fontWeight: "bold", fontSize: "12px",
-                      margin: "0 0 0 5px"}}
-                onClick={this.requestDeleteClick}>
-                x
-              </span>
-            </div>
-          )
-        })}
-      </div>) :
-      <span style={{display: "none"}} />
+    // const tags = item.tags ?
+    //   (<div className="tags">
+    //     {Object.keys(item.tags).map((tag, idx) => {
+    //       return (
+    //         <div key={idx} style={{cursor: "pointer"}} className="tag">
+    //             {tag}
+    //           <span style={{fontWeight: "bold", fontSize: "12px",
+    //                   margin: "0 0 0 5px"}}
+    //             onClick={this.requestDeleteClick}>
+    //             x
+    //           </span>
+    //         </div>
+    //       )
+    //     })}
+    //   </div>) :
+    //   <span style={{display: "none"}} />
 
     return (
       <div style={{margin: "8px"}} className="paper">
@@ -69,7 +83,8 @@ export default class PocketListItem extends Component {
                 </span>
               </div>
             </div>
-            <div style={{maxHeight: "270px", overflow: "hidden", textOverflow: "ellipsis"}}>
+            <div style={{overflow: "hidden",
+              textOverflow: "ellipsis", marginTop: '5px'}}>
               {imgExc}
             </div>
           </a>
@@ -85,8 +100,35 @@ export default class PocketListItem extends Component {
               </div>
             </a>
           </div>
-          <div style={{margin: "0 10px 0 20px"}}>
-            {tags}
+          <div style={{margin: '9px 12px 4px 30px'}}>
+            {item.tags
+              ? (<div className="tags">
+                  {Object.keys(item.tags).map((tag, idx) => {
+                    return (
+                      <div key={idx} style={{cursor: "pointer"}} className="tag">
+                        {tag}
+                         {/* <span onClick={this.requestDeleteClick}>
+                            <FontIcon className='material-icons'
+                              style={{margin: '0 1px 0',
+                              fontSize: '12px', top: '2px',
+                              transition: 'inherit', color: 'inherit'}}>
+                              clear
+                            </FontIcon>
+                        </span> */}
+                      </div>)
+                    })}
+                  </div>)
+              : <span style={{display: "none"}} />}
+          </div>
+          <div className='item-toolbar'>
+            <FontIcon className='material-icons item-toolbar-button'
+              onClick={this.deleteItem} data-tip='delete'>
+              delete
+            </FontIcon>
+            <FontIcon className='material-icons item-toolbar-button'
+              onClick={this.archiveItem} data-tip='archive'>
+              done
+            </FontIcon>
           </div>
         </Paper>
       </div>

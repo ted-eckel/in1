@@ -5,7 +5,7 @@ import union from 'lodash/union'
 import concat from 'lodash/concat'
 
 
-export const itemsSelector = state => state.pocket.items;
+// export const itemsSelector = state => state.pocket.items;
 export const pocketIsFetchingSelector = state => state.pocket.isFetching;
 export const errorSelector = state => state.pocket.error;
 export const endOfListSelector = state => state.pocket.endOfList;
@@ -84,44 +84,6 @@ export const allAuthSelector = createSelector([
   }
 })
 
-export const allAccountsCountSelector = createSelector([
-  identitiesSelector,
-  isAuthorizedSelector
-], (
-  identities,
-  isAuthorized
-) => {
-  let gmail = isAuthorized ? 1 : 0;
-  return identities.length + gmail;
-})
-
-export const allAccountsSelector = createSelector([
-  identitiesSelector,
-  isAuthorizedSelector,
-  isAuthorizingSelector,
-  driveIsAuthorizedSelector,
-  driveIsAuthorizingSelector
-], (
-  identities,
-  isAuthorized,
-  isAuthorizing,
-  driveIsAuthorized,
-  driveIsAuthorizing
-) => {
-  let accounts = [];
-  if (identities.length === 1) {
-    accounts.push('pocket');
-  }
-  if (isAuthorized && !isAuthorizing){
-    accounts.push('gmail')
-  }
-  if (driveIsAuthorized && !driveIsAuthorizing){
-    accounts.push('drive')
-  }
-
-  return accounts;
-})
-
 export const threadsSelector = createSelector([
   searchQuerySelector,
   threadListByQuerySelector,
@@ -131,9 +93,28 @@ export const threadsSelector = createSelector([
   threadListByQuery,
   threadsByID,
 ) => {
-  const threadList = searchQuery ? threadListByQuery[searchQuery] : threadListByQuery['labelIds:INBOX'];
+  const threadList = threadListByQuery[searchQuery];
   return threadList ?
     threadList.threadIDs.map(threadID => threadsByID[threadID]) :
+    [];
+});
+
+export const pocketSearchSelector = state => state.pocket.app.search;
+export const pocketItemListBySearchSelector = state => state.pocket.itemListBySearch;
+export const pocketItemsByIDSelector = state => state.pocket.itemsByID;
+
+export const itemsSelector = createSelector([
+  pocketSearchSelector,
+  pocketItemListBySearchSelector,
+  pocketItemsByIDSelector,
+], (
+  search,
+  itemListBySearch,
+  itemsByID
+) => {
+  const itemsList = itemListBySearch[search];
+  return itemsList ?
+    itemsList.itemIDs.map(itemID => itemsByID[itemID]) :
     [];
 });
 
@@ -170,7 +151,7 @@ export const hasMoreThreadsSelector = createSelector([
   searchQuery,
   threadListByQuery,
 ) => {
-  const threadList = searchQuery ? threadListByQuery[searchQuery] : threadListByQuery['labelIds:INBOX'];
+  const threadList = threadListByQuery[searchQuery];
   return !threadList || !!threadList.nextPageToken;
 });
 
@@ -181,7 +162,7 @@ export const loadedThreadCountSelector = createSelector([
   searchQuery,
   threadListByQuery,
 ) => {
-  const threadList = searchQuery ? threadListByQuery[searchQuery] : threadListByQuery['labelIds:INBOX'];
+  const threadList = threadListByQuery[searchQuery];
   return threadList ? threadList.threadIDs.length : 0;
 });
 

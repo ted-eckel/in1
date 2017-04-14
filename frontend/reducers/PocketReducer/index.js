@@ -3,36 +3,47 @@ import union from 'lodash/union'
 import uniq from 'lodash/uniq'
 import { combineReducers } from 'redux'
 import update from 'react/lib/update'
-import ActionType from '../actions/ActionType'
+import ActionType from '../../actions/ActionType'
 
-const itemsReducer = (state = [], action) => {
+import ItemListReducer from './ItemListReducer'
+import AppReducer from './AppReducer'
+
+const itemsByIDReducer = (itemsByID = {}, action) => {
   switch (action.type) {
     case ActionType.Pocket.Items.FETCH_SUCCESS:
-      let oldState = union([], state);
-      let newState = action.items;
-      let nextState = uniq(union(oldState, newState));
-      return nextState;
+      return action.items.reduce(
+        (newItemsByID, item) => {
+          newItemsByID[item.id] = item
+          return newItemsByID
+        },
+        {...itemsByID},
+      );
+      // let oldState = union([], state);
+      // let newState = action.items;
+      // let nextState = uniq(union(oldState, newState));
+      // return nextState;
     default:
-      return state;
+      return itemsByID;
   }
 }
 
-const paramsReducer = (state = {
-    count: 20,
-    detailType: "complete",
-    offset: 0
-}, action) => {
-  switch (action.type) {
-    case ActionType.Pocket.Items.FETCH_REQUEST:
-      return update(state, {$merge: action.params})
-    case ActionType.Pocket.Items.FETCH_SUCCESS:
-      let nextState = merge({}, state);
-      nextState.offset += 20;
-      return nextState;
-    default:
-      return state;
-  }
-}
+// const paramsReducer = (state = {
+//     count: 20,
+//     detailType: "complete",
+//     offset: 0,
+//     search: ''
+// }, action) => {
+//   switch (action.type) {
+//     case ActionType.Pocket.Items.FETCH_REQUEST:
+//       return update(state, {$merge: action.params})
+//     case ActionType.Pocket.Items.FETCH_SUCCESS:
+//       let nextState = merge({}, state);
+//       nextState.offset += 20;
+//       return nextState;
+//     default:
+//       return state;
+//   }
+// }
 
 const isFetchingReducer = (state = false, action) => {
   switch (action.type) {
@@ -93,8 +104,10 @@ const authorizationReducer = (state = {
 }
 
 export default combineReducers({
-  items: itemsReducer,
-  params: paramsReducer,
+  app: AppReducer,
+  itemsByID: itemsByIDReducer,
+  itemListBySearch: ItemListReducer,
+  // params: paramsReducer,
   isFetching: isFetchingReducer,
   error: errorReducer,
   endOfList: endOfListReducer,

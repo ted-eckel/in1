@@ -16,6 +16,8 @@ import * as GoogleActions from '../actions/Google/GoogleActions'
 import * as AppActions from '../actions/AppActions'
 import * as GmailThreadActions from '../actions/Gmail/ThreadActions'
 import * as FileActions from '../actions/Drive/FileActions'
+import * as GmailAppActions from '../actions/Gmail/AppActions'
+import * as DriveAppActions from '../actions/Drive/AppActions'
 import { push } from 'react-router-redux'
 
 import {
@@ -59,6 +61,8 @@ import {
     driveAuthFailure: GoogleActions.driveAuthFailure,
     gmailAuthSuccess: GoogleActions.gmailAuthSuccess,
     gmailAuthFailure: GoogleActions.gmailAuthFailure,
+    gmailLogin: GmailAppActions.gmailLogin,
+    driveLogin: DriveAppActions.driveLogin,
     push
   }, dispatch),
 )
@@ -104,53 +108,74 @@ class App extends Component {
     window.location.reload();
   }
 
-  gmailLogin = () => {
-    return window.gapi.auth2.getAuthInstance().then(GoogleAuth => {
-      let isSignedIn = GoogleAuth.isSignedIn.get();
-      if (isSignedIn) {
-        this.gmailClientInit()
-      } else {
-        GoogleAuth.signIn().then(() => gmailClientInit());
-      }
-    })
-  }
-
-  gmailClientInit = () => {
-    this.props.gmailAuthRequest();
-    return window.gapi.client.init({
-      discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"],
-      clientId: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
-      scope: "https://www.googleapis.com/auth/gmail.modify"
-    }).then(res => {
-      this.props.gmailAuthSuccess();
-    }, err => {
-      this.props.gmailAuthFailure();
-    })
-  }
-
-  driveClientInit = () => {
-    this.props.driveAuthRequest()
-    return window.gapi.client.init({
-      discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-      clientId: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
-      scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata https://www.googleapis.com/auth/drive.photos.readonly"
-    }).then(res => {
-      this.props.driveAuthSuccess()
-    }, err => {
-      this.props.driveAuthFailure()
-    })
-  }
-
-  driveLogin = () => {
-    return window.gapi.auth2.getAuthInstance().then(GoogleAuth => {
-      let isSignedIn = GoogleAuth.isSignedIn.get();
-      if (isSignedIn) {
-        this.driveClientInit()
-      } else {
-        GoogleAuth.signIn().then(() => driveClientInit());
-      }
-    })
-  }
+  // gmailLogin = () => {
+  //   this.props.gmailAuthRequest();
+  //   window.gapi.auth2.getAuthInstance().signIn(
+  //     {
+  //       scope: 'https://www.googleapis.com/auth/gmail.modify profile email'
+  //     }
+  //   ).then(res => {
+  //     this.props.gmailAuthSuccess();
+  //   }, err => {
+  //     this.props.gmailAuthFailure();
+  //   })
+  //   // return window.gapi.auth2.getAuthInstance().then(GoogleAuth => {
+  //   //   let isSignedIn = GoogleAuth.isSignedIn.get();
+  //   //   if (isSignedIn) {
+  //   //     this.gmailClientInit()
+  //   //   } else {
+  //   //     GoogleAuth.signIn().then(() => gmailClientInit());
+  //   //   }
+  //   // })
+  // }
+  //
+  // gmailClientInit = () => {
+  //   this.props.gmailAuthRequest();
+  //   window.gapi.client.init({
+  //     discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"],
+  //     clientId: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
+  //     scope: "https://www.googleapis.com/auth/gmail.modify"
+  //   }).then(res => {
+  //     this.props.gmailAuthSuccess();
+  //   }, err => {
+  //     this.props.gmailAuthFailure();
+  //   })
+  // }
+  //
+  // driveClientInit = () => {
+  //   this.props.driveAuthRequest()
+  //   window.gapi.client.init({
+  //     discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+  //     clientId: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
+  //     scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata https://www.googleapis.com/auth/drive.photos.readonly"
+  //   }).then(res => {
+  //     this.props.driveAuthSuccess()
+  //   }, err => {
+  //     this.props.driveAuthFailure()
+  //   })
+  // }
+  //
+  // driveLogin = () => {
+  //   this.props.driveAuthRequest()
+  //   window.gapi.auth2.getAuthInstance().signIn(
+  //     {
+  //       scope: 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata https://www.googleapis.com/auth/drive.photos.readonly profile email'
+  //     }
+  //   )
+  //   .then(res => {
+  //     this.props.driveAuthSuccess()
+  //   }, err => {
+  //     this.props.driveAuthFailure()
+  //   })
+  //   // return window.gapi.auth2.getAuthInstance().then(GoogleAuth => {
+  //   //   let isSignedIn = GoogleAuth.isSignedIn.get();
+  //   //   if (isSignedIn) {
+  //   //     this.driveClientInit()
+  //   //   } else {
+  //   //     GoogleAuth.signIn().then(() => driveClientInit());
+  //   //   }
+  //   // })
+  // }
 
   render() {
     let { driveAuthSuccess, driveAuthFailure, gmailAuthSuccess,
@@ -167,17 +192,24 @@ class App extends Component {
         }
       ).then(GoogleAuth => {
         let isSignedIn = GoogleAuth.isSignedIn.get();
+        // console.log(`isSignedIn: ${isSignedIn}`)
         if (isSignedIn) {
           let currentUser = GoogleAuth.currentUser.get();
           // console.log(`currentUserEmail: ${currentUser.getBasicProfile().getEmail()}`)
           let scopes = currentUser.getGrantedScopes();
+          // console.log(`scopes: ${scopes}`)
 
           if (scopes.includes("https://www.googleapis.com/auth/gmail.modify")){
             gmailAuthRequest();
             window.gapi.client.load(
               "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"
             )
-            .then(() => gmailAuthSuccess())
+            // window.gapi.client.init({
+            //   discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"],
+            //   clientId: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
+            //   scope: "https://www.googleapis.com/auth/gmail.modify"
+            // })
+            .then(res => gmailAuthSuccess(), err => gmailAuthFailure())
           } else {
             gmailAuthFailure()
           }
@@ -192,7 +224,13 @@ class App extends Component {
             driveAuthRequest();
             window.gapi.client.load(
               "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
-            ).then(() => driveAuthSuccess())
+            )
+            // window.gapi.client.init({
+            //   discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+            //   clientId: '128518506637-qcrlhsu7pnivdarnagtshk9hdv600c4c.apps.googleusercontent.com',
+            //   scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata https://www.googleapis.com/auth/drive.photos.readonly"
+            // })
+            .then(res => driveAuthSuccess(), err => gmailAuthFailure())
           } else {
             driveAuthFailure()
           }
@@ -218,8 +256,8 @@ class App extends Component {
               drawerOpen={this.props.drawerOpen}
               toggleDrawer={this.props.toggleDrawer}
               allAuth={this.props.allAuth}
-              gmailLogin={this.gmailLogin}
-              driveLogin={this.driveLogin}
+              gmailLogin={this.props.gmailLogin}
+              driveLogin={this.props.driveLogin}
             />
           </div>
           <Bar />

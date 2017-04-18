@@ -8,7 +8,7 @@ import concat from 'lodash/concat'
 // export const itemsSelector = state => state.pocket.items;
 export const pocketIsFetchingSelector = state => state.pocket.isFetching;
 export const errorSelector = state => state.pocket.error;
-export const endOfListSelector = state => state.pocket.endOfList;
+// export const endOfListSelector = state => state.pocket.endOfList;
 
 export const drawerOpenSelector = state => state.app.drawerOpen;
 
@@ -27,9 +27,7 @@ export const driveIsAuthorizingSelector = state => state.drive.authorization.isA
 
 export const gmailIsFetchingSelector = state => state.gmail.isFetching;
 export const driveIsFetchingSelector = state => state.drive.isFetching;
-
-export const drivePageTokenSelector = state => state.drive.nextPageToken;
-export const driveFilesSelector = state => state.drive.fileList;
+// export const driveFilesSelector = state => state.drive.fileList;
 
 export const pocketAuthSelector = state => state.pocket.authorization.isAuthorized;
 
@@ -118,6 +116,84 @@ export const itemsSelector = createSelector([
     [];
 });
 
+export const driveQuerySelector = state => state.drive.app.searchQuery;
+export const driveFileListByQuerySelector = state => state.drive.fileListByQuery;
+export const driveFilesByIDSelector = state => state.drive.filesByID;
+
+export const driveFilesSelector = createSelector([
+  driveQuerySelector,
+  driveFileListByQuerySelector,
+  driveFilesByIDSelector
+], (
+  query,
+  fileListByQuery,
+  filesByID
+) => {
+  const fileList = fileListByQuery[query];
+  return fileList ?
+    fileList.fileIDs.map(fileID => filesByID[fileID]) :
+    [];
+});
+
+export const driveHasMoreFilesSelector = createSelector([
+  driveQuerySelector,
+  driveFileListByQuerySelector
+], (
+  query,
+  fileListByQuery
+) => {
+  const fileList = fileListByQuery[query];
+  return !fileList || !!fileList.nextPageToken;
+});
+
+export const pocketHasMoreItemsSelector = createSelector([
+  pocketSearchSelector,
+  pocketItemListBySearchSelector,
+], (
+  search,
+  itemListBySearch
+) => {
+  const itemList = itemListBySearch[search];
+  return !itemList || itemList.status === 1;
+})
+
+export const hasMoreThreadsSelector = createSelector([
+  searchQuerySelector,
+  threadListByQuerySelector,
+], (
+  searchQuery,
+  threadListByQuery,
+) => {
+  const threadList = threadListByQuery[searchQuery];
+  return !threadList || !!threadList.nextPageToken;
+});
+
+export const endOfListSelector = createSelector([
+  pocketHasMoreItemsSelector,
+  hasMoreThreadsSelector,
+  driveHasMoreFilesSelector,
+  allAuthSelector
+], (
+  pocketHasMoreItems,
+  gmailHasMoreThreads,
+  driveHasMoreFiles,
+  allAuth
+) => {
+  if (allAuth.pocket && pocketHasMoreItems) {
+    return false
+  }
+
+  if (allAuth.gmail && gmailHasMoreThreads) {
+    return false
+  }
+
+  if (allAuth.drive && driveHasMoreFiles) {
+    return false
+  }
+
+  return true;
+})
+
 // export const unsubscribeUrlSelector = createSelector([
 //   selectedThreadMessagesSelector,
 //   selectedMessageIDSelector,
@@ -144,16 +220,7 @@ export const lastMessageInEachThreadSelector = createSelector([
   );
 });
 
-export const hasMoreThreadsSelector = createSelector([
-  searchQuerySelector,
-  threadListByQuerySelector,
-], (
-  searchQuery,
-  threadListByQuery,
-) => {
-  const threadList = threadListByQuery[searchQuery];
-  return !threadList || !!threadList.nextPageToken;
-});
+
 
 export const loadedThreadCountSelector = createSelector([
   searchQuerySelector,

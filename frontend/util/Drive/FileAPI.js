@@ -7,7 +7,7 @@ export const list = options => {
     orderBy: options.orderBy || null,
     pageSize: options.pageSize || null,
     pageToken: options.pageToken || null,
-    q: options.query || null,
+    q: options.q || null,
     spaces: options.spaces || null,
     fields: options.fields || null
   }).then(listResponse => {

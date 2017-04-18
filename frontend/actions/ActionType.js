@@ -51,6 +51,12 @@ const ActionType = {
       FETCH_LIST_SUCCESS: '',
       FETCH_LIST_FAILURE: '',
 
+      MOVE_TO_INBOX_REQUEST: '',
+      MOVE_TO_INBOX_SUCCESS: '',
+      MOVE_TO_INBOX_FAILURE: '',
+
+      REFRESH: '',
+
       STAR_REQUEST: '',
       STAR_SUCCESS: '',
       STAR_FAILURE: '',
@@ -58,6 +64,10 @@ const ActionType = {
       UNSTAR_REQUEST: '',
       UNSTAR_SUCCESS: '',
       UNSTAR_FAILURE: '',
+
+      TRASH_REQUEST: '',
+      TRASH_SUCCESS: '',
+      TRASH_FAILURE: '',
     },
   },
 

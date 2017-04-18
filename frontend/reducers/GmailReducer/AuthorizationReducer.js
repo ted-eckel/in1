@@ -24,12 +24,6 @@ export default (state = {
         isAuthorized: false,
         isAuthorizing: false,
       }
-    case ActionType.Gmail.Thread.FETCH_LIST_SUCCESS:
-      return {
-        ...state,
-        isAuthorized: true,
-        isAuthorizing: false,
-      }
   }
   return state
 }

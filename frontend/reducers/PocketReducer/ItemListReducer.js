@@ -19,6 +19,7 @@ export default (itemListBySearch = {}, action) => {
             itemIDs: [],
             isFetching: true,
             nextOffset: 0,
+            status: null
           }
         }
       }
@@ -30,7 +31,8 @@ export default (itemListBySearch = {}, action) => {
         [action.search]: {
           itemIDs: [...itemList.itemIDs, ...newItemIDs],
           isFetching: false,
-          nextOffset: itemList.nextOffset + 20
+          nextOffset: itemList.nextOffset + 20,
+          status: action.status
         }
       }
 

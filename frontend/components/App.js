@@ -28,6 +28,8 @@ import {
   allAuthSelector,
   isFetchingSelector,
   hasMoreThreadsSelector,
+  driveHasMoreFilesSelector,
+  pocketHasMoreItemsSelector,
   threadsByIDSelector,
 } from '../selectors'
 
@@ -40,6 +42,8 @@ import {
     getAllItems: getAllItemsSelector(state),
     endOfList: endOfListSelector(state),
     gmailHasMoreThreads: hasMoreThreadsSelector(state),
+    driveHasMoreFiles: driveHasMoreFilesSelector(state),
+    pocketHasMoreItems: pocketHasMoreItemsSelector(state),
     allAuth: allAuthSelector(state),
     isFetching: isFetchingSelector(state),
     gmailThreadsByID: threadsByIDSelector(state),
@@ -77,7 +81,7 @@ class App extends Component {
     const {
       fetchPocketItems, endOfList, allAuth, isFetching, driveFetchFiles,
       searchQuery, gmailLoadThreadList, fetchEverything, gmailHasMoreThreads,
-      dispatchAllItems, getAllItems
+      dispatchAllItems, getAllItems, driveHasMoreFiles, pocketHasMoreItems
     } = this.props;
 
     let promiseArray = []
@@ -87,11 +91,11 @@ class App extends Component {
         promiseArray.push(gmailLoadThreadList(searchQuery));
       }
 
-      if (allAuth.pocket) {
+      if (allAuth.pocket && pocketHasMoreItems) {
         promiseArray.push(fetchPocketItems());
       }
 
-      if (allAuth.drive) {
+      if (allAuth.drive && driveHasMoreFiles) {
         promiseArray.push(driveFetchFiles());
       }
 

@@ -1,17 +1,24 @@
 import ActionType from '../ActionType';
 import * as FileAPI from '../../util/Drive/FileAPI';
-import { drivePageTokenSelector } from '../../selectors/index'
 
 export const loadList = (
   // q = "'root' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false",
-  q = `(not appProperties has { key='state' and value='archived' }) and mimeType != 'application/vnd.google-apps.folder' and trashed = false`,
+  // q = `(not appProperties has { key='state' and value='archived' }) and mimeType != 'application/vnd.google-apps.folder' and trashed = false`,
+  q = "mimeType != 'application/vnd.google-apps.folder' and trashed = false",
   fields = "nextPageToken, files",
   spaces = 'drive,photos',
   pageSize = 20
 ) => (dispatch, getState) => {
-    let { nextPageToken } = getState().drive;
-    let pageToken = nextPageToken;
+    const { fileListByQuery } = getState().drive;
+    const fileList = fileListByQuery[q];
 
+    let pageToken = null;
+    if (fileList) {
+      pageToken = fileList.nextPageToken;
+      if (!pageToken) {
+        return;
+      }
+    }
 
     dispatch({
       type: ActionType.Drive.File.FETCH_LIST_REQUEST,
@@ -44,7 +51,21 @@ export const loadList = (
         q,
         fields,
         spaces,
-        pageSize
+        pageSize,
+        error
       })
+    })
+  }
+
+  export const trash = fileID => dispatch => {
+    dispatch({
+      type: ActionType.Drive.File.TRASH_REQUEST,
+      fileID
+    });
+
+    FileAPI.trash({fileID}).then(res => {
+      dispatch({type: ActionType.Drive.File.TRASH_SUCCESS, fileID, res})
+    }, err => {
+      dispatch({type: ActionType.Drive.File.TRASH_FAILURE, fileID, err})
     })
   }

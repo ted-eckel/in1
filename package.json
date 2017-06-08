@@ -2,9 +2,11 @@
   "name": "in1_20161227",
   "version": "1.0.0",
   "description": "== README",
-  "main": "index.js",
+  "main": "webpack.config.js",
   "scripts": {
-    "postinstall": "./node_modules/.bin/webpack"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "webpack",
+    "webpack": "webpack --watch"
   },
   "repository": {
     "type": "git",

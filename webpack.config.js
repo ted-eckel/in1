@@ -28,7 +28,6 @@ module.exports = {
     path: path.join(__dirname, 'app', 'assets', 'javascripts'),
     filename: "bundle.js"
   },
-  plugins: plugins,
   module: {
     loaders: [
       {
@@ -36,6 +35,7 @@ module.exports = {
         exclude: /(node_modules|bower_components)/,
         loader: 'babel',
         query: {
+          plugins: plugins,
           presets: ['es2015', 'react', 'stage-2']
         }
       },
@@ -45,7 +45,7 @@ module.exports = {
       }
     ]
   },
-  devtool: 'source-maps',
+  devtool: 'source-map',
   resolve: {
     extensions: ["", ".js", ".jsx"]
   }

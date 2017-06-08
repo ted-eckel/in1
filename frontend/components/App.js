@@ -15,7 +15,7 @@ import Bar from './Bar'
 import Drawer from './Drawer'
 import Items from './Items'
 import CreateNoteModal from './CreateNoteModal'
-import FloatingActionButton from 'material-ui/FLoatingActionButton'
+import FloatingActionButton from 'material-ui/FloatingActionButton'
 import ContentAdd from 'material-ui/svg-icons/content/add'
 import { EditorState, convertFromRaw } from 'draft-js'
 

@@ -26,6 +26,7 @@
     "babel-preset-stage-2": "^6.18.0",
     "draft-convert": "^1.4.6",
     "draft-js": "^0.10.1",
+    "json-loader": "^0.5.4",
     "lodash": "^4.17.4",
     "masonry-layout": "^4.1.1",
     "material-ui": "^0.16.6",

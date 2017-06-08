@@ -3,11 +3,14 @@
 import GmailListItem from './GmailListItem'
 import PocketListItem from './PocketListItem'
 import DriveListItem from './DriveListItem'
+import NoteListItem from './NoteListItem'
 import React, { Component, PropTypes } from 'react'
 
 import InfiniteScroll from 'react-infinite-scroller'
 import Masonry from 'react-masonry-component'
 import CircularProgress from 'material-ui/CircularProgress'
+
+import { rawContentConvert } from '../util/NoteAPI'
 
 export default class Items extends Component {
   static propTypes = {
@@ -124,7 +127,7 @@ export default class Items extends Component {
       const childElements = items.map((item, idx) => {
         if (item && item.service === "pocket") {
           return (
-            <div style={{display: 'inline-block'}} key={idx}>
+            <div style={{display: 'inline-block'}} key={'pocket' + items[idx].id}>
               <PocketListItem
                 item={items[idx].item}
                 date={items[idx].date.toString()}
@@ -136,7 +139,7 @@ export default class Items extends Component {
           )
         } else if (item && item.service === "gmail") {
           return (
-            <div style={{display: 'inline-block'}} key={idx}>
+            <div style={{display: 'inline-block'}} key={'gmail' + items[idx].id}>
               <GmailListItem
                 gmailId={items[idx].id}
                 from={items[idx].from}
@@ -156,11 +159,24 @@ export default class Items extends Component {
           )
         } else if (item && item.service === "drive") {
           return (
-            <div style={{display: 'inline-block'}} key={idx}>
+            <div style={{display: 'inline-block'}} key={'drive' + items[idx].id}>
               <DriveListItem
                 file={items[idx].file}
                 date={items[idx].date.toString()}
                 handleRequestDelete={this.props.handleRequestDelete}
+              />
+            </div>
+          )
+        } else if (item && item.service === "in1box") {
+          return (
+            <div style={{display: 'inline-block'}} key={'note' + items[idx].id}>
+              <NoteListItem
+                item={items[idx].note}
+                date={items[idx].date.toString()}
+                trashNote={this.props.trashNote}
+                archiveNote={this.props.archiveNote}
+                toggleCreateNoteModal={this.props.toggleCreateNoteModal}
+                createdNoteState={this.props.createdNoteState}
               />
             </div>
           )

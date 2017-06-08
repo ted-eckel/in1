@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-
+  include Storext.model
   attr_reader :password
 
   validates :username, :password_digest, :session_token, presence: true
@@ -11,6 +11,11 @@ class User < ActiveRecord::Base
 
   has_many :identities
   has_many :notes
+  has_many :tags
+
+  store_attributes :settings do
+    drive_uploads_folder_id String, default: ''
+  end
 
   def password= password
 		self.password_digest = BCrypt::Password.create(password)

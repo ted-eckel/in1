@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react'
 import MuiDrawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
-import * as API from '../util/API'
 
 export default class Drawer extends Component {
   static propTypes = {
     style: PropTypes.object,
     drawerOpen: PropTypes.bool.isRequired,
     toggleDrawer: PropTypes.func.isRequired,
+    toggleKeepModal: PropTypes.func.isRequired,
     allAuth: PropTypes.object.isRequired,
     gmailLogin: PropTypes.func.isRequired,
     driveLogin: PropTypes.func.isRequired,
@@ -30,6 +30,10 @@ export default class Drawer extends Component {
     this.handleDrawerClose();
     this.props.driveLogin();
   };
+
+  toggleKeepModal = () => {
+    this.props.toggleKeepModal();
+  }
 
   render() {
     return(
@@ -72,13 +76,29 @@ export default class Drawer extends Component {
             this.props.allAuth.drive &&
             this.props.allAuth.pocket
             ? (
-              <div style={{margin: '0 auto', display: 'table'}}>
-                All possible services connected!
+              <div>
+                <span style={{border: '10px', boxSizing: 'border-box',
+                   display: 'block', cursor: 'default',  margin: '0px', padding: '0px',
+                   outline: 'none', lineHeight: '48px', position: 'relative',
+                   minHeight: '48px', whiteSpace: 'nowrap'}}>
+                  <div>
+                    <span style={{height: '100%', width: '100%', position: 'absolute',
+                       top: '0px', left: '0px', overflow: 'hidden', pointerEvents: 'none'}}></span>
+                    <div style={{marginLeft: '0px', padding: '0px 16px', position: 'relative'}}>
+                      All possible services connected!
+                    </div>
+                  </div>
+                </span>
               </div>
             )
             : null
           }
+          <MenuItem onClick={this.toggleKeepModal}>Upload Google Keep Notes</MenuItem>
       </MuiDrawer>
     )
   }
 }
+
+/* <div style={{margin: '0 auto', display: 'table'}}>
+  All possible services connected!
+</div> */

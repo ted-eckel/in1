@@ -16,6 +16,9 @@ const ActionType = {
     View: {
       TOGGLE_DRAWER: '',
       TOGGLE_LIST_TYPE: '',
+      TOGGLE_KEEP_MODAL: '',
+
+      TOGGLE_CREATE_NOTE_MODAL: '',
     },
 
     Session: {
@@ -24,6 +27,48 @@ const ActionType = {
       SIGNUP: '',
       RECEIVE_CURRENT_USER: '',
       RECEIVE_ERRORS: '',
+    },
+
+    Uploads: {
+      SET_FOLDER_ID: '',
+    },
+
+    Notes: {
+      FETCH_REQUEST: '',
+      FETCH_SUCCESS: '',
+      FETCH_FAILURE: '',
+      END_OF_LIST: '',
+
+      ARCHIVE_REQUEST: '',
+      ARCHIVE_SUCCESS: '',
+      ARCHIVE_FAILURE: '',
+
+      DELETE_REQUEST: '',
+      DELETE_SUCCESS: '',
+      DELETE_FAILURE: '',
+
+      TRASH_REQUEST: '',
+      TRASH_SUCCESS: '',
+      TRASH_FAILURE: '',
+
+      UNARCHIVE_REQUEST: '',
+      UNARCHIVE_SUCCESS: '',
+      UNARCHIVE_FAILURE: '',
+
+      CREATE_NOTE_REQUEST: '',
+      CREATE_NOTE_SUCCESS: '',
+      CREATE_NOTE_FAILURE: '',
+
+      UPDATE_NOTE_REQUEST: '',
+      UPDATE_NOTE_SUCCESS: '',
+      UPDATE_NOTE_FAILURE: '',
+
+      UPLOAD_NOTES_REQUEST: '',
+      UPLOAD_NOTES_SUCCESS: '',
+      UPLOAD_NOTES_FAILURE: '',
+
+      UPDATE_CREATED_NOTE_TITLE: '',
+      UPDATE_CREATED_NOTE_CONTENT: '',
     },
   },
 

@@ -15,7 +15,8 @@ export const receiveItems = (items, search) => (
         date: d,
         item: items.list[key],
         id: key
-      }})
+      }
+    })
   }
 )
 
@@ -25,13 +26,12 @@ export const receiveError = error => ({
 })
 
 export const fetchItems = (search = '', requestedResultCount = 20) => (dispatch, getState) => {
-  const {itemListBySearch} = getState().pocket;
-  const itemList = itemListBySearch[search];
+  const itemList = getState().pocket.itemListBySearch[search];
 
   let offset = 0;
   if (itemList) {
     offset = itemList.nextOffset;
-    status = itemList.status;
+    let status = itemList.status;
     if (status === 2) {
       return;
     }

@@ -2,6 +2,14 @@
 
 import ActionType from '../actions/ActionType'
 
+export const changeSettings = settings => {
+  return $.ajax({
+    method: 'PATCH',
+    url: 'api/change_settings',
+    data: settings
+  })
+}
+
 // export const login = () => {
 //   return window.gapi.auth2.getAuthInstance().then(GoogleAuth => {
 //     let isSignedIn = GoogleAuth.isSignedIn.get();
@@ -25,7 +33,7 @@ import ActionType from '../actions/ActionType'
 //     dispatch({type: ActionType.Gmail.Authorization.FAILURE})
 //   })
 // }
-// 
+//
 // const driveClientInit = () => dispatch => {
 //   dispatch({type: ActionType.Drive.Authorization.REQUEST})
 //   return window.gapi.client.init({

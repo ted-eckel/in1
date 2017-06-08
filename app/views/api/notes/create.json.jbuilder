@@ -1,1 +1,3 @@
-json.extract! @note, :id, :title, :content, :color, :initial_created_at, :initial_updated_at, :state
+json.notes @notes.each do |note|
+  json.partial! 'note', note: note
+end

@@ -11,8 +11,11 @@ export const errorSelector = state => state.pocket.error;
 // export const endOfListSelector = state => state.pocket.endOfList;
 
 export const drawerOpenSelector = state => state.app.drawerOpen;
+export const keepModalOpenSelector = state => state.app.keepModalOpen;
+export const createNoteModalOpenSelector = state => state.app.createNoteModalOpen;
 
 export const identitiesSelector = state => state.session.currentUser.identities;
+export const currentUserSelector = state => state.session.currentUser;
 
 const threadListByQuerySelector = state => state.gmail.threadListByQuery;
 export const threadsByIDSelector = state => state.gmail.threadsByID;
@@ -28,29 +31,35 @@ export const driveIsAuthorizingSelector = state => state.drive.authorization.isA
 export const gmailIsFetchingSelector = state => state.gmail.isFetching;
 export const driveIsFetchingSelector = state => state.drive.isFetching;
 // export const driveFilesSelector = state => state.drive.fileList;
+export const notesIsFetchingSelector = state => state.notes.isFetching;
+export const createdNoteSelector = state => state.notes.createdNote;
 
 export const pocketAuthSelector = state => state.pocket.authorization.isAuthorized;
 
 export const isFetchingSelector = createSelector([
   pocketIsFetchingSelector,
   driveIsFetchingSelector,
-  gmailIsFetchingSelector
+  gmailIsFetchingSelector,
+  notesIsFetchingSelector,
 ], (
   pocketIsFetching,
   driveIsFetching,
-  gmailIsFetching
+  gmailIsFetching,
+  notesIsFetching,
 ) => {
   let anyAreFetching = false;
   if (
     pocketIsFetching ||
     driveIsFetching ||
-    gmailIsFetching
+    gmailIsFetching ||
+    notesIsFetching
   ) {anyAreFetching = true};
   return {
     any: anyAreFetching,
     pocket: pocketIsFetching,
     drive: driveIsFetching,
-    gmail: gmailIsFetching
+    gmail: gmailIsFetching,
+    notes: notesIsFetching,
   }
 })
 
@@ -116,6 +125,25 @@ export const itemsSelector = createSelector([
     [];
 });
 
+export const appSearchSelector = state => state.app.search;
+export const noteListBySearchSelector = state => state.notes.noteListBySearch;
+export const notesByIDSelector = state => state.notes.notesByID;
+
+export const notesSelector = createSelector([
+  appSearchSelector,
+  noteListBySearchSelector,
+  notesByIDSelector
+], (
+  appSearch,
+  noteListBySearch,
+  notesByID
+) => {
+  const notesList = noteListBySearch[appSearch];
+  return notesList ?
+    notesList.noteIDs.map(noteID => notesByID[noteID]) :
+    [];
+});
+
 export const driveQuerySelector = state => state.drive.app.searchQuery;
 export const driveFileListByQuerySelector = state => state.drive.fileListByQuery;
 export const driveFilesByIDSelector = state => state.drive.filesByID;
@@ -157,6 +185,17 @@ export const pocketHasMoreItemsSelector = createSelector([
   return !itemList || itemList.status === 1;
 })
 
+export const in1boxHasMoreNotesSelector = createSelector([
+  appSearchSelector,
+  noteListBySearchSelector,
+], (
+  search,
+  noteListBySearch
+) => {
+  const noteList = noteListBySearch[search];
+  return !noteList || noteList.status === 1;
+})
+
 export const hasMoreThreadsSelector = createSelector([
   searchQuerySelector,
   threadListByQuerySelector,
@@ -172,11 +211,13 @@ export const endOfListSelector = createSelector([
   pocketHasMoreItemsSelector,
   hasMoreThreadsSelector,
   driveHasMoreFilesSelector,
+  in1boxHasMoreNotesSelector,
   allAuthSelector
 ], (
   pocketHasMoreItems,
   gmailHasMoreThreads,
   driveHasMoreFiles,
+  in1boxHasMoreNotes,
   allAuth
 ) => {
   if (allAuth.pocket && pocketHasMoreItems) {
@@ -188,6 +229,10 @@ export const endOfListSelector = createSelector([
   }
 
   if (allAuth.drive && driveHasMoreFiles) {
+    return false
+  }
+
+  if (in1boxHasMoreNotes) {
     return false
   }
 
@@ -220,8 +265,6 @@ export const lastMessageInEachThreadSelector = createSelector([
   );
 });
 
-
-
 export const loadedThreadCountSelector = createSelector([
   searchQuerySelector,
   threadListByQuerySelector,
@@ -236,12 +279,14 @@ export const loadedThreadCountSelector = createSelector([
 export const getAllItemsSelector = createSelector([
   lastMessageInEachThreadSelector,
   itemsSelector,
+  notesSelector,
   driveFilesSelector,
   isFetchingSelector,
   allAuthSelector,
 ], (
     lastMessageInEachThread,
     items,
+    notes,
     driveFiles,
     isFetching,
     allAuth,
@@ -249,6 +294,7 @@ export const getAllItemsSelector = createSelector([
     let driveCurrent;
     let gmailCurrent;
     let pocketCurrent;
+    let notesCurrent;
 
     if (allAuth.all) {
       if (isFetching.pocket) {
@@ -263,13 +309,18 @@ export const getAllItemsSelector = createSelector([
         driveCurrent = Object.freeze(driveFiles);
       }
 
+      if (isFetching.notes) {
+        notesCurrent = Object.freeze(notes);
+      }
+
       if (isFetching.any) {
-        return concat(pocketCurrent, gmailCurrent, driveCurrent).sort((a, b) => b.date - a.date);
+        return concat(pocketCurrent, gmailCurrent, driveCurrent, notesCurrent).sort((a, b) => b.date - a.date);
       } else {
         pocketCurrent = null;
         driveCurrent = null;
         gmailCurrent = null;
-        return concat(items, lastMessageInEachThread, driveFiles).sort((a, b) => b.date - a.date);
+        notesCurrent = null;
+        return concat(items, lastMessageInEachThread, driveFiles, notes).sort((a, b) => b.date - a.date);
       }
     } else {
       return [];

@@ -21,6 +21,17 @@ const SessionReducer = (state = _nullUser, action) => {
       return merge({}, _nullUser, {
         errors
       });
+    case ActionType.App.Uploads.SET_FOLDER_ID:
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          settings: {
+            ...state.currentUser.settings,
+            drive_uploads_folder_id: action.folderId,
+          }
+        }
+      }
     default:
       return state;
   }

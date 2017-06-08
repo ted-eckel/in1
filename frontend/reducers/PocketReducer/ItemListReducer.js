@@ -56,12 +56,13 @@ function removeItem(itemListBySearch, itemIDToRemove, searchRegex) {
       if (searchRegex.test(search)) {
         const existingItemList = itemListBySearch[search];
         const newItemIDs = existingItemList.itemIDs.filter(
-          threadID => threadID !== itemIDToRemove
+          itemID => itemID !== itemIDToRemove
         );
         if (newItemIDs.length < existingItemList.itemIDs.length) {
           newItemListBySearch[search] = {
             ...existingItemList,
             itemIDs: newItemIDs,
+            nextOffset: existingItemList.nextOffset - 1,
           };
         } else {
           newItemListBySearch[search] = existingItemList;

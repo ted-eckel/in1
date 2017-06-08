@@ -1,7 +1,7 @@
 var path = require("path");
 var webpack = require("webpack")
 
-var plugins = ['transform-decorators-legacy'];
+var plugins = [];
 var devPlugins = [];
 
 var prodPlugins = [
@@ -28,6 +28,7 @@ module.exports = {
     path: path.join(__dirname, 'app', 'assets', 'javascripts'),
     filename: "bundle.js"
   },
+  plugins: plugins,
   module: {
     loaders: [
       {
@@ -35,7 +36,7 @@ module.exports = {
         exclude: /(node_modules|bower_components)/,
         loader: 'babel',
         query: {
-          plugins: plugins,
+          plugins: ['transform-decorators-legacy'],
           presets: ['es2015', 'react', 'stage-2']
         }
       },

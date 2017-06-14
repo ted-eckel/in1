@@ -177,6 +177,7 @@ export default class Items extends Component {
                 archiveNote={this.props.archiveNote}
                 toggleCreateNoteModal={this.props.toggleCreateNoteModal}
                 createdNoteState={this.props.createdNoteState}
+                currentUser={this.props.currentUser}
               />
             </div>
           )

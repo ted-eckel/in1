@@ -106,6 +106,11 @@ class App extends Component {
     params: PropTypes.object.isRequired
   }
 
+  componentWillMount() {
+    this.props.gmailAuthFailure()
+    this.props.driveAuthFailure()
+  }
+
   handleLoadMore = () => {
     const {
       fetchPocketItems, endOfList, allAuth, isFetching, driveFetchFiles,
@@ -114,28 +119,28 @@ class App extends Component {
       fetchNotes
     } = this.props;
 
-    let promiseArray = []
-
-    if (allAuth.all && !isFetching.any) {
-      if (allAuth.gmail && gmailHasMoreThreads) {
-        promiseArray.push(gmailLoadThreadList(searchQuery));
-      }
-
-      if (allAuth.pocket && pocketHasMoreItems) {
-        promiseArray.push(fetchPocketItems());
-      }
-
-      if (allAuth.drive && driveHasMoreFiles) {
-        promiseArray.push(driveFetchFiles());
-      }
-
-      promiseArray.push(fetchNotes());
-
-      fetchEverything(promiseArray)
-    }
-    // if (!isFetching.any) {
-    //   fetchNotes()
+    // let promiseArray = []
+    //
+    // if (allAuth.all && !isFetching.any) {
+    //   if (allAuth.gmail && gmailHasMoreThreads) {
+    //     promiseArray.push(gmailLoadThreadList(searchQuery));
+    //   }
+    //
+    //   if (allAuth.pocket && pocketHasMoreItems) {
+    //     promiseArray.push(fetchPocketItems());
+    //   }
+    //
+    //   if (allAuth.drive && driveHasMoreFiles) {
+    //     promiseArray.push(driveFetchFiles());
+    //   }
+    //
+    //   promiseArray.push(fetchNotes());
+    //
+    //   fetchEverything(promiseArray)
     // }
+    if (!isFetching.any) {
+      fetchNotes()
+    }
   }
 
   handleRequestDelete = e => {
@@ -358,16 +363,10 @@ class App extends Component {
 
     const keepModalActions = [
       <FlatButton
-        label="Cancel"
-        primary={true}
+        label="Close"
+        style={{color: '#202020'}}
         onTouchTap={this.props.toggleKeepModal}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this.props.toggleKeepModal}
-      />,
+      />
     ];
 
     window.handleGoogleClientLoad = () => {
@@ -467,16 +466,31 @@ class App extends Component {
             archiveNote={this.props.archiveNote}
             toggleCreateNoteModal={this.props.toggleCreateNoteModal}
             createdNoteState={this.props.createdNoteState}
+            currentUser={this.props.currentUser}
           />
           <Dialog
-            title="Dialog With Actions"
+            title="Upload Google Keep Notes"
             actions={keepModalActions}
             modal={false}
             open={this.props.keepModalOpen}
             onRequestClose={this.props.toggleKeepModal}>
-            <Dropzone accept="text/html" onDrop={this.onDrop.bind(this)}>
-              <p>Try dropping some files here, or click to select files to upload.</p>
+            <Dropzone accept="text/html" onDrop={this.onDrop.bind(this)}
+              style={{
+                borderStyle: 'solid', height: '200px', borderWidth: '2px',
+                borderColor: 'rgb(102, 102, 102)', borderRadius: '5px'
+              }}>
+              <p style={{textAlign: 'center', position: 'relative', top: '48%'}}>
+                Try dropping some exported Google Keep notes here, or click to select which html files to upload.
+              </p>
             </Dropzone>
+            <div style={{marginTop: '10px'}}>
+              <a style={{textDecoration: 'underline'}}
+                href='https://takeout.google.com/settings/takeout'>Click here</a>{" "}
+              to download your Google Keep notes. Click 'Select none', then check 'Keep',
+              hit 'Next', then click 'Create archive'. When it's done, extract the zip,
+              go into the folder called 'Keep', and select as many notes as you wish to upload.
+              Then drag them here!
+            </div>
           </Dialog>
           <CreateNoteModal
             createNoteModalOpen={this.props.createNoteModalOpen}
@@ -491,10 +505,14 @@ class App extends Component {
             backgroundColor="red"
             data-tip='create note'
             onTouchTap={() => this.props.toggleCreateNoteModal()}
-            style={{
+            style={this.props.drawerOpen? {
               position: 'fixed',
-              bottom: '30px',
-              right: '30px'
+              bottom: '43px',
+              right: '3px'
+            } : {
+              position: 'fixed',
+              bottom: '43px',
+              right: '49px'
             }}>
             <ContentAdd />
           </FloatingActionButton>

@@ -3,19 +3,14 @@ import Paper from 'material-ui/Paper'
 import unescape from 'lodash/unescape'
 
 export default class DriveListItem extends Component {
-  static propTypes = {
-    file: PropTypes.object.isRequired,
-    date: PropTypes.string.isRequired,
-    handleRequestDelete: PropTypes.func.isRequired
-  };
 
-  requestDeleteClick = e => {
-    this.props.handleRequestDelete(e)
+  handleRequestDelete = e => {
+    e.preventDefault();
+    alert('You clicked the delete button.');
   }
 
   render(){
-    const file = this.props.file;
-    const date = this.props.date;
+    const file = this.props.item.file;
     const viewedFont = file.viewedByMe ? 'normal' : 'bold';
     const filePicture = file.thumbnailLink ? file.thumbnailLink : file.iconLink;
 

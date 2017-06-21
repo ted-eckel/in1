@@ -3,55 +3,50 @@ import Paper from 'material-ui/Paper'
 import unescape from 'lodash/unescape'
 import FontIcon from 'material-ui/FontIcon'
 import ReactTooltip from 'react-tooltip'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { threadsByIDSelector } from '../selectors'
+import { trash, archive } from '../actions/Gmail/ThreadActions'
+
 
 // if there is are no more items, Pocket will return something like this as a response:
 // {"status":2,"complete":1,"list":[],"error":null,"search_meta":{"search_type":"normal"},"since":1484251363}
 
+@connect(
+  state => ({
+    gmailThreadsByID: threadsByIDSelector(state)
+  }),
+  dispatch => bindActionCreators({
+    gmailTrashThread: trash,
+    gmailArchiveThread: archive,
+  }, dispatch),
+)
+
 export default class GmailListItem extends Component {
-  static propTypes = {
-    gmailId: PropTypes.string.isRequired,
-    from: PropTypes.object.isRequired,
-    subject: PropTypes.string.isRequired,
-    snippet: PropTypes.string.isRequired,
-    labelIDs: PropTypes.array.isRequired,
-    isUnread: PropTypes.bool.isRequired,
-    handleRequestDelete: PropTypes.func.isRequired,
-    gmailTrashThread: PropTypes.func.isRequired,
-    gmailArchiveThread: PropTypes.func.isRequired,
-    threadID: PropTypes.string.isRequired,
-    hasAttachment: PropTypes.bool.isRequired,
-    date: PropTypes.string.isRequired,
-    messageCount: PropTypes.number.isRequired,
-  };
-
-  requestDeleteClick = e => {
-    this.props.handleRequestDelete(e)
-  }
-
   gmailTrashThread = () => {
-    this.props.gmailTrashThread(this.props.threadID);
+    this.props.gmailTrashThread(this.props.item.threadID);
   }
 
   gmailArchiveThread = () => {
-    this.props.gmailArchiveThread(this.props.threadID);
+    this.props.gmailArchiveThread(this.props.item.threadID);
   }
 
   render(){
-    const gmailId = this.props.gmailId;
+    const item = this.props.item;
+    const gmailId = item.id;
     const from = (
-      this.props.from.name ?
-      this.props.from.name :
-      this.props.from.email.substring(0, this.props.from.email.lastIndexOf("@")));
-    const subject = this.props.subject;
-    const snippet = this.props.snippet;
-    const labelIDs = this.props.labelIDs;
-    const isUnread = this.props.isUnread;
+      item.from.name ?
+      item.from.name :
+      item.from.email.substring(0, item.from.email.lastIndexOf("@")));
+    const subject = item.subject;
+    const snippet = item.snippet;
+    const labelIDs = item.labelIDs;
+    const isUnread = item.isUnread;
 
-    const threadID = this.props.threadID;
-    const hasAttachment = this.props.hasAttachment.toString();
-    const date = this.props.date;
+    const threadID = item.threadID;
+    const date = item.date.toString();
     const unreadFont = isUnread ? 'bold' : 'normal';
-    const messageCount = this.props.messageCount;
+    const messageCount = this.props.gmailThreadsByID[item.threadID].messageIDs.length;
 
     const removeCategory = tag => {
       if (tag.slice(0, 9) === 'CATEGORY_') {

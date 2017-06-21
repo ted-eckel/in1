@@ -2,6 +2,17 @@ import React, { Component, PropTypes } from 'react'
 import Paper from 'material-ui/Paper'
 import FontIcon from 'material-ui/FontIcon'
 import ReactTooltip from 'react-tooltip'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { archiveItem, deleteItem } from '../actions/PocketActions'
+
+@connect(
+  state => state,
+  dispatch => bindActionCreators({
+    archiveItem: archiveItem,
+    deleteItem: deleteItem,
+  }, dispatch),
+)
 
 // if there is are no more items, Pocket will return something like this as a response:
 // {"status":2,"complete":1,"list":[],"error":null,"search_meta":{"search_type":"normal"},"since":1484251363}
@@ -9,15 +20,9 @@ import ReactTooltip from 'react-tooltip'
 export default class PocketListItem extends Component {
   static propTypes = {
     item: PropTypes.object.isRequired,
-    handleRequestDelete: PropTypes.func.isRequired,
-    date: PropTypes.string.isRequired,
     archiveItem: PropTypes.func.isRequired,
     deleteItem: PropTypes.func.isRequired,
   };
-
-  requestDeleteClick = e => {
-    this.props.handleRequestDelete(e)
-  }
 
   archiveItem = () => {
     this.props.archiveItem(this.props.item.item_id)
@@ -34,8 +39,7 @@ export default class PocketListItem extends Component {
   }
 
   render(){
-    const item = this.props.item;
-    const date = this.props.date;
+    const item = this.props.item.item;
 
     const imgExc = item.image ?
       (<div title={item.excerpt ? item.excerpt : ""} style={{

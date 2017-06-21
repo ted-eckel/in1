@@ -12,6 +12,24 @@ import ActionLabel from 'material-ui/svg-icons/action/label'
 import ActionDone from 'material-ui/svg-icons/action/done'
 import ActionDelete from 'material-ui/svg-icons/action/delete'
 import difference from 'lodash/difference'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { trashNote, archiveNote, updateNote } from '../actions/NoteActions'
+import { createdNoteSelector, currentUserSelector } from '../selectors'
+import { toggleCreateNoteModal } from '../actions/AppActions'
+
+@connect(
+  state => ({
+    createdNoteState: createdNoteSelector(state),
+    currentUser: currentUserSelector(state)
+  }),
+  dispatch => bindActionCreators({
+    trashNote: trashNote,
+    archiveNote: archiveNote,
+    updateNote: updateNote,
+    toggleCreateNoteModal: toggleCreateNoteModal,
+  }, dispatch),
+)
 
 
 // if there is are no more items, Pocket will return something like this as a response:
@@ -20,7 +38,6 @@ import difference from 'lodash/difference'
 export default class NoteListItem extends Component {
   static propTypes = {
     item: PropTypes.object.isRequired,
-    date: PropTypes.string.isRequired,
   };
 
   constructor(props) {
@@ -52,7 +69,6 @@ export default class NoteListItem extends Component {
 
   render(){
     const item = this.props.item;
-    const date = this.props.date;
 
     const colorHex = () => {
       if (this.props.createdNoteState.id === item.id) {
@@ -89,19 +105,19 @@ export default class NoteListItem extends Component {
       this.props.toggleCreateNoteModal(item)
     }
 
-    const textColor = () => {
-      if (this.props.createdNoteState.id === item.id) {
-        return '#F2F2F2'
-      } else {
-        return '#000'
-      }
-    }
-
     const name = () => {
       if (this.props.createdNoteState.id === item.id) {
         return 'paper-selected'
       } else {
         return 'paper'
+      }
+    }
+
+    const visibilityFunc = () => {
+      if (this.props.createdNoteState.id === item.id) {
+        return 'hidden'
+      } else {
+        return 'visible'
       }
     }
 
@@ -164,7 +180,7 @@ export default class NoteListItem extends Component {
       } else {
         this.setState({open: false})
         let stateTags = this.state.tags;
-        let propTags = this.props.item.tags.map(tag => tag.name);
+        let propTags = this.props.item.tags ? this.props.item.tags.map(tag => tag.name) : [];
         let theDifference = difference(stateTags, propTags)
         if (theDifference.length) {
           console.log(theDifference)
@@ -212,9 +228,9 @@ export default class NoteListItem extends Component {
     const editorState = EditorState.createWithContent(convertFromRaw(item.content));
 
     return (
-      <div style={{margin: "8px"}} className={name()}>
+      <div style={{margin: "8px", visibility: visibilityFunc()}} className={name()}>
         <Paper style={{width: "240px", padding: "12px 0", backgroundColor: colorHex()}}>
-          <div style={{cursor: 'default', color: textColor()}} onClick={toggleCreateNoteModal}>
+          <div style={{cursor: 'default'}} onClick={toggleCreateNoteModal}>
             {item.title
               ? (
                 <div style={{display: "inline-block",

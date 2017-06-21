@@ -1,6 +1,28 @@
 import React, { Component, PropTypes } from 'react'
 import MuiDrawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { gmailLogin } from '../actions/Gmail/AppActions'
+import { driveLogin } from '../actions/Drive/AppActions'
+import { toggleDrawer, toggleKeepModal } from '../actions/AppActions'
+import {
+  drawerOpenSelector,
+  allAuthSelector,
+} from '../selectors'
+
+@connect(
+  state => ({
+    drawerOpen: drawerOpenSelector(state),
+    allAuth: allAuthSelector(state),
+  }),
+  dispatch => bindActionCreators({
+    toggleDrawer: toggleDrawer,
+    toggleKeepModal: toggleKeepModal,
+    gmailLogin: gmailLogin,
+    driveLogin: driveLogin,
+  }, dispatch),
+)
 
 export default class Drawer extends Component {
   static propTypes = {
@@ -98,7 +120,3 @@ export default class Drawer extends Component {
     )
   }
 }
-
-/* <div style={{margin: '0 auto', display: 'table'}}>
-  All possible services connected!
-</div> */

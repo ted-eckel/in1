@@ -5,6 +5,8 @@ import TextField from 'material-ui/TextField'
 import BasicEditor from './BasicEditor'
 import { htmlConvert, rawContentConvert, contentConvert } from '../util/NoteAPI'
 import { Map } from 'immutable'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import {
   Editor,
   EditorState,
@@ -15,10 +17,35 @@ import {
   convertFromRaw,
   ContentState,
 } from 'draft-js'
+import {
+  createNoteModalOpenSelector,
+  createdNoteSelector,
+} from '../selectors'
+import {
+  createNote,
+  updateNote,
+  updateCreatedNoteTitle,
+  updateCreatedNoteContent,
+ } from '../actions/NoteActions'
+ import { toggleCreateNoteModal } from '../actions/AppActions'
+
+// @connect(
+//   state => ({
+//     createNoteModalOpen: createNoteModalOpenSelector(state),
+//     createdNoteState: createdNoteSelector(state),
+//   }),
+//   dispatch => bindActionCreators({
+//     createNote: createNote,
+//     updateNote: updateNote,
+//     updateCreatedNoteTitle: updateCreatedNoteTitle,
+//     updateCreatedNoteContent: updateCreatedNoteContent,
+//     toggleCreateNoteModal: toggleCreateNoteModal,
+//   }, dispatch),
+// )
 
 const TODO_TYPE = 'todo';
 
-export default class CreateNoteModal extends Component {
+class CreateNoteModal extends Component {
   constructor(props) {
     super(props)
 
@@ -39,7 +66,6 @@ export default class CreateNoteModal extends Component {
     }
 
     this.getEditorState = () => this.state.editorState;
-    // this.getEditorState = () => this.props.editorState;
 
     this.blockRendererFn = getBlockRendererFn(this.getEditorState, this.onChange);
 
@@ -52,8 +78,8 @@ export default class CreateNoteModal extends Component {
     this.disabledButton = this.disabledButton.bind(this)
   }
 
-  updateTitleState(event, value) {
-    this.setState({title: value})
+  updateTitleState(event) {
+    this.setState({title: event.target.value})
   }
 
   createNote() {
@@ -255,6 +281,24 @@ export default class CreateNoteModal extends Component {
     )
   }
 }
+
+const mapStateToProps = state => ({
+  createNoteModalOpen: createNoteModalOpenSelector(state),
+  createdNoteState: createdNoteSelector(state),
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  createNote: createNote,
+  updateNote: updateNote,
+  updateCreatedNoteTitle: updateCreatedNoteTitle,
+  updateCreatedNoteContent: updateCreatedNoteContent,
+  toggleCreateNoteModal: toggleCreateNoteModal,
+}, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CreateNoteModal);
 
 /*
 Returns default block-level metadata for various block type. Empty object otherwise.

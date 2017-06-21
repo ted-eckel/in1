@@ -1,9 +1,9 @@
 import ActionType from '../actions/ActionType'
 import * as ApiUtil from '../util/API'
 
-export const toggleDrawer = () => ({
-  type: ActionType.App.View.TOGGLE_DRAWER,
-})
+export const toggleDrawer = () => dispatch => {
+  dispatch({type: ActionType.App.View.TOGGLE_DRAWER})
+}
 
 export const toggleKeepModal = () => ({
   type: ActionType.App.View.TOGGLE_KEEP_MODAL,

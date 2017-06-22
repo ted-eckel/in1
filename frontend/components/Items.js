@@ -186,26 +186,26 @@ export default class Items extends Component {
       const childElements = items.map((item, idx) => {
         if (item && item.service === "pocket") {
           return (
-            <div style={{display: 'inline-block'}} key={'pocket' + items[idx].id}>
-              <PocketListItem item={items[idx]} />
+            <div style={{display: 'inline-block'}} key={'pocket' + item.id}>
+              <PocketListItem item={item} />
             </div>
           )
         } else if (item && item.service === "gmail") {
           return (
-            <div style={{display: 'inline-block'}} key={'gmail' + items[idx].id}>
-              <GmailListItem item={items[idx]} />
+            <div style={{display: 'inline-block'}} key={'gmail' + item.id}>
+              <GmailListItem item={item} />
             </div>
           )
         } else if (item && item.service === "drive") {
           return (
-            <div style={{display: 'inline-block'}} key={'drive' + items[idx].id}>
-              <DriveListItem item={items[idx]} />
+            <div style={{display: 'inline-block'}} key={'drive' + item.id}>
+              <DriveListItem item={item} />
             </div>
           )
         } else if (item && item.service === "in1box") {
           return (
-            <div style={{display: 'inline-block'}} key={'note' + items[idx].id}>
-              <NoteListItem item={items[idx]} />
+            <div style={{display: 'inline-block'}} key={'note' + item.id}>
+              <NoteListItem item={item} />
             </div>
           )
         }

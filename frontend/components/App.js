@@ -12,7 +12,7 @@ import CreateNoteModal from './CreateNoteModal'
 import KeepModal from './KeepModal'
 import FAB from './FAB'
 import { initClient } from '../util/API'
-// import ActionType from '../actions/ActionType'
+import ActionType from '../actions/ActionType'
 
 // const PAGE_SIZE = 20;
 
@@ -20,8 +20,8 @@ import { initClient } from '../util/API'
   state => state,
   dispatch => bindActionCreators({
     initClient: initClient,
-    // driveAuthFailure: () => dispatch({type: ActionType.Drive.Authorization.FAILURE}),
-    // gmailAuthFailure: () => dispatch({type: ActionType.Gmail.Authorization.FAILURE}),
+    driveAuthFailure: () => dispatch({type: ActionType.Drive.Authorization.FAILURE}),
+    gmailAuthFailure: () => dispatch({type: ActionType.Gmail.Authorization.FAILURE}),
   }, dispatch),
 )
 

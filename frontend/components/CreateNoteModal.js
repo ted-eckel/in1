@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react'
+import ReactTooltip from 'react-tooltip'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
@@ -7,6 +8,8 @@ import IconButton from 'material-ui/IconButton'
 import ActionLabel from 'material-ui/svg-icons/action/label'
 import ActionDone from 'material-ui/svg-icons/action/done'
 import ActionDelete from 'material-ui/svg-icons/action/delete'
+import ImagePalette from 'material-ui/svg-icons/image/palette'
+import Paper from 'material-ui/Paper'
 import difference from 'lodash/difference'
 import { htmlConvert, rawContentConvert, contentConvert } from '../util/NoteAPI'
 import { Map } from 'immutable'
@@ -62,6 +65,8 @@ class CreateNoteModal extends Component {
       editorState: EditorState.createWithContent(convertFromRaw(this.props.createdNoteState.content)),
       color: this.props.createdNoteState.color,
       tags: this.props.createdNoteState.tags,
+      open: false,
+      colorMenuOpen: false,
     }
 
     this.blockRenderMap = Map({
@@ -88,6 +93,12 @@ class CreateNoteModal extends Component {
 
     this.handleChange = this.handleChange.bind(this)
     this.handleChangeInput = this.handleChangeInput.bind(this)
+
+    // this.deleteTag = this.deleteTag.bind(this)
+    // this.changeTags = this.changeTags.bind(this)
+    this.handleColorChange =this.handleColorChange.bind(this)
+    this.trash = this.trash.bind(this)
+    this.archive = this.archive.bind(this)
   }
 
   handleChange(tags) {
@@ -200,24 +211,150 @@ class CreateNoteModal extends Component {
     }
   }
 
-  trash = () => {
-    this.props.trashNote(this.props.createdNoteState.id)
+  trash = (id) => {
+    this.props.toggleCreateNoteModal();
+    this.props.trashNote(id);
   }
 
-  archive = () => {
-    this.props.archiveNote(this.props.createdNoteState.id)
+  archive = (id) => {
+    this.props.toggleCreateNoteModal();
+    this.props.archiveNote(id);
+  }
+
+  // changeTags() {
+  //   let noteObject = {};
+  //
+  //   let tagString = `${this.props.currentUser.id}`;
+  //   for (let i=0; i<this.state.tags.length; i++){
+  //     tagString += `-------314159265358979323846${this.state.tags[i]}`
+  //   }
+  //   noteObject.all_tags = tagString;
+  //   this.props.updateNote()
+  // }
+  //
+  // deleteTag(key) {
+  //   let noteObject = {};
+  //
+  //   let newTags = this.state.tags;
+  //   newTags.splice(key, 1);
+  //
+  //   let tagString = `${this.props.currentUser.id}`;
+  //   for (let i=0; i<newTags.length; i++){
+  //     tagString += `-------314159265358979323846${newTags[i]}`
+  //   }
+  //   noteObject.all_tags = tagString;
+  //   this.createNote();
+  // }
+
+  handleColorChange(color) {
+    console.log(color)
+    this.setState({color});
+    // let noteObject = {color};
+    // noteObject.color = color;
+    // this.createNote()
   }
 
   render() {
+    const item = this.props.createdNoteState;
+    const colorArray = ['DEFAULT', 'RED', 'ORANGE', 'YELLOW', 'GRAY', 'BLUE', 'TEAL', 'GREEN'];
+
+    const colorCheckMark = color => {
+      if (this.state.color) {
+        if (this.state.color === color) {
+          return (
+            <ActionDone/>
+          )
+        } else if (this.state.color === 'DEFAULT' && color === 'WHITE') {
+          return (
+            <ActionDone />
+          )
+        }
+      } else if (color === 'WHITE') {
+        return (
+          <ActionDone/>
+        )
+      } else {
+        return null;
+      }
+    }
+
+    const colorDataTip = (color) => {
+      if (color) {
+        if (color === 'DEFAULT') {
+          return 'white'
+        } else {
+          return color.toLowerCase()
+        }
+      } else {
+        return null
+      }
+    }
+
+    const colorHex = (color) => {
+      if (color) {
+        switch (color) {
+          case 'DEFAULT':
+            return '#fff'
+          case 'RED':
+            return 'rgb(255, 109, 63)'
+          case 'ORANGE':
+            return 'rgb(255, 155, 0)'
+          case 'YELLOW':
+            return 'rgb(255, 218, 0)'
+          case 'GREEN':
+            return 'rgb(149, 214, 65)'
+          case 'TEAL':
+            return 'rgb(28, 232, 181)'
+          case 'BLUE':
+            return 'rgb(63, 195, 255)'
+          case 'GRAY':
+            return 'rgb(184, 196, 201)'
+          default:
+            return '#fff'
+        }
+      } else {
+        return '#fff'
+      }
+    }
+
+    const colorButtons = colorArray.map(color => {
+      return (
+        <Paper
+          circle
+          key={`${item.id}-${color}-DIALOG`}
+          data-tip={colorDataTip(color)}
+          onClick={() => this.handleColorChange(color)}
+          style={{
+            backgroundColor: colorHex(color),
+            height: '25px',
+            width: '25px',
+            display: 'inline-block',
+            margin: '3px',
+            cursor: 'pointer',
+            verticalAlign: 'top'
+          }}>
+          {colorCheckMark(color)}
+        </Paper>
+      )
+    })
+
+    const handleCloseColorMenu = (open, reason) => {
+      if (open) {
+        this.setState({colorMenuOpen: true})
+      } else {
+        this.setState({colorMenuOpen: false})
+      }
+    }
+
     const tags = this.props.currentUser.tags.map(tag => tag.name).sort();
 
-    function defaultRenderTag (props) {
-      let {tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other} = props
+    const defaultRenderTag = props => {
+      let {tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other} = props;
       return (
         <span key={key} {...other}>
           <span style={{
             whiteSpace: 'nowrap', maxWidth: '130px', overflow: 'hidden',
-            textOverflow: 'ellipsis', display: 'inline-block'
+            textOverflow: 'ellipsis', display: 'inline-block', verticalAlign: 'top'
           }}>
             {getTagDisplayValue(tag)}
           </span>
@@ -267,33 +404,43 @@ class CreateNoteModal extends Component {
         this.setState({open: true})
       } else {
         this.setState({open: false})
-        let stateTags = this.state.tags;
-        let propTags = item.tags ? item.tags.map(tag => tag.name) : [];
-        let theDifference = difference(stateTags, propTags)
-        if (theDifference.length) {
-          console.log(theDifference)
-          console.log('state tags not the same as prop tags')
-        } else {
-          console.log(theDifference)
-          console.log("they're the same")
-        }
+        // let stateTags = this.state.tags;
+        // let propTags = item.tags ? item.tags.map(tag => tag.name) : [];
+        // let theDifference = difference(stateTags, propTags)
+        // if (theDifference.length) {
+        //   this.changeTags();
+        // }
       }
-      console.log(open)
-      console.log(reason)
     }
 
     const defaultRenderLayout = (tagComponents, inputComponent) => {
       const archive = this.archive;
       const deleteFunc = this.trash;
+      const noteID = this.props.createdNoteState.id;
       return (
         <div>
           {tagComponents}
           <div className='item-toolbar' style={{padding: '0 15px'}}>
             <IconMenu
+              onRequestChange={(open, reason) => handleCloseColorMenu(open, reason)}
+              open={this.state.colorMenuOpen}
+              iconButtonElement={
+                <IconButton className="dialog-toolbar-button">
+                  <ImagePalette data-tip="change color" />
+                </IconButton>
+              }
+              autoWidth={false}
+              menuStyle={{width: '174px', height: '115px'}}>
+              <div style={{width: '124px', margin: '0 25px'}}>
+                {colorButtons}
+              </div>
+              <ReactTooltip place="bottom" type="dark" effect="solid" />
+            </IconMenu>
+            <IconMenu
               onRequestChange={(open, reason) => handleCloseMenu(open, reason)}
               open={this.state.open}
               iconButtonElement={
-                <IconButton>
+                <IconButton className="dialog-toolbar-button">
                   <ActionLabel
                     data-tip={this.state.tags.length ? 'change tags' : 'add tags'}
                   />
@@ -302,10 +449,10 @@ class CreateNoteModal extends Component {
               width={200}>
               {inputComponent}
             </IconMenu>
-            <IconButton onTouchTap={archive}>
+            <IconButton disabled={noteID === 'new' } onTouchTap={() => archive(noteID)} className="dialog-toolbar-button">
               <ActionDone data-tip='archive' />
             </IconButton>
-            <IconButton onTouchTap={deleteFunc}>
+            <IconButton disabled={noteID === 'new'} onTouchTap={() => deleteFunc(noteID)} className="dialog-toolbar-button">
               <ActionDelete data-tip='trash' />
             </IconButton>
             <FlatButton
@@ -320,6 +467,7 @@ class CreateNoteModal extends Component {
               style={{color: '#202020'}}
             />
           </div>
+          <ReactTooltip place="bottom" type="dark" effect="solid" />
         </div>
       )
     }
@@ -365,36 +513,38 @@ class CreateNoteModal extends Component {
       }
     }
 
-    const colorHex = () => {
-      if (this.state.color) {
-        switch (this.state.color) {
-          case 'DEFAULT':
-            return '#fff'
-          case 'RED':
-            return 'rgb(255, 109, 63)'
-          case 'ORANGE':
-            return 'rgb(255, 155, 0)'
-          case 'YELLOW':
-            return 'rgb(255, 218, 0)'
-          case 'GREEN':
-            return 'rgb(149, 214, 65)'
-          case 'TEAL':
-            return 'rgb(28, 232, 181)'
-          case 'BLUE':
-            return 'rgb(63, 195, 255)'
-          case 'GRAY':
-            return 'rgb(184, 196, 201)'
-          default:
-            return '#fff'
-        }
-      } else {
-        return '#fff'
-      }
-    }
+    // const colorHex = () => {
+    //   if (this.state.color) {
+    //     switch (this.state.color) {
+    //       case 'DEFAULT':
+    //         return '#fff'
+    //       case 'RED':
+    //         return 'rgb(255, 109, 63)'
+    //       case 'ORANGE':
+    //         return 'rgb(255, 155, 0)'
+    //       case 'YELLOW':
+    //         return 'rgb(255, 218, 0)'
+    //       case 'GREEN':
+    //         return 'rgb(149, 214, 65)'
+    //       case 'TEAL':
+    //         return 'rgb(28, 232, 181)'
+    //       case 'BLUE':
+    //         return 'rgb(63, 195, 255)'
+    //       case 'GRAY':
+    //         return 'rgb(184, 196, 201)'
+    //       default:
+    //         return '#fff'
+    //     }
+    //   } else {
+    //     return '#fff'
+    //   }
+    // }
 
     const title = (
       <input type="text" value={this.state.title} onChange={this.updateTitleState} placeholder="Title" />
     )
+
+    const colorState = this.state.color;
 
     return (
       <div>
@@ -410,7 +560,7 @@ class CreateNoteModal extends Component {
           titleStyle={{
             fontFamily: "'Roboto Condensed',arial,sans-serif", border: 'none',
             fontSize: '17px', lineHeight: '23px', padding: '24px 24px 10px',
-            backgroundColor: colorHex(), width: '93%'
+            backgroundColor: colorHex(colorState), width: '93%'
           }}
           titleClassName="createNoteModalTitle">
           <div onClick={this.focus} style={{
@@ -429,6 +579,7 @@ class CreateNoteModal extends Component {
               handleKeyCommand={this.handleKeyCommand} />
           </div>
         </Dialog>
+        <ReactTooltip place="bottom" type="dark" effect="solid" />
       </div>
     )
   }

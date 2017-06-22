@@ -46,7 +46,8 @@ export default class NoteListItem extends Component {
     this.state = {
       tags: props.item.note.tags.map(tag => tag.name),
       color: props.item.note.color,
-      open: false
+      open: false,
+      colorMenuOpen: false,
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -54,7 +55,7 @@ export default class NoteListItem extends Component {
     this.updateNote = this.updateNote.bind(this)
     this.deleteTag = this.deleteTag.bind(this)
     this.changeTags = this.changeTags.bind(this)
-    this.changeColor = this.changeColor.bind(this)
+    this.handleColorChange =this.handleColorChange.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -82,6 +83,13 @@ export default class NoteListItem extends Component {
     this.setState({tag})
   }
 
+  handleColorChange(color) {
+    this.setState({color});
+    let noteObject = {color};
+    // noteObject.color = color;
+    this.props.updateNote(this.props.item.note.id, noteObject)
+  }
+
   updateNote() {
     let note = this.props.item.note;
     let noteObject = {};
@@ -97,10 +105,6 @@ export default class NoteListItem extends Component {
 
     const noteID = note.id;
     this.props.updateNote(noteID, noteObject)
-  }
-
-  changeColor() {
-    console.log('differentColor')
   }
 
   changeTags() {
@@ -131,9 +135,9 @@ export default class NoteListItem extends Component {
   render(){
     const item = this.props.item.note;
 
-    const colorHex = () => {
-      if (this.state.color) {
-        switch (this.state.color) {
+    const colorHex = (color) => {
+      if (color) {
+        switch (color) {
           case 'DEFAULT':
             return '#fff'
           case 'RED':
@@ -157,6 +161,61 @@ export default class NoteListItem extends Component {
         return '#fff'
       }
     }
+
+    const colorArray = ['DEFAULT', 'RED', 'ORANGE', 'YELLOW', 'GRAY', 'BLUE', 'TEAL', 'GREEN'];
+
+    const colorCheckMark = color => {
+      if (this.state.color) {
+        if (this.state.color === color) {
+          return (
+            <ActionDone/>
+          )
+        } else if (this.state.color === 'DEFAULT' && color === 'WHITE') {
+          return (
+            <ActionDone />
+          )
+        }
+      } else if (color === 'WHITE') {
+        return (
+          <ActionDone/>
+        )
+      } else {
+        return null;
+      }
+    }
+
+    const colorDataTip = (color) => {
+      if (color) {
+        if (color === 'DEFAULT') {
+          return 'white'
+        } else {
+          return color.toLowerCase()
+        }
+      } else {
+        return null
+      }
+    }
+
+    const colorButtons = colorArray.map(color => {
+      return (
+        <Paper
+          circle
+          key={`${item.id}-${color}-ITEM`}
+          data-tip={colorDataTip(color)}
+          onClick={() => this.handleColorChange(color)}
+          style={{
+            backgroundColor: colorHex(color),
+            height: '25px',
+            width: '25px',
+            display: 'inline-block',
+            margin: '3px',
+            cursor: 'pointer',
+            verticalAlign: 'top'
+          }}>
+          {colorCheckMark(color)}
+        </Paper>
+      )
+    })
 
     const toggleCreateNoteModal = () => {
       this.props.toggleCreateNoteModal(item)
@@ -186,7 +245,7 @@ export default class NoteListItem extends Component {
         <span key={key} {...other}>
           <span style={{
             whiteSpace: 'nowrap', maxWidth: '130px', overflow: 'hidden',
-            textOverflow: 'ellipsis', display: 'inline-block'
+            textOverflow: 'ellipsis', display: 'inline-block', verticalAlign: 'top'
           }}>
             {getTagDisplayValue(tag)}
           </span>
@@ -248,16 +307,17 @@ export default class NoteListItem extends Component {
         let propTags = item.tags ? item.tags.map(tag => tag.name) : [];
         let theDifference = difference(stateTags, propTags)
         if (theDifference.length) {
-          console.log(theDifference)
-          console.log('state tags not the same as prop tags')
           this.changeTags();
-        } else {
-          console.log(theDifference)
-          console.log("they're the same")
         }
       }
-      console.log(open)
-      console.log(reason)
+    }
+
+    const handleCloseColorMenu = (open, reason) => {
+      if (open) {
+        this.setState({colorMenuOpen: true})
+      } else {
+        this.setState({colorMenuOpen: false})
+      }
     }
 
     const defaultRenderLayout = (tagComponents, inputComponent) => {
@@ -268,6 +328,21 @@ export default class NoteListItem extends Component {
           {tagComponents}
           <div className='item-toolbar' style={{padding: '0 15px'}}>
             <IconMenu
+              onRequestChange={(open, reason) => handleCloseColorMenu(open, reason)}
+              open={this.state.colorMenuOpen}
+              iconButtonElement={
+                <IconButton>
+                  <ImagePalette data-tip="change color" className='item-toolbar-button' />
+                </IconButton>
+              }
+              autoWidth={false}
+              menuStyle={{width: '174px', height: '115px'}}>
+              <div style={{width: '124px', margin: '0 25px'}}>
+                {colorButtons}
+              </div>
+              <ReactTooltip place="bottom" type="dark" effect="solid" />
+            </IconMenu>
+            <IconMenu
               onRequestChange={(open, reason) => handleCloseMenu(open, reason)}
               open={this.state.open}
               iconButtonElement={
@@ -277,7 +352,8 @@ export default class NoteListItem extends Component {
                     className='item-toolbar-button' />
                 </IconButton>
               }
-              width={200}>
+              autoWidth={false}
+              menuStyle={{width: '200px'}}>
               {inputComponent}
             </IconMenu>
             <IconButton onTouchTap={archive}>
@@ -293,9 +369,11 @@ export default class NoteListItem extends Component {
 
     const editorState = EditorState.createWithContent(convertFromRaw(item.content));
 
+    const colorState = this.state.color;
+
     return (
       <div style={{margin: "8px", visibility: visibilityFunc()}} className={name()}>
-        <Paper style={{width: "240px", padding: "12px 0", backgroundColor: colorHex()}}>
+        <Paper style={{width: "240px", padding: "12px 0", backgroundColor: colorHex(colorState)}}>
           <div style={{cursor: 'default'}} onClick={toggleCreateNoteModal}>
             {item.title
               ? (

@@ -279,6 +279,15 @@ pocket-title {
   opacity: .87;
 }
 
+.dialog-toolbar-button {
+  opacity: .54;
+  vertical-align: middle;
+}
+
+.dialog-toolbar-button:hover {
+  opacity: .87;
+}
+
 /* TODO:.toolbar-button:hover {
   opacity: .87;
   cursor: pointer;
@@ -388,96 +397,6 @@ pocket-title {
    outline: none;
  }
 
- /*.react-tagsinput {
-  background-color: transparent;
-  border: 1px solid transparent;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  margin: 0 12px 4px;
-  height: 49px;
-  white-space: nowrap;
- }
-
-.paper:hover .react-tagsinput {
-  border: 1px solid #ccc;
-}
-
-.react-tagsinput--focused {
- border: 1px solid #ccc;
-}
-
-.react-tagsinput-tag {
-  background-color: #eee;
-  color: #464646;
-  display: inline-block;
-  font-family: sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  margin-bottom: 5px;
-  margin-right: 5px;
-  padding: 5px;
-}
-
-.react-tagsinput-remove {
-  cursor: pointer;
-  font-weight: bold;
-  color: transparent;
-}
-
-.react-tagsinput-tag:hover .react-tagsinput-remove {
-  color: #464646
-}
-
-.react-tagsinput-tag a::before {
-  content: " ×";
-}
-
-.react-tagsinput-input {
-  background: transparent;
-  border: 0;
-  font-family: sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  margin-bottom: 6px;
-  margin-top: 1px;
-  outline: none;
-  padding: 5px;
-  width: 80px;
-  overflow-x: scroll;
-}
-
-.react-tagsinput input.react-tagsinput-input::-webkit-input-placeholder {
-  color: transparent;
-}
-
-.react-tagsinput input.react-tagsinput-input::-moz-placeholder {
-  color: transparent;
-}
-
-.react-tagsinput input.react-tagsinput-input:-ms-input-placeholder {
-  color: transparent;
-}
-
-.react-tagsinput input.react-tagsinput-input:-moz-placeholder {
-  color: transparent;
-}
-
-.paper:hover .react-tagsinput input.react-tagsinput-input::-webkit-input-placeholder {
-  color: #777;
-}
-
-.paper:hover .react-tagsinput input.react-tagsinput-input::-moz-placeholder {
-  color: #777;
-}
-
-.paper:hover .react-tagsinput input.react-tagsinput-input:-ms-input-placeholder {
-  color: #777;
-}
-
-.paper:hover .react-tagsinput input.react-tagsinput-input:-moz-placeholder {
-  color: #777;
-}*/
-
 .react-autosuggest__container {
   display: inline-block;
 }
@@ -489,34 +408,39 @@ pocket-title {
 }
 
 .react-tagsinput {
-  /*background-color: #fff;
-  border: 1px solid #ccc;*/
   overflow: hidden;
-  /*padding-left: 5px;
-  padding-top: 5px;*/
+  padding: 0 9px;
 }
 
 .react-tagsinput-tag {
-  background-color: #cde69c;
-  border-radius: 2px;
-  border: 1px solid #a5d24a;
-  color: #638421;
+  background-color: rgba(0,0,0,.1);
   display: inline-block;
   font-family: sans-serif;
   font-size: 13px;
   font-weight: 400;
   margin-bottom: 5px;
   margin-right: 5px;
-  padding: 5px;
+  padding: 5px;;
+  cursor: default;
+}
+
+.react-tagsinput-tag:hover {
+  background-color: rgba(0,0,0,.2);
 }
 
 .react-tagsinput-remove {
   cursor: pointer;
   font-weight: bold;
+  vertical-align: top;
 }
 
 .react-tagsinput-tag a::before {
   content: " ×";
+  color: transparent;
+}
+
+.react-tagsinput-tag:hover a::before {
+  color: initial;
 }
 
 .react-tagsinput-input {

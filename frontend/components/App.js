@@ -12,6 +12,7 @@ import CreateNoteModal from './CreateNoteModal'
 import KeepModal from './KeepModal'
 import FAB from './FAB'
 import { initClient } from '../util/API'
+// import ActionType from '../actions/ActionType'
 
 // const PAGE_SIZE = 20;
 
@@ -19,6 +20,8 @@ import { initClient } from '../util/API'
   state => state,
   dispatch => bindActionCreators({
     initClient: initClient,
+    // driveAuthFailure: () => dispatch({type: ActionType.Drive.Authorization.FAILURE}),
+    // gmailAuthFailure: () => dispatch({type: ActionType.Gmail.Authorization.FAILURE}),
   }, dispatch),
 )
 
@@ -29,12 +32,11 @@ export default class App extends Component {
   }
 
   // componentWillMount() {
-  //   this.props.gmailAuthFailure()
-  //   this.props.driveAuthFailure()
+  //   this.props.driveAuthFailure();
+  //   this.props.gmailAuthFailure();
   // }
 
   render() {
-
     window.handleGoogleClientLoad = () => {
       window.gapi.load('client:auth2', this.props.initClient);
     }

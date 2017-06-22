@@ -56,40 +56,33 @@ const createdNoteReducer = (state = {
   id: 'new',
   title: '',
   content: htmlConvert(''),
-  // all_tags: null,
+  tags: [],
   color: null,
   // drive_attachment_ids: null,
 }, action) => {
   switch (action.type) {
-    case ActionType.App.Notes.UPDATE_CREATED_NOTE_TITLE:
-      return {
-        ...state,
-        title: action.title
-      }
-    case ActionType.App.Notes.UPDATE_CREATED_NOTE_CONTENT:
-      return {
-        ...state,
-        content: action.content
-      }
     case ActionType.App.View.TOGGLE_CREATE_NOTE_MODAL:
       if (action.note) {
         const note = action.note;
         const title = note.title ? note.title : '';
         const id = note.id;
         const content = note.content;
+        const tags = note.tags.map(tag => tag.name);
         const color = note.color;
         return {
           id,
           title,
           content,
-          color
+          tags,
+          color,
         }
       } else {
         return {
           id: 'new',
           title: '',
           content: htmlConvert(''),
-          color: null
+          tags: [],
+          color: null,
         }
       }
     default:

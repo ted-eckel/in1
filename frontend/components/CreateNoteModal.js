@@ -2,7 +2,12 @@ import React, { Component, PropTypes } from 'react'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
-import BasicEditor from './BasicEditor'
+import IconMenu from 'material-ui/IconMenu'
+import IconButton from 'material-ui/IconButton'
+import ActionLabel from 'material-ui/svg-icons/action/label'
+import ActionDone from 'material-ui/svg-icons/action/done'
+import ActionDelete from 'material-ui/svg-icons/action/delete'
+import difference from 'lodash/difference'
 import { htmlConvert, rawContentConvert, contentConvert } from '../util/NoteAPI'
 import { Map } from 'immutable'
 import { connect } from 'react-redux'
@@ -20,30 +25,33 @@ import {
 import {
   createNoteModalOpenSelector,
   createdNoteSelector,
+  currentUserSelector
 } from '../selectors'
 import {
   createNote,
   updateNote,
-  updateCreatedNoteTitle,
-  updateCreatedNoteContent,
+  trashNote,
+  archiveNote,
  } from '../actions/NoteActions'
  import { toggleCreateNoteModal } from '../actions/AppActions'
-
-// @connect(
-//   state => ({
-//     createNoteModalOpen: createNoteModalOpenSelector(state),
-//     createdNoteState: createdNoteSelector(state),
-//   }),
-//   dispatch => bindActionCreators({
-//     createNote: createNote,
-//     updateNote: updateNote,
-//     updateCreatedNoteTitle: updateCreatedNoteTitle,
-//     updateCreatedNoteContent: updateCreatedNoteContent,
-//     toggleCreateNoteModal: toggleCreateNoteModal,
-//   }, dispatch),
-// )
+ import TagsInput from 'react-tagsinput'
+ import Autosuggest from 'react-autosuggest'
 
 const TODO_TYPE = 'todo';
+
+const mapStateToProps = state => ({
+  createNoteModalOpen: createNoteModalOpenSelector(state),
+  createdNoteState: createdNoteSelector(state),
+  currentUser: currentUserSelector(state),
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  createNote: createNote,
+  updateNote: updateNote,
+  trashNote: trashNote,
+  archiveNote: archiveNote,
+  toggleCreateNoteModal: toggleCreateNoteModal,
+}, dispatch);
 
 class CreateNoteModal extends Component {
   constructor(props) {
@@ -52,7 +60,8 @@ class CreateNoteModal extends Component {
     this.state = {
       title: this.props.createdNoteState.title,
       editorState: EditorState.createWithContent(convertFromRaw(this.props.createdNoteState.content)),
-      color: this.props.createdNoteState.color
+      color: this.props.createdNoteState.color,
+      tags: this.props.createdNoteState.tags,
     }
 
     this.blockRenderMap = Map({
@@ -76,6 +85,17 @@ class CreateNoteModal extends Component {
     this.updateTitleState = this.updateTitleState.bind(this)
     this.createNote = this.createNote.bind(this)
     this.disabledButton = this.disabledButton.bind(this)
+
+    this.handleChange = this.handleChange.bind(this)
+    this.handleChangeInput = this.handleChangeInput.bind(this)
+  }
+
+  handleChange(tags) {
+    this.setState({tags})
+  }
+
+  handleChangeInput(tag) {
+    this.setState({tag})
   }
 
   updateTitleState(event) {
@@ -83,17 +103,28 @@ class CreateNoteModal extends Component {
   }
 
   createNote() {
-    let note = this.props.createdNoteState;
-    let title = this.state.title;
-    let currentContent = this.state.editorState.getCurrentContent();
-    let noteID = note.id;
+    const { currentUser } = this.props;
 
-    const content = contentConvert(currentContent)
+    let note = this.props.createdNoteState;
+    let noteObject = {};
+    noteObject.title = this.state.title;
+    noteObject.color = this.state.color;
+    if (this.state.tags[0]) {
+      let tagString = `${currentUser.id}`;
+      for (let i=0; i<this.state.tags.length; i++){
+        tagString += `-------314159265358979323846${this.state.tags[i]}`
+      }
+      noteObject.all_tags = tagString;
+    }
+
+    const noteID = note.id;
+    const currentContent = this.state.editorState.getCurrentContent();
+    noteObject.content = contentConvert(currentContent)
 
     if (this.props.createdNoteState.id === 'new') {
-      this.props.createNote({title, content})
+      this.props.createNote(noteObject)
     } else {
-      this.props.updateNote(noteID, {title, content})
+      this.props.updateNote(noteID, noteObject)
     }
     this.props.toggleCreateNoteModal()
   }
@@ -163,24 +194,145 @@ class CreateNoteModal extends Component {
       this.setState({
         title: nextProps.createdNoteState.title,
         editorState: EditorState.createWithContent(convertFromRaw(nextProps.createdNoteState.content)),
-        color: nextProps.createdNoteState.color
+        color: nextProps.createdNoteState.color,
+        tags: nextProps.createdNoteState.tags,
       })
     }
   }
 
+  trash = () => {
+    this.props.trashNote(this.props.createdNoteState.id)
+  }
+
+  archive = () => {
+    this.props.archiveNote(this.props.createdNoteState.id)
+  }
+
   render() {
+    const tags = this.props.currentUser.tags.map(tag => tag.name).sort();
+
+    function defaultRenderTag (props) {
+      let {tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other} = props
+      return (
+        <span key={key} {...other}>
+          <span style={{
+            whiteSpace: 'nowrap', maxWidth: '130px', overflow: 'hidden',
+            textOverflow: 'ellipsis', display: 'inline-block'
+          }}>
+            {getTagDisplayValue(tag)}
+          </span>
+          {!disabled &&
+            <a className={classNameRemove} onClick={(e) => onRemove(key)} />
+          }
+        </span>
+      )
+    }
+
+    function autocompleteRenderInput({addTag, ...props}) {
+
+      const handleOnChange = (e, {newValue, method}) => {
+        if (method === 'enter') {
+          e.preventDefault()
+        } else {
+          props.onChange(e)
+        }
+      }
+
+      const inputValue = (props.value && props.value.trim().toLowerCase()) || ''
+      const inputLength = inputValue.length
+
+      let suggestions = tags.filter((tag) => {
+        return tag.toLowerCase().slice(0, inputLength) === inputValue
+      })
+
+      return (
+        <Autosuggest
+          ref={props.ref}
+          suggestions={suggestions}
+          alwaysRenderSuggestions
+          getSuggestionValue={(suggestion) => suggestion}
+          renderSuggestion={(suggestion) => <span>{suggestion}</span>}
+          inputProps={{...props, onChange: handleOnChange}}
+          onSuggestionSelected={(e, {suggestion}) => {
+            addTag(suggestion)
+          }}
+          onSuggestionsClearRequested={() => {}}
+          onSuggestionsFetchRequested={() => {}}
+        />
+      )
+    }
+
+    const handleCloseMenu = (open, reason) => {
+      if (open) {
+        this.setState({open: true})
+      } else {
+        this.setState({open: false})
+        let stateTags = this.state.tags;
+        let propTags = item.tags ? item.tags.map(tag => tag.name) : [];
+        let theDifference = difference(stateTags, propTags)
+        if (theDifference.length) {
+          console.log(theDifference)
+          console.log('state tags not the same as prop tags')
+        } else {
+          console.log(theDifference)
+          console.log("they're the same")
+        }
+      }
+      console.log(open)
+      console.log(reason)
+    }
+
+    const defaultRenderLayout = (tagComponents, inputComponent) => {
+      const archive = this.archive;
+      const deleteFunc = this.trash;
+      return (
+        <div>
+          {tagComponents}
+          <div className='item-toolbar' style={{padding: '0 15px'}}>
+            <IconMenu
+              onRequestChange={(open, reason) => handleCloseMenu(open, reason)}
+              open={this.state.open}
+              iconButtonElement={
+                <IconButton>
+                  <ActionLabel
+                    data-tip={this.state.tags.length ? 'change tags' : 'add tags'}
+                  />
+                </IconButton>
+              }
+              width={200}>
+              {inputComponent}
+            </IconMenu>
+            <IconButton onTouchTap={archive}>
+              <ActionDone data-tip='archive' />
+            </IconButton>
+            <IconButton onTouchTap={deleteFunc}>
+              <ActionDelete data-tip='trash' />
+            </IconButton>
+            <FlatButton
+              label="Cancel"
+              onTouchTap={() => this.props.toggleCreateNoteModal()}
+              style={{color: '#202020'}}
+            />
+            <FlatButton
+              label="Save Note"
+              onTouchTap={this.createNote}
+              disabled={this.disabledButton()}
+              style={{color: '#202020'}}
+            />
+          </div>
+        </div>
+      )
+    }
+
     const createNoteModalActions = [
-      <FlatButton
-        label="Cancel"
-        onTouchTap={() => this.props.toggleCreateNoteModal()}
-        style={{color: '#202020'}}
-      />,
-      <FlatButton
-        label="Save Note"
-        onTouchTap={this.createNote}
-        disabled={this.disabledButton()}
-        style={{color: '#202020'}}
-      />,
+      <TagsInput
+        onlyUnique
+        renderInput={autocompleteRenderInput}
+        value={this.state.tags}
+        onChange={this.handleChange}
+        renderLayout={defaultRenderLayout}
+        renderTag={defaultRenderTag}
+      />
     ];
 
     // const editorState = this.props.createdNoteState.content;
@@ -281,19 +433,6 @@ class CreateNoteModal extends Component {
     )
   }
 }
-
-const mapStateToProps = state => ({
-  createNoteModalOpen: createNoteModalOpenSelector(state),
-  createdNoteState: createdNoteSelector(state),
-});
-
-const mapDispatchToProps = dispatch => bindActionCreators({
-  createNote: createNote,
-  updateNote: updateNote,
-  updateCreatedNoteTitle: updateCreatedNoteTitle,
-  updateCreatedNoteContent: updateCreatedNoteContent,
-  toggleCreateNoteModal: toggleCreateNoteModal,
-}, dispatch);
 
 export default connect(
   mapStateToProps,

@@ -47,7 +47,8 @@ class Api::NotesController < ApplicationController
   def update
     @note = Note.find(params[:id])
     @note.update(note_params)
-    render json: @note
+    # render json: @note
+    render :update
     # mnp = modify_note_params
     # actions = {}
     # actions[:state] = mnp[:state]

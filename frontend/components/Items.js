@@ -205,7 +205,7 @@ export default class Items extends Component {
         } else if (item && item.service === "in1box") {
           return (
             <div style={{display: 'inline-block'}} key={'note' + items[idx].id}>
-              <NoteListItem item={items[idx].note} />
+              <NoteListItem item={items[idx]} />
             </div>
           )
         }

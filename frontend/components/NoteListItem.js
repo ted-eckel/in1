@@ -11,6 +11,7 @@ import IconButton from 'material-ui/IconButton'
 import ActionLabel from 'material-ui/svg-icons/action/label'
 import ActionDone from 'material-ui/svg-icons/action/done'
 import ActionDelete from 'material-ui/svg-icons/action/delete'
+import ImagePalette from 'material-ui/svg-icons/image/palette'
 import difference from 'lodash/difference'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -43,20 +44,34 @@ export default class NoteListItem extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      tags: props.item.tags.map(tag => tag.name),
+      tags: props.item.note.tags.map(tag => tag.name),
+      color: props.item.note.color,
       open: false
     }
 
     this.handleChange = this.handleChange.bind(this)
     this.handleChangeInput = this.handleChangeInput.bind(this)
+    this.updateNote = this.updateNote.bind(this)
+    this.deleteTag = this.deleteTag.bind(this)
+    this.changeTags = this.changeTags.bind(this)
+    this.changeColor = this.changeColor.bind(this)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props !== nextProps) {
+      this.setState({
+        tags: nextProps.item.note.tags.map(tag => tag.name),
+        color: nextProps.item.note.color,
+      })
+    }
   }
 
   trash = () => {
-    this.props.trashNote(this.props.item.id)
+    this.props.trashNote(this.props.item.note.id)
   }
 
   archive = () => {
-    this.props.archiveNote(this.props.item.id)
+    this.props.archiveNote(this.props.item.note.id)
   }
 
   handleChange(tags) {
@@ -67,37 +82,79 @@ export default class NoteListItem extends Component {
     this.setState({tag})
   }
 
+  updateNote() {
+    let note = this.props.item.note;
+    let noteObject = {};
+    noteObject.color = this.state.color;
+
+    if (this.state.tags[0]) {
+      let tagString = `${this.props.currentUser.id}`;
+      for (let i=0; i<this.state.tags.length; i++){
+        tagString += `-------314159265358979323846${this.state.tags[i]}`
+      }
+      noteObject.all_tags = tagString;
+    }
+
+    const noteID = note.id;
+    this.props.updateNote(noteID, noteObject)
+  }
+
+  changeColor() {
+    console.log('differentColor')
+  }
+
+  changeTags() {
+    let noteObject = {};
+
+    let tagString = `${this.props.currentUser.id}`;
+    for (let i=0; i<this.state.tags.length; i++){
+      tagString += `-------314159265358979323846${this.state.tags[i]}`
+    }
+    noteObject.all_tags = tagString;
+    this.props.updateNote(this.props.item.note.id, noteObject);
+  }
+
+  deleteTag(key) {
+    let noteObject = {};
+
+    let newTags = this.state.tags;
+    newTags.splice(key, 1);
+
+    let tagString = `${this.props.currentUser.id}`;
+    for (let i=0; i<newTags.length; i++){
+      tagString += `-------314159265358979323846${newTags[i]}`
+    }
+    noteObject.all_tags = tagString;
+    this.props.updateNote(this.props.item.note.id, noteObject);
+  }
+
   render(){
-    const item = this.props.item;
+    const item = this.props.item.note;
 
     const colorHex = () => {
-      if (this.props.createdNoteState.id === item.id) {
-        return '#F2F2F2'
-      } else {
-        if (this.props.item.color) {
-          switch (this.props.item.color) {
-            case 'DEFAULT':
+      if (this.state.color) {
+        switch (this.state.color) {
+          case 'DEFAULT':
             return '#fff'
-            case 'RED':
+          case 'RED':
             return 'rgb(255, 109, 63)'
-            case 'ORANGE':
+          case 'ORANGE':
             return 'rgb(255, 155, 0)'
-            case 'YELLOW':
+          case 'YELLOW':
             return 'rgb(255, 218, 0)'
-            case 'GREEN':
+          case 'GREEN':
             return 'rgb(149, 214, 65)'
-            case 'TEAL':
+          case 'TEAL':
             return 'rgb(28, 232, 181)'
-            case 'BLUE':
+          case 'BLUE':
             return 'rgb(63, 195, 255)'
-            case 'GRAY':
+          case 'GRAY':
             return 'rgb(184, 196, 201)'
-            default:
+          default:
             return '#fff'
-          }
-        } else {
-          return '#fff'
         }
+      } else {
+        return '#fff'
       }
     }
 
@@ -123,8 +180,8 @@ export default class NoteListItem extends Component {
 
     const tags = this.props.currentUser.tags.map(tag => tag.name).sort();
 
-    function defaultRenderTag (props) {
-      let {tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other} = props
+    const defaultRenderTag = props => {
+      let {tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other} = props;
       return (
         <span key={key} {...other}>
           <span style={{
@@ -134,7 +191,15 @@ export default class NoteListItem extends Component {
             {getTagDisplayValue(tag)}
           </span>
           {!disabled &&
-            <a className={classNameRemove} onClick={(e) => onRemove(key)} />
+            <a
+              className={classNameRemove}
+              onClick={
+                (e) => {
+                  onRemove(key);
+                  this.deleteTag(key)
+                }
+              }
+            />
           }
         </span>
       )
@@ -180,11 +245,12 @@ export default class NoteListItem extends Component {
       } else {
         this.setState({open: false})
         let stateTags = this.state.tags;
-        let propTags = this.props.item.tags ? this.props.item.tags.map(tag => tag.name) : [];
+        let propTags = item.tags ? item.tags.map(tag => tag.name) : [];
         let theDifference = difference(stateTags, propTags)
         if (theDifference.length) {
           console.log(theDifference)
           console.log('state tags not the same as prop tags')
+          this.changeTags();
         } else {
           console.log(theDifference)
           console.log("they're the same")
@@ -255,42 +321,6 @@ export default class NoteListItem extends Component {
             renderLayout={defaultRenderLayout}
             renderTag={defaultRenderTag}
           />
-          {/* <div style={{margin: '9px 12px 4px 30px'}}>
-            {item.tags.length
-              ? (<div className="tags">
-                  {item.tags.map((tag, idx) => {
-                    return (
-                      <div key={idx} style={{cursor: "pointer"}} className="tag">
-                        {tag.name}
-                      </div>)
-                    })}
-                  </div>)
-              : null}
-          </div> */}
-          {/* <div className='item-toolbar' style={{padding: '0 15px'}}>
-            <IconMenu
-              iconButtonElement={
-                <IconButton animated={false}>
-                  <ActionLabel
-                    data-tip={item.tags.length ? 'change tags' : 'add tags'}
-                    className='item-toolbar-button' />
-                </IconButton>
-              }
-              width={200}>
-              <TagsInput
-                onlyUnique
-                renderInput={autocompleteRenderInput}
-                value={this.state.tags}
-                onChange={this.handleChange}
-              />
-            </IconMenu>
-            <IconButton animated={false} onTouchTap={this.archive}>
-              <ActionDone data-tip='archive' className='item-toolbar-button' />
-            </IconButton>
-            <IconButton animated={false} onTouchTap={this.delete}>
-              <ActionDelete data-tip='trash' className='item-toolbar-button' />
-            </IconButton>
-          </div> */}
           <ReactTooltip place="bottom" type="dark" effect="solid" />
         </Paper>
       </div>

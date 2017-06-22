@@ -154,20 +154,6 @@ export const uploadNotes = notesArray => dispatch => {
   })
 }
 
-export const updateCreatedNoteTitle = title => dispatch => {
-  dispatch({
-    type: ActionType.App.Notes.UPDATE_CREATED_NOTE_TITLE,
-    title
-  })
-}
-
-export const updateCreatedNoteContent = content => dispatch => {
-  dispatch({
-    type: ActionType.App.Notes.UPDATE_CREATED_NOTE_CONTENT,
-    content
-  })
-}
-
 export const deleteNotes = noteIDsArray => dispatch => {
   dispatch({
     type: ActionType.App.Notes.DELETE_REQUEST,

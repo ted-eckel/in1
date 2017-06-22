@@ -6,6 +6,7 @@ export const loadList = (
   // q = `(not appProperties has { key='state' and value='archived' }) and mimeType != 'application/vnd.google-apps.folder' and trashed = false`,
   q = "mimeType != 'application/vnd.google-apps.folder' and trashed = false",
   fields = "nextPageToken, files",
+  orderBy = 'createdTime desc',
   spaces = 'drive,photos',
   pageSize = 20
 ) => (dispatch, getState) => {
@@ -24,6 +25,7 @@ export const loadList = (
       type: ActionType.Drive.File.FETCH_LIST_REQUEST,
       q,
       fields,
+      orderBy,
       spaces,
       pageSize,
       pageToken
@@ -32,6 +34,7 @@ export const loadList = (
     FileAPI.list({
       q,
       fields,
+      orderBy,
       spaces,
       pageSize,
       pageToken
@@ -40,6 +43,7 @@ export const loadList = (
         type: ActionType.Drive.File.FETCH_LIST_SUCCESS,
         q,
         fields,
+        orderBy,
         spaces,
         pageSize,
         files: listResult.files,
@@ -50,6 +54,7 @@ export const loadList = (
         type: ActionType.Drive.File.FETCH_LIST_FAILURE,
         q,
         fields,
+        orderBy,
         spaces,
         pageSize,
         error

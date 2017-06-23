@@ -11,7 +11,7 @@ function translateMessage(rawMessage: Object): Message {
   return {
     service: 'gmail',
     body: decodeBody(rawMessage),
-    date: new Date(pluckHeader(msg.headers, 'Date')),
+    date: null,
     from: parseNameAndEmail(pluckHeader(msg.headers, 'From') || ''),
     to: parseNameAndEmail(pluckHeader(msg.headers, 'To') || ''),
     hasAttachment: !!msg.body.data,
@@ -24,6 +24,7 @@ function translateMessage(rawMessage: Object): Message {
       rawMessage.labelIds,
       ['DRAFT', 'INBOX', 'UNREAD', 'STARRED']
     ),
+    messageDate: new Date(pluckHeader(msg.headers, 'Date')),
     raw: rawMessage,
     snippet: _.unescape(rawMessage.snippet),
     subject: pluckHeader(msg.headers, 'Subject'),

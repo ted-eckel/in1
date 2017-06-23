@@ -3,7 +3,8 @@ import merge from 'lodash/merge';
 
 const _nullUser = Object.freeze({
   currentUser: null,
-  errors: []
+  errors: [],
+  googleUser: null,
 });
 
 const SessionReducer = (state = _nullUser, action) => {
@@ -31,6 +32,11 @@ const SessionReducer = (state = _nullUser, action) => {
             drive_uploads_folder_id: action.folderId,
           }
         }
+      }
+    case ActionType.App.Session.RECEIVE_GOOGLE_USER:
+      return {
+        ...state,
+        googleUser: action.googleUser
       }
     default:
       return state;

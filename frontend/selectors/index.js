@@ -16,6 +16,7 @@ export const createNoteModalOpenSelector = state => state.app.createNoteModalOpe
 
 export const identitiesSelector = state => state.session.currentUser.identities;
 export const currentUserSelector = state => state.session.currentUser;
+export const googleUserSelector = state => state.session.googleUser;
 
 const threadListByQuerySelector = state => state.gmail.threadListByQuery;
 export const threadsByIDSelector = state => state.gmail.threadsByID;
@@ -255,15 +256,44 @@ export const endOfListSelector = createSelector([
 
 export const lastMessageInEachThreadSelector = createSelector([
   messagesByIDSelector,
-  threadsSelector
+  threadsSelector,
+  googleUserSelector,
 ], (
   messagesByID,
-  threads
+  threads,
+  googleUser,
 ) => {
   return threads && threads.map(
-    thread => messagesByID[last(thread.messageIDs)]
+    thread => {
+      let idx = thread.messageIDs.length - 1;
+      while (idx >= 0) {
+        if (thread.messageIDs[idx].from !== googleUser) {
+          messagesByID[last(thread.messageIDs)].date = thread.messageIDs[idx].messageDate;
+          break;
+        }
+        idx -= 1;
+      }
+      return messagesByID[last(thread.messageIDs)];
+    }
   );
 });
+
+// export const lastReceivedMessageInEachThreadSelector = createSelector([
+//   messagesByIDSelector,
+//   threadsSelector
+// ], (
+//   messagesByID,
+//   threads
+// ) => {
+//   let messagesByIDArray = messagesByID;
+//   messagesByIDArray.reverse().forEach((messageID, idx) => {
+//
+//   });
+//
+//   return threads && threads.map(
+//     thread =>
+//   )
+// })
 
 export const loadedThreadCountSelector = createSelector([
   searchQuerySelector,

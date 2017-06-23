@@ -44,7 +44,6 @@ export default class GmailListItem extends Component {
     const isUnread = item.isUnread;
 
     const threadID = item.threadID;
-    const date = item.date.toString();
     const unreadFont = isUnread ? 'bold' : 'normal';
     const messageCount = this.props.gmailThreadsByID[item.threadID].messageIDs.length;
 

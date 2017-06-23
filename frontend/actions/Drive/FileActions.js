@@ -6,7 +6,7 @@ export const loadList = (
   // q = `(not appProperties has { key='state' and value='archived' }) and mimeType != 'application/vnd.google-apps.folder' and trashed = false`,
   q = "mimeType != 'application/vnd.google-apps.folder' and trashed = false",
   fields = "nextPageToken, files",
-  orderBy = 'createdTime desc',
+  orderBy = 'modifiedTime desc',
   spaces = 'drive,photos',
   pageSize = 20
 ) => (dispatch, getState) => {

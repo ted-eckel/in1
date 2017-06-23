@@ -26,6 +26,7 @@ const ActionType = {
       LOGOUT: '',
       SIGNUP: '',
       RECEIVE_CURRENT_USER: '',
+      RECEIVE_GOOGLE_USER: '',
       RECEIVE_ERRORS: '',
     },
 

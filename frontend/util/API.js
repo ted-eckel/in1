@@ -20,6 +20,7 @@ export const initClient = () => dispatch => {
     // console.log(`isSignedIn: ${isSignedIn}`)
     if (isSignedIn) {
       let currentUser = GoogleAuth.currentUser.get();
+      dispatch({type: ActionType.App.Session.RECEIVE_GOOGLE_USER, googleUser: currentUser.getBasicProfile().getEmail()})
       // console.log(`currentUserEmail: ${currentUser.getBasicProfile().getEmail()}`)
       let scopes = currentUser.getGrantedScopes();
       // console.log(`scopes: ${scopes}`)

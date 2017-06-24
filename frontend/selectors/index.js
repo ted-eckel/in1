@@ -267,16 +267,10 @@ export const lastMessageInEachThreadSelector = createSelector([
     thread => {
       let idx = thread.messageIDs.length - 1;
       let lastMessage = messagesByID[last(thread.messageIDs)];
-      console.log('lastMessage:')
-      console.log(lastMessage)
       while (idx >= 0) {
         let message = messagesByID[thread.messageIDs[idx]]
-        console.log('message:')
-        console.log(message)
         if (message.from.email !== googleUser) {
           lastMessage.date = message.messageDate;
-          console.log('lastMessage after date modification:')
-          console.log(lastMessage)
           break;
         }
         idx -= 1;

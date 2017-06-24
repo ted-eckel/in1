@@ -266,14 +266,22 @@ export const lastMessageInEachThreadSelector = createSelector([
   return threads && threads.map(
     thread => {
       let idx = thread.messageIDs.length - 1;
+      let lastMessage = messagesByID[last(thread.messageIDs)];
+      console.log('lastMessage:')
+      console.log(lastMessage)
       while (idx >= 0) {
-        if (thread.messageIDs[idx].from !== googleUser) {
-          messagesByID[last(thread.messageIDs)].date = thread.messageIDs[idx].messageDate;
+        let message = messagesByID[thread.messageIDs[idx]]
+        console.log('message:')
+        console.log(message)
+        if (message.from.email !== googleUser) {
+          lastMessage.date = message.messageDate;
+          console.log('lastMessage after date modification:')
+          console.log(lastMessage)
           break;
         }
         idx -= 1;
       }
-      return messagesByID[last(thread.messageIDs)];
+      return lastMessage;
     }
   );
 });
@@ -344,13 +352,19 @@ export const getAllItemsSelector = createSelector([
       }
 
       if (isFetching.any) {
-        return concat(pocketCurrent, gmailCurrent, driveCurrent, notesCurrent).sort((a, b) => b.date - a.date);
+        let allTheItems = concat(pocketCurrent, gmailCurrent, driveCurrent, notesCurrent).sort((a, b) => b.date - a.date);
+        // console.log(allTheItems);
+        return allTheItems
+        // return concat(pocketCurrent, gmailCurrent, driveCurrent, notesCurrent).sort((a, b) => b.date - a.date);
       } else {
         pocketCurrent = null;
         driveCurrent = null;
         gmailCurrent = null;
         notesCurrent = null;
-        return concat(items, lastMessageInEachThread, driveFiles, notes).sort((a, b) => b.date - a.date);
+        let allTheItems = concat(items, lastMessageInEachThread, driveFiles, notes).sort((a, b) => b.date - a.date);
+        // console.log(allTheItems)
+        return allTheItems;
+        // return concat(items, lastMessageInEachThread, driveFiles, notes).sort((a, b) => b.date - a.date);
       }
     } else {
       return [];

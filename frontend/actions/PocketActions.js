@@ -110,3 +110,41 @@ export const deleteItem = itemID => (dispatch, getState) => {
     dispatch({type: ActionType.Pocket.Items.DELETE_FAILURE, err})
   })
 }
+
+export const setTags = (itemID, tagString) => (dispatch, getState) => {
+  dispatch({type: ActionType.Pocket.Items.SET_TAGS_REQUEST, tagString, itemID})
+
+  let date = Math.floor(Date.now() / 1000).toString();
+
+  return APIUtil.pocketTags(
+    {
+      modify_action: 'tags_replace',
+      item_id: itemID,
+      tags: tagString,
+      time: date
+    }
+  ).then(res => {
+    dispatch({type: ActionType.Pocket.Items.SET_TAGS_SUCCESS, res})
+  }, err => {
+    dispatch({type: ActionType.Pocket.Items.SET_TAGS_FAILURE, err})
+  })
+}
+
+export const removeTag = (itemID, tagString) => (dispatch, getState) => {
+  dispatch({type: ActionType.Pocket.Items.REMOVE_TAG_REQUEST, tagString, itemID})
+
+  let date = Math.floor(Date.now() / 1000).toString();
+
+  return APIUtil.pocketTags(
+    {
+      modify_action: 'tags_remove',
+      item_id: itemID,
+      tags: tagString,
+      time: date
+    }
+  ).then(res => {
+    dispatch({type: ActionType.Pocket.Items.REMOVE_TAG_SUCCESS, res})
+  }, err => {
+    dispatch({type: ActionType.Pocket.Items.REMOVE_TAG_FAILURE, err})
+  })
+}

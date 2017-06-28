@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     match 'pocket_retrieve', to: 'pocket#retrieve', via: [:get, :post]
     match 'pocket_modify', to:   'pocket#modify', via: [:get, :post]
     match 'pocket_add', to: 'pocket#add', via: [:get, :post]
+    match 'pocket_tags', to: 'pocket#tags', via: [:get, :post]
     match 'change_settings', to: 'users#change_settings', via: [:patch]
   end
 

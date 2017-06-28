@@ -21,3 +21,11 @@ export const pocketAdd = options => {
 		data: options
 	})
 }
+
+export const pocketTags = options => {
+	return $.ajax({
+		method: 'POST',
+		url: 'api/pocket_tags',
+		data: options
+	})
+}

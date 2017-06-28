@@ -12,12 +12,47 @@ class Api::PocketController < ApplicationController
   end
 
   def modify
-    url = "https://getpocket.com/v3/send?actions=%5B%7B%22action%22%3A%22#{params[:modify_action]}%22%2C%22time%22%3A#{params[:time]}%2C%22item_id%22%3A#{params[:item_id]}%7D%5D&access_token=#{session["pocket_omniauth_data"]["credentials"]["token"]}&consumer_key=#{ENV["pocket_consumer_key"]}"
-
-    render json: HTTParty.post(
-      url
-    )
+    url = "https://getpocket.com/v3/send?"\
+      "actions=%5B%7B"\
+      "%22action%22%3A%22#{params[:modify_action]}%22%2C"\
+      "%22time%22%3A#{params[:time]}%2C"\
+      "%22item_id%22%3A#{params[:item_id]}%7D%5D"\
+      "&access_token=#{session["pocket_omniauth_data"]["credentials"]["token"]}"\
+      "&consumer_key=#{ENV["pocket_consumer_key"]}"
+    puts url
+    request = HTTParty.post(url)
+    puts request
+    render json: request
   end
+
+  def tags
+    url = "https://getpocket.com/v3/send?actions=%5B%7B%22action%22%3A%22#{params[:modify_action]}%22%2C%22time%22%3A#{params[:time]}%2C%22tags%22%3A%22#{params[:tags]}%22%2C%22item_id%22%3A#{params[:item_id]}%7D%5D&access_token=#{session["pocket_omniauth_data"]["credentials"]["token"]}&consumer_key=#{ENV["pocket_consumer_key"]}"
+    puts url
+    request = HTTParty.post(url)
+    puts request
+    render json: request
+  end
+
+  # def tags
+  #   render json: HTTParty.post('https://getpocket.com/v3/send',
+  #     {
+  #       body: {
+  #         consumer_key: ENV["pocket_consumer_key"],
+  #         access_token: session["pocket_omniauth_data"]["credentials"]["token"],
+  #         actions: [
+  #           {
+  #             action: params[:modify_action],
+  #             item_id: params[:item_id],
+  #             tags: params[:tags],
+  #             time: params[:time]
+  #           }.transform_keys do |key|
+  #             key.to_sym
+  #           end
+  #         ]
+  #       }
+  #     }
+  #   )
+  # end
 
   def add
     render json: HTTParty.post('https://getpocket.com/v3/add',

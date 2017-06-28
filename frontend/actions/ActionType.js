@@ -224,6 +224,14 @@ const ActionType = {
       UNARCHIVE_REQUEST: '',
       UNARCHIVE_SUCCESS: '',
       UNARCHIVE_FAILURE: '',
+
+      SET_TAGS_REQUEST: '',
+      SET_TAGS_SUCCESS: '',
+      SET_TAGS_FAILURE: '',
+
+      REMOVE_TAG_REQUEST: '',
+      REMOVE_TAG_SUCCESS: '',
+      REMOVE_TAG_FAILURE: '',
     },
   },
 };

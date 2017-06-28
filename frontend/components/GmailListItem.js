@@ -1,12 +1,23 @@
 import React, { Component, PropTypes } from 'react'
 import Paper from 'material-ui/Paper'
-import unescape from 'lodash/unescape'
+import {default as lodashUnescape} from 'lodash/unescape'
 import FontIcon from 'material-ui/FontIcon'
 import ReactTooltip from 'react-tooltip'
+import TagsInput from 'react-tagsinput'
+import Autosuggest from 'react-autosuggest'
+import IconMenu from 'material-ui/IconMenu'
+import IconButton from 'material-ui/IconButton'
+import ActionLabel from 'material-ui/svg-icons/action/label'
+import ActionDone from 'material-ui/svg-icons/action/done'
+import ActionDelete from 'material-ui/svg-icons/action/delete'
+import difference from 'lodash/difference'
+import differenceBy from 'lodash/differenceBy'
+import pickBy from 'lodash/pickBy'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { threadsByIDSelector } from '../selectors'
-import { trash, archive } from '../actions/Gmail/ThreadActions'
+import { threadsByIDSelector, labelsSelector, allTagsSelector } from '../selectors'
+import { trash, archive, removeLabel, addLabels } from '../actions/Gmail/ThreadActions'
+
 
 
 // if there is are no more items, Pocket will return something like this as a response:
@@ -14,15 +25,71 @@ import { trash, archive } from '../actions/Gmail/ThreadActions'
 
 @connect(
   state => ({
-    gmailThreadsByID: threadsByIDSelector(state)
+    gmailThreadsByID: threadsByIDSelector(state),
+    gmailLabels: labelsSelector(state),
+    allTags: allTagsSelector(state),
   }),
   dispatch => bindActionCreators({
     gmailTrashThread: trash,
     gmailArchiveThread: archive,
+    gmailRemoveLabel: removeLabel,
+    gmailAddLabels: addLabels,
   }, dispatch),
 )
 
 export default class GmailListItem extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      tags: props.item.labelIDs.map(labelID => props.gmailLabels[labelID].name),
+      open: false,
+    }
+
+    this.removeCategory = this.removeCategory.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+    this.deleteTag = this.deleteTag.bind(this)
+    this.changeTags = this.changeTags.bind(this)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props !== nextProps) {
+      this.setState({
+        tags: nextProps.item.labelIDs.map(labelID => this.props.gmailLabels[labelID].name),
+      })
+    }
+  }
+
+  handleChange(tags) {
+    this.setState({tags})
+  }
+
+  changeTags(newTags) {
+    let { gmailLabels } = this.props;
+    console.log('changeTags()')
+    let gmailLabelsByName = {};
+    Object.keys(gmailLabels).forEach(key => gmailLabelsByName[gmailLabels[key].name] = gmailLabels[key])
+    let labelIDs = [];
+    let labelNames = [];
+    newTags.forEach(tag => {
+      if (gmailLabelsByName[tag]) {
+        labelIDs.push(gmailLabelsByName[tag].id)
+      } else {
+        labelNames.push(tag)
+      }
+    })
+    this.props.gmailAddLabels(this.props.item.threadID, labelIDs, labelNames)
+  }
+
+  deleteTag(key) {
+    let { gmailLabels } = this.props;
+    console.log(`deleteTag(${key})`)
+    let labelToDelete = this.state.tags[key]
+    let gmailLabelsByName = {};
+    Object.keys(gmailLabels).forEach(key => gmailLabelsByName[gmailLabels[key].name] = gmailLabels[key])
+    let labelID =  gmailLabelsByName[labelToDelete].id
+    this.props.gmailRemoveLabel(this.props.item.threadID, labelID)
+  }
+
   gmailTrashThread = () => {
     this.props.gmailTrashThread(this.props.item.threadID);
   }
@@ -31,13 +98,20 @@ export default class GmailListItem extends Component {
     this.props.gmailArchiveThread(this.props.item.threadID);
   }
 
+  removeCategory(tag) {
+    if (tag.slice(0, 9) === 'CATEGORY_') {
+      return tag.slice(9)
+    }
+    return tag
+  }
+
   render(){
     const item = this.props.item;
     const gmailId = item.id;
     const from = (
-      item.from.name ?
-      item.from.name :
-      item.from.email.substring(0, item.from.email.lastIndexOf("@")));
+      item.from.length > 1 ?
+      item.from.reverse().map(title => title.split(' ')[0]).join(', ') :
+      item.from[0]);
     const subject = item.subject;
     const snippet = item.snippet;
     const labelIDs = item.labelIDs;
@@ -47,11 +121,112 @@ export default class GmailListItem extends Component {
     const unreadFont = isUnread ? 'bold' : 'normal';
     const messageCount = this.props.gmailThreadsByID[item.threadID].messageIDs.length;
 
-    const removeCategory = tag => {
-      if (tag.slice(0, 9) === 'CATEGORY_') {
-        return tag.slice(9)
+
+
+    const tags = Object.keys(this.props.allTags).map(key => this.props.allTags[key].name).sort();
+
+    const defaultRenderTag = props => {
+      let {tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other} = props;
+      return (
+        <span key={key} {...other}>
+          <span style={{
+            whiteSpace: 'nowrap', maxWidth: '130px', overflow: 'hidden',
+            textOverflow: 'ellipsis', display: 'inline-block', verticalAlign: 'top'
+          }}>
+            {getTagDisplayValue(tag)}
+          </span>
+          {!disabled &&
+            <a
+              className={classNameRemove}
+              onClick={
+                (e) => {
+                  onRemove(key);
+                  this.deleteTag(key)
+                }
+              }
+            />
+          }
+        </span>
+      )
+    }
+
+    const handleCloseMenu = (open, reason) => {
+      if (open) {
+        this.setState({open: true})
+      } else {
+        this.setState({open: false})
+        let stateTags = this.state.tags;
+        let propTags = labelIDs.map(labelID => this.props.gmailLabels[labelID].name);
+        let theDifference = difference(stateTags, propTags);
+        console.log(theDifference);
+        if (theDifference.length) {
+          this.changeTags(theDifference);
+        }
       }
-      return tag
+    }
+
+    const defaultRenderLayout = (tagComponents, inputComponent) => {
+      return (
+        <div>
+          {tagComponents}
+          <div className='item-toolbar' style={{padding: '0 15px'}}>
+            <IconMenu
+              onRequestChange={(open, reason) => handleCloseMenu(open, reason)}
+              open={this.state.open}
+              iconButtonElement={
+                <IconButton>
+                  <ActionLabel
+                    data-tip={this.state.tags.length ? 'change tags' : 'add tags'}
+                    className='item-toolbar-button' />
+                </IconButton>
+              }
+              autoWidth={false}
+              menuStyle={{width: '200px'}}>
+              {inputComponent}
+            </IconMenu>
+            <IconButton onTouchTap={this.gmailArchiveThread}>
+              <ActionDone data-tip='archive' className='item-toolbar-button' />
+            </IconButton>
+            <IconButton onTouchTap={this.gmailTrashThread}>
+              <ActionDelete data-tip='trash' className='item-toolbar-button' />
+            </IconButton>
+          </div>
+        </div>
+      )
+    }
+
+    function autocompleteRenderInput({addTag, ...props}) {
+
+      const handleOnChange = (e, {newValue, method}) => {
+        if (method === 'enter') {
+          e.preventDefault()
+        } else {
+          props.onChange(e)
+        }
+      }
+
+      const inputValue = (props.value && props.value.trim().toLowerCase()) || ''
+      const inputLength = inputValue.length
+
+      let suggestions = tags.filter((tag) => {
+        return tag.toLowerCase().slice(0, inputLength) === inputValue
+      })
+
+      return (
+        <Autosuggest
+          ref={props.ref}
+          suggestions={suggestions}
+          alwaysRenderSuggestions
+          getSuggestionValue={(suggestion) => suggestion}
+          renderSuggestion={(suggestion) => <span>{suggestion}</span>}
+          inputProps={{...props, onChange: handleOnChange}}
+          onSuggestionSelected={(e, {suggestion}) => {
+            addTag(suggestion)
+          }}
+          onSuggestionsClearRequested={() => {}}
+          onSuggestionsFetchRequested={() => {}}
+        />
+      )
     }
 
     return (
@@ -60,14 +235,16 @@ export default class GmailListItem extends Component {
           <a href={"https://mail.google.com/mail/u/0/#inbox/".concat(gmailId)}
             target="_blank" className="item-link">
             <div className="gmail-link">
-              <div className='gmail-title'>
-                <img src="http://www.google.com/s2/favicons?domain=https://www.google.com/gmail/about"
+              <div>
+                <span className='gmail-title'>
+                  <img src="icons/gmail.png"
                   style={{verticalAlign: 'bottom'}} />
-                <span style={{fontWeight: unreadFont}} className="item-title highlight">
-                  { from }
-                  <span style={{fontWeight: 'normal'}}>
-                    { messageCount <= 1 ? null : ' (' + messageCount + ')' }
+                  <span style={{fontWeight: unreadFont}} className="item-title highlight">
+                    { from }
                   </span>
+                </span>
+                <span style={{fontWeight: 'normal', display: 'inline-block', paddingLeft: '2px'}}>
+                  { messageCount <= 1 ? null : ' (' + messageCount + ')' }
                 </span>
               </div>
               <div style={{marginTop: '12px', overflow: 'hidden', lineHeight: '14px'}}>
@@ -77,43 +254,20 @@ export default class GmailListItem extends Component {
                 </span>
                 <span style={{color: "rgb(117, 117, 117)"}}>
                   {snippet.length > 0
-                    ? " - " + unescape(snippet) + "..."
+                    ? " - " + lodashUnescape(snippet) + "..."
                     : ""}
                 </span>
               </div>
             </div>
           </a>
-          <div style={{margin: '0 12px 4px 30px'}}>
-            {labelIDs
-              ? (<div className="tags">
-                  {labelIDs.map((tag, idx) => {
-                    return (
-                      <div key={idx} style={{cursor: "pointer"}} className="tag">
-                        {removeCategory(tag)}
-                         {/* <span onClick={this.requestDeleteClick}>
-                            <FontIcon className='material-icons'
-                              style={{margin: '0 1px 0',
-                              fontSize: '12px', top: '2px',
-                              transition: 'inherit', color: 'inherit'}}>
-                              clear
-                            </FontIcon>
-                        </span> */}
-                      </div>)
-                    })}
-                  </div>)
-              : <span style={{display: "none"}} />}
-            </div>
-            <div className='item-toolbar'>
-              <FontIcon className='material-icons item-toolbar-button'
-                onClick={this.gmailTrashThread} data-tip='trash'>
-                delete
-              </FontIcon>
-              <FontIcon className='material-icons item-toolbar-button'
-                onClick={this.gmailArchiveThread} data-tip='archive'>
-                done
-              </FontIcon>
-              <ReactTooltip place="bottom" type="dark" effect="solid" />
-            </div>
+          <TagsInput
+            onlyUnique
+            renderInput={autocompleteRenderInput}
+            value={this.state.tags}
+            onChange={this.handleChange}
+            renderLayout={defaultRenderLayout}
+            renderTag={defaultRenderTag}
+          />
         </Paper>
       </div>
     )

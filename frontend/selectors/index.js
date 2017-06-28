@@ -149,6 +149,18 @@ export const driveQuerySelector = state => state.drive.app.searchQuery;
 export const driveFileListByQuerySelector = state => state.drive.fileListByQuery;
 export const driveFilesByIDSelector = state => state.drive.filesByID;
 
+export const allTagsSelector = createSelector([
+  labelsSelector,
+  currentUserSelector
+], (
+  gmailLabels,
+  currentUser
+) => {
+  let tagsObject = {}
+  currentUser.tags.forEach(tag => tagsObject[tag.id] = tag)
+  return {...tagsObject, ...gmailLabels}
+})
+
 export const driveFilesSelector = createSelector([
   driveQuerySelector,
   driveFileListByQuerySelector,
@@ -265,16 +277,41 @@ export const lastMessageInEachThreadSelector = createSelector([
 ) => {
   return threads && threads.map(
     thread => {
-      let idx = thread.messageIDs.length - 1;
+      let idx = 0;
+      // let idx = thread.messageIDs.length - 1;
       let lastMessage = messagesByID[last(thread.messageIDs)];
-      while (idx >= 0) {
-        let message = messagesByID[thread.messageIDs[idx]]
-        if (message.from.email !== googleUser) {
+      let from = [];
+      while (idx < thread.messageIDs.length) {
+        let pos = thread.messageIDs.length - (1 + idx);
+        let message = messagesByID[thread.messageIDs[pos]];
+        let email = message.messageFrom.email;
+        let name = message.messageFrom.name;
+        if (email !== googleUser && !lastMessage.date) {
           lastMessage.date = message.messageDate;
-          break;
+          // break;
         }
-        idx -= 1;
+        if (pos === 0 && !lastMessage.date) {
+          lastMessage.date = lastMessage.messageDate;
+        }
+
+        if(email === googleUser) {
+          if (!from.includes('me')) {
+            from.push('me')
+          }
+        } else {
+          if (name) {
+            if (!from.includes(name)) {
+              from.push(name)
+            }
+          } else {
+            if (!from.includes(email.substring(0, email.lastIndexOf('@')))) {
+              from.push(email.substring(0, email.lastIndexOf('@')))
+            }
+          }
+        }
+        idx += 1;
       }
+      lastMessage.from = from;
       return lastMessage;
     }
   );

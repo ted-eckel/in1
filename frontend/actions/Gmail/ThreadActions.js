@@ -70,6 +70,7 @@ export const loadList = (query = '', requestedResultCount = 20) => (dispatch, ge
       type: ActionType.Gmail.Thread.FETCH_LIST_FAILURE,
       query,
       requestedResultCount,
+      error
     })
   })
 }
@@ -212,4 +213,31 @@ export function unstar(threadID: string) {
       })
     );
   };
+}
+
+export const addLabels = (threadID, labelIDs, labelNames) => dispatch => {
+  dispatch({
+    type: ActionType.Gmail.Thread.ADD_LABELS_REQUEST,
+    threadID,
+    labelIDs,
+    labelNames
+  })
+
+  ThreadAPI.addLabels(threadID, labelIDs, labelNames).then(res => {
+    dispatch({type: ActionType.Gmail.Thread.ADD_LABELS_SUCCESS, res})
+  }, err => {
+    dispatch ({type: ActionType.Gmail.Thread.ADD_LABELS_FAILURE, err})
+  })
+}
+
+export const removeLabel = (threadID, labelID) => dispatch => {
+  dispatch({
+    type: ActionType.Gmail.Thread.REMOVE_LABEL_REQUEST, threadID, labelID
+  })
+
+  ThreadAPI.removeLabel(threadID, labelID).then(res => {
+    dispatch({type: ActionType.Gmail.Thread.REMOVE_LABEL_SUCCESS, res})
+  }, err => {
+    dispatch({type: ActionType.Gmail.Thread.REMOVE_LABEL_FAILURE, err})
+  })
 }

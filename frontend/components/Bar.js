@@ -13,7 +13,7 @@ import { toggleDrawer } from '../actions/AppActions'
 const listButton = () => (
   <IconButton tooltip="Grid View">
     <div className="group" style={{display: "inline-block", paddingTop: "10px", marginRight: "15px"}}>
-      <img style={{width: "27px", opacity: ".54"}} src="gridview.svg" alt="Grid View" />
+      <img style={{width: "27px", opacity: ".54"}} src="icons/gridview.svg" alt="Grid View" />
     </div>
   </IconButton>
 )
@@ -55,7 +55,7 @@ export default class Bar extends Component {
                 paddingTop: "10px",
                 marginRight: "15px"
               }}
-              src="gridview.svg"
+              src="icons/gridview.svg"
               alt="Grid View" />
               <a href="/">
               <FlatButton

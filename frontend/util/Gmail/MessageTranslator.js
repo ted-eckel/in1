@@ -1,7 +1,9 @@
 /** @flow */
 
-const _ = require('lodash');
+// const _ = require('lodash');
 const utf8 = require('utf8');
+import difference from 'lodash/difference'
+import {default as lodashUnescape} from 'lodash/unescape'
 
 import type {TMessage} from './Types';
 type Message = typeof TMessage;
@@ -12,7 +14,7 @@ function translateMessage(rawMessage: Object): Message {
     service: 'gmail',
     body: decodeBody(rawMessage),
     date: null,
-    from: parseNameAndEmail(pluckHeader(msg.headers, 'From') || ''),
+    from: null,
     to: parseNameAndEmail(pluckHeader(msg.headers, 'To') || ''),
     hasAttachment: !!msg.body.data,
     id: rawMessage.id,
@@ -20,13 +22,18 @@ function translateMessage(rawMessage: Object): Message {
     isInInbox: hasLabel(rawMessage, 'INBOX'),
     isUnread: hasLabel(rawMessage, 'UNREAD'),
     isStarred: hasLabel(rawMessage, 'STARRED'),
-    labelIDs: _.difference(
+    isSent: hasLabel(rawMessage, 'SENT'),
+    isImportant: hasLabel(rawMessage, 'IMPORTANT'),
+    labelIDs: difference(
       rawMessage.labelIds,
-      ['DRAFT', 'INBOX', 'UNREAD', 'STARRED']
+      ['DRAFT', 'INBOX', 'UNREAD', 'STARRED', 'SENT', 'IMPORTANT',
+        'CATEGORY_UPDATES', 'CATEGORY_FORUMS', 'CATEGORY_PERSONAL',
+        'CATEGORY_PROMOTIONS', 'CATEGORY_SOCIAL']
     ),
     messageDate: new Date(pluckHeader(msg.headers, 'Date')),
+    messageFrom: parseNameAndEmail(pluckHeader(msg.headers, 'From') || ''),
     raw: rawMessage,
-    snippet: _.unescape(rawMessage.snippet),
+    snippet: lodashUnescape(rawMessage.snippet),
     subject: pluckHeader(msg.headers, 'Subject'),
     threadID: rawMessage.threadId,
   };

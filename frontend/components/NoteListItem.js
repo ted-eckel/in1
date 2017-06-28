@@ -16,13 +16,14 @@ import difference from 'lodash/difference'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { trashNote, archiveNote, updateNote } from '../actions/NoteActions'
-import { createdNoteSelector, currentUserSelector } from '../selectors'
+import { createdNoteSelector, currentUserSelector, allTagsSelector } from '../selectors'
 import { toggleCreateNoteModal } from '../actions/AppActions'
 
 @connect(
   state => ({
     createdNoteState: createdNoteSelector(state),
-    currentUser: currentUserSelector(state)
+    currentUser: currentUserSelector(state),
+    allTags: allTagsSelector(state),
   }),
   dispatch => bindActionCreators({
     trashNote: trashNote,
@@ -237,7 +238,7 @@ export default class NoteListItem extends Component {
       }
     }
 
-    const tags = this.props.currentUser.tags.map(tag => tag.name).sort();
+    const tags = Object.keys(this.props.allTags).map(key => this.props.allTags[key].name).sort();
 
     const defaultRenderTag = props => {
       let {tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other} = props;

@@ -1,19 +1,34 @@
 import ActionType from '../ActionType'
 import * as LabelAPI from '../../util/Gmail/LabelAPI'
 
-export function loadAll() {
-  return dispatch => {
-    dispatch({type: ActionType.Gmail.Label.FETCH_ALL_REQUEST});
+export const loadAll = () => dispatch => {
+  dispatch({type: ActionType.Gmail.Label.FETCH_ALL_REQUEST})
 
-    LabelAPI.list().then(labels => {
-      dispatch({
-        type: ActionType.Gmail.Label.FETCH_ALL_SUCCESS,
-        labels: labels,
-      });
-    }).catch(() => {
-      dispatch({
-        type: ActionType.Gmail.Label.FETCH_ALL_FAILURE,
-      });
-    });
-  };
-};
+  LabelAPI.list().then(labels => {
+    dispatch({
+      type: ActionType.Gmail.Label.FETCH_ALL_SUCCESS,
+      labels: labels,
+    })
+  }, error => {
+    dispatch({
+      type: ActionType.Gmail.Label.FETCH_ALL_FAILURE,
+      error
+    })
+  })
+}
+
+export const create = labelName => dispatch => {
+  dispatch({type: ActionType.Gmail.Label.CREATE_REQUEST, labelName})
+
+  LabelAPI.create(labelName).then(labels => {
+    dispatch({
+      type: ActionType.Gmail.Label.CREATE_SUCCESS,
+      label: labels
+    })
+  }, error => {
+    dispatch({
+      type: ActionType.Gmail.Label.CREATE_FAILURE,
+      error
+    })
+  })
+}

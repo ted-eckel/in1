@@ -129,6 +129,10 @@ const ActionType = {
     },
 
     Label: {
+      CREATE_REQUEST: '',
+      CREATE_SUCCESS: '',
+      CREATE_FAILURE: '',
+
       FETCH_ALL_REQUEST: '',
       FETCH_ALL_SUCCESS: '',
       FETCH_ALL_FAILURE: '',
@@ -144,6 +148,14 @@ const ActionType = {
     },
 
     Thread: {
+      ADD_LABELS_REQUEST: '',
+      ADD_LABELS_SUCCESS: '',
+      ADD_LABELS_FAILURE: '',
+
+      REMOVE_LABEL_REQUEST: '',
+      REMOVE_LABEL_SUCCESS: '',
+      REMOVE_LABEL_FAILURE: '',
+
       FETCH_REQUEST: '',
       FETCH_SUCCESS: '',
       FETCH_FAILURE: '',

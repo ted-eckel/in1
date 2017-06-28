@@ -14,6 +14,7 @@ import { bindActionCreators } from 'redux'
 import { fetchItems as fetchPocketItems } from '../actions/PocketActions'
 import { loadList as driveFetchFiles } from '../actions/Drive/FileActions'
 import { loadList as gmailLoadThreadList } from '../actions/Gmail/ThreadActions'
+import { loadAll as gmailLoadLabels } from '../actions/Gmail/LabelActions'
 import { fetchNotes } from '../actions/NoteActions'
 import { fetchEverything } from '../actions/AppActions'
 import {
@@ -26,6 +27,7 @@ import {
   hasMoreThreadsSelector,
   driveHasMoreFilesSelector,
   pocketHasMoreItemsSelector,
+  labelsSelector
 } from '../selectors'
 
 @connect(
@@ -39,11 +41,13 @@ import {
     gmailHasMoreThreads: hasMoreThreadsSelector(state),
     driveHasMoreFiles: driveHasMoreFilesSelector(state),
     pocketHasMoreItems: pocketHasMoreItemsSelector(state),
+    gmailLabels: labelsSelector(state),
   }),
   dispatch => bindActionCreators({
     fetchPocketItems: fetchPocketItems,
     driveFetchFiles: driveFetchFiles,
     gmailLoadThreadList: gmailLoadThreadList,
+    gmailLoadLabels: gmailLoadLabels,
     fetchEverything: fetchEverything,
     fetchNotes: fetchNotes,
   }, dispatch),
@@ -96,29 +100,40 @@ export default class Items extends Component {
     const {
       fetchPocketItems, endOfList, allAuth, isFetching, driveFetchFiles,
       searchQuery, gmailLoadThreadList, fetchEverything, gmailHasMoreThreads,
-      driveHasMoreFiles, pocketHasMoreItems, fetchNotes
+      driveHasMoreFiles, pocketHasMoreItems, fetchNotes, gmailLabels, gmailLoadLabels
     } = this.props;
 
     let promiseArray = []
 
     if (allAuth.all && !isFetching.any) {
-      if (allAuth.gmail && gmailHasMoreThreads) {
-        promiseArray.push(gmailLoadThreadList(searchQuery));
+      if (allAuth.gmail/* && gmailHasMoreThreads*/) {
+        if (!gmailLabels.length) {
+          // promiseArray.push(gmailLoadLabels())
+          gmailLoadLabels()
+        }
+        // gmailLoadLabels();
+        if (gmailHasMoreThreads) {
+          // promiseArray.push(gmailLoadThreadList(searchQuery));
+          gmailLoadThreadList(searchQuery)
+        }
       }
 
       if (allAuth.pocket && pocketHasMoreItems) {
-        promiseArray.push(fetchPocketItems());
+        // promiseArray.push(fetchPocketItems());
+        fetchPocketItems();
       }
 
       if (allAuth.drive && driveHasMoreFiles) {
-        promiseArray.push(driveFetchFiles());
+        // promiseArray.push(driveFetchFiles());
+        driveFetchFiles();
       }
 
-      promiseArray.push(fetchNotes());
+      // promiseArray.push(fetchNotes());
+      fetchNotes()
 
-      fetchEverything(promiseArray)
+      // fetchEverything(promiseArray)
     }
-    // if (!isFetching.any) {
+    // if (allAuth.all && !isFetching.any) {
     //   fetchNotes()
     // }
   }

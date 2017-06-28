@@ -1,11 +1,16 @@
 /** @flow */
 /* global gapi */
 
-function list() {
-  window.gapi.client.gmail.users.labels.list({userId: 'me'})
-  .then(response => response.labels)
+export const list = () => {
+  return window.gapi.client.gmail.users.labels.list({userId: 'me'})
+  .then(response => response.result.labels)
 }
 
-module.exports = {
-  list,
-};
+export const create = labelName => {
+  return window.gapi.client.gmail.users.labels.create({
+    userId: 'me',
+    label: {
+      name: labelName
+    }
+  }).then(response => response.result.labels)
+}

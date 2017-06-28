@@ -1,12 +1,18 @@
 import React, { Component, PropTypes } from 'react'
 import Paper from 'material-ui/Paper'
-import unescape from 'lodash/unescape'
 
 export default class DriveListItem extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {iconUrl: 'icons/' + props.item.file.mimeType + '.png'}
 
-  handleRequestDelete = e => {
-    e.preventDefault();
-    alert('You clicked the delete button.');
+    this.onError = this.onError.bind(this);
+  }
+
+  onError() {
+    this.setState({
+      iconUrl: 'icons/drive.png'
+    })
   }
 
   render(){
@@ -26,7 +32,7 @@ export default class DriveListItem extends Component {
             <div style={{fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
                 fontSize: "13px", padding: '12px 15px'}}>
               <div className="drive-title">
-                <img src={file.iconLink} style={{verticalAlign: 'bottom'}} />
+                <img src={this.state.iconUrl} onError={this.onError} style={{verticalAlign: 'bottom'}} />
                 <span style={{fontWeight: viewedFont}}
                   className="item-title highlight">
                   { file.name }

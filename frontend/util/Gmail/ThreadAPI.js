@@ -60,6 +60,53 @@ export const list = (options) => {
   })
 }
 
+export const addLabels = (threadID, labelIDs, labelNames) => {
+  const labelAddRequest = ids => {
+    return window.gapi.client.gmail.users.threads.modify({
+      userId: 'me',
+      id: threadID,
+      addLabelIds: ids
+    })
+  }
+
+  if (labelNames.length) {
+    const createLabelsBatch = window.gapi.client.newBatch();
+
+    const labelCreateRequest = labelName => {
+      return window.gapi.client.gmail.users.labels.create({
+        userId: 'me',
+        name: labelName
+      })
+    }
+
+    labelNames.forEach(labelName => {
+      createLabelsBatch.add(labelCreateRequest(labelName))
+    })
+
+    return createLabelsBatch.then(res => {
+      let newLabelIds = labelIDs;
+      let createdLabels = [];
+
+      Object.keys(res.result).forEach(key => {
+        createdLabels.push(res.result[key].result)
+        newLabelIds.push(res.result[key].result.id)
+      })
+
+      return labelAddRequest(newLabelIds).then(res => res.result)
+    })
+  } else {
+    labelAddRequest(labelIDs).then(res => res.result)
+  }
+}
+
+export const removeLabel = (threadID, labelID) => {
+  return window.gapi.client.gmail.users.threads.modify({
+    userId: 'me',
+    id: threadID,
+    removeLabelIds: [labelID]
+  })
+}
+
 export function processThreadResults(results) {
   const allMessages = [];
   const threads = results.filter(thread => thread).map(thread => {

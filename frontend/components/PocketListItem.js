@@ -61,7 +61,7 @@ export default class PocketListItem extends Component {
              target="_blank" className="pocket-link item-link">
             <div style={{margin: "0 15px"}}>
               <div style={{display: "inline-block"}}>
-                <img src="http://www.google.com/s2/favicons?domain=https://getpocket.com/"
+                <img src="icons/pocket.png"
                   style={{verticalAlign: 'text-top'}} />
                 <span className="item-title pocket-title highlight">
                   {item.resolved_title ? item.resolved_title : item.given_title}
